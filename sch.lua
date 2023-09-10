@@ -1271,7 +1271,7 @@ gentab:add_button("Remove balance", function()
         log.info("已移除收支差:"..SE)    
         SEa = 1
     else
-        gui.show_message("Your income and expenditure difference is normal, there is no need to remove or trigger the protection of abnormal values","There is no income and expenditure difference at all, but it may be abnormal")
+        gui.show_message("Your income and expenditure are normal, no need to remove or trigger abnormal value protection","There is no difference in income and expenditure at all, but it may be abnormal")
         SEa = 1
     end
 
