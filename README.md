@@ -58,6 +58,10 @@ RScript (ZH_CN) https://github.com/TCRoid/YimMenu-Lua-RScript \
 Alestarov_Menu (EN) https://github.com/Alestarov/YimMenu-lua-script-Alestarov_Menu \
 YIMMENU Official Lua Repo (EN) YIMMENU Official Lua Repo https://github.com/YimMenu-Lua
 ## Screenshots 
-![1](https://github.com/Drsexo/English-Sch-lua/assets/101467921/39d49dfa-870b-4b32-a2ce-61b95426c0c3)
-![2](https://github.com/Drsexo/English-Sch-lua/assets/101467921/5ad1dc9c-9cb1-4917-8444-9d525d0e3f60)
-![3](https://github.com/Drsexo/English-Sch-lua/assets/101467921/cc6e8f0d-f633-4c90-83f5-eb168cfc08d5)
+![1](https://github.com/Drsexo/English-Sch-lua/assets/101467921/df7c29e5-50bd-4a61-b76a-ac1ab92d4aa8)
+![2](https://github.com/Drsexo/English-Sch-lua/assets/101467921/d16ae327-556d-4bcd-9361-e47395e123e2)
+![3](https://github.com/Drsexo/English-Sch-lua/assets/101467921/7062e682-f574-4928-9a0b-03d9375b7a56)
+
+
+
+
