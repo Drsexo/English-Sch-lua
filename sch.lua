@@ -247,7 +247,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Configure the front of Pei Island (cheetah statue)", function()
+gentab:add_button("Skip cayo perico setup (cheetah statue)", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID  --用于判断当前是角色1还是角色2
     local mpx = "MP0_"--用于判断当前是角色1还是角色2
     if playerid == 1 then --用于判断当前是角色1还是角色2
@@ -276,7 +276,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Configuration Pei island front (pink diamond)", function()
+gentab:add_button("Skip cayo perico setup (pink diamond)", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     local mpx = "MP0_"
     if playerid == 1 then 
@@ -305,7 +305,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Reset Pey Island", function()
+gentab:add_button("Reset cayo perico", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     local mpx = "MP0_"
     if playerid == 1 then 
@@ -333,7 +333,7 @@ gentab:add_button("Reset Pey Island", function()
     gui.show_message("Attention", "The planning panel will be restored to the state just bought the killer whale!")
 end)
 
-gentab:add_button("Configure Casino Front (Diamond)", function()
+gentab:add_button("Skip Casino heist prep (Diamond)", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     local mpx = "MP0_"
     if playerid == 1 then 
@@ -360,7 +360,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Configure Casino Front (Gold)", function()
+gentab:add_button("kip Casino heist prep (Gold)", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     local mpx = "MP0_"
     if playerid == 1 then 
@@ -477,7 +477,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Display game hall industry master control computer", function()
+gentab:add_button("Show arcade computer", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
         run_script("apparcadebusinesshub")
@@ -493,7 +493,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Show the Terrorist Dashboard", function()
+gentab:add_button("Show the Terrorbyte Dashboard", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
         run_script("apphackertruck")
@@ -934,7 +934,7 @@ CamList = {   --从heist control抄的
 
 gentab:add_sameline()
 
-gentab:add_button("Removed Perico hoplites", function()
+gentab:add_button("Removed Perico npcs", function()
     for _, ent in pairs(entities.get_all_peds_as_handles()) do
         if ENTITY.GET_ENTITY_MODEL(ent) == 193469166 then
             ENTITY.SET_ENTITY_AS_MISSION_ENTITY(ent,true,true) --不执行这个下面会删除失败
@@ -964,7 +964,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("One-click delivery of hallucinogens", function()
+gentab:add_button("One-click delivery of acid", function()
     locals.set_int("fm_content_acid_lab_sell",6596,9)
     locals.set_int("fm_content_acid_lab_sell",6597,10)
     locals.set_int("fm_content_acid_lab_sell",6530,2)
@@ -994,11 +994,11 @@ local ccrgsl = gentab:add_checkbox("CEO warehouse shipment locks the transport s
 
 gentab:add_sameline()
 
-local bkeasyms = gentab:add_checkbox("The motorcycle gang shipped only one truck")
+local bkeasyms = gentab:add_checkbox("The motorcycle gang will ship only one truck")
 
 gentab:add_sameline()
 
-local bussp = gentab:add_checkbox("Rapid production of hallucinogens in the motorcycle gang industrial bunker (dangerous)")
+local bussp = gentab:add_checkbox("Rapid production of acid in the motorcycle gang industrial bunker (dangerous)")
 
 gentab:add_sameline()
 
@@ -1014,7 +1014,7 @@ gentab:add_sameline()
 
 local ncspupa3 = gentab:add_checkbox("Purchase at 20 times the speed of the nightclub (dangerous)")
 
-gentab:add_button("The motorcycle industry is full of raw materials", function()
+gentab:add_button("The motorcycle industry is full of supplies", function()
     globals.set_int(1648657+1+1,1) --可卡因 --freemode.c  	if (func_12737(148, "OR_PSUP_DEL" /*Hey, the supplies you purchased have arrived at the ~a~. Remember, paying for them eats into profits!*/, &unk, false, -99, 0, 0, false, 0))
     globals.set_int(1648657+1+2,1) --冰毒
     globals.set_int(1648657+1+3,1) --大麻
@@ -1026,7 +1026,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("The bunker is full of raw materials", function()
+gentab:add_button("The bunker is full of supplies", function()
     globals.set_int(1648657+1+5,1) --bunker
     gui.show_message("Auto-replenishment","All done")
 end)
@@ -1126,7 +1126,7 @@ function tpfac() --传送到设施
 
 end
 
-gentab:add_button("Killer Whale Project Panel", function()
+gentab:add_button("Kosatka Panel", function()
     script.run_in_fiber(function (callkos)
         local SubBlip = HUD.GET_FIRST_BLIP_INFO_ID(760)
         local SubControlBlip = HUD.GET_FIRST_BLIP_INFO_ID(773)
@@ -1231,7 +1231,7 @@ gentab:add_button("Nightclub safe (enter the nightclub first)", function()
     PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), -1615.6832, -3015.7546, -75.204994)
 end)
 
-gentab:add_button("gaming room", function()
+gentab:add_button("arcade", function()
 
     local Blip = HUD.GET_FIRST_BLIP_INFO_ID(740) -- Arcade Blip
     local Pos = HUD.GET_BLIP_COORDS(Blip)
@@ -1449,7 +1449,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Generate ground speed bar", function()
+gentab:add_button("Ground speedometer", function()
     script.run_in_fiber(function (crtspeedm)
     objHash = joaat("stt_prop_track_speedup_t1")
     while not STREAMING.HAS_MODEL_LOADED(objHash) do	
@@ -1465,7 +1465,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Generate Air Acceleration Bar", function()
+gentab:add_button("Air speedometer", function()
     script.run_in_fiber(function (crtspeedm)
     objHash = joaat("ar_prop_ar_speed_ring")
     while not STREAMING.HAS_MODEL_LOADED(objHash) do	
