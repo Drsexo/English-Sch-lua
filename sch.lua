@@ -1,4 +1,4 @@
--- v1.79 --
+-- v1.80 --
 --I do not limit or even encourage players to modify and customize lua according to their own needs.
 --I even added comments to some codes to explain what this is used for and the location of the relevant global in the decompiled script
 --[[
@@ -16,6 +16,7 @@ No guarantees (I can only guarantee that there is no subjective malice when writ
 
 Please also make sure to download the file through the official discord user yeahsch(sch) of the assistant, any other method may be a malicious script
 Github: https://github.com/sch-lda/SCH-LUA-YIMMENU
+English version : https://github.com/Drsexo/English-Sch-lua/
 
 external link
 Yimmenu lib By Discord@alice2333 https://discord.com/channels/388227343862464513/1124473215436214372 can provide support for developers
@@ -34,7 +35,7 @@ Websites that may be helpful for lua writing
 ]]
 
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
-local luaversion = "v1.79"
+local luaversion = "v1.80"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -1497,16 +1498,27 @@ gentab:add_button("remove all visual effects", function()
     GRAPHICS.ANIMPOSTFX_STOP_ALL()
     GRAPHICS.SET_TIMECYCLE_MODIFIER("DEFAULT")
 	PED.SET_PED_MOTION_BLUR(PLAYER.PLAYER_PED_ID(), false)
-	CAM.SHAKE_GAMEPLAY_CAM("DEATH_FAIL_IN_EFFECT_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("CLUB_DANCE_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("DAMPED_HAND_SHAKE", 0.0)
+    CAM.SHAKE_GAMEPLAY_CAM("DEATH_FAIL_IN_EFFECT_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("DRONE_BOOST_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("DRUNK_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("FAMILY5_DRUG_TRIP_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("gameplay_explosion_shake", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("GRENADE_EXPLOSION_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_BUMP_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_ENGINE_START_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_ENGINE_STOP_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_LOOP_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("HAND_SHAKE", 0.0)
-	CAM.SHAKE_GAMEPLAY_CAM("JOLT_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("HIGH_FALL_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("jolt_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("LARGE_EXPLOSION_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("MEDIUM_EXPLOSION_SHAKE", 0.0)
-	CAM.SHAKE_GAMEPLAY_CAM("SMALL_EXPLOSION_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("PLANE_PART_SPEED_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("ROAD_VIBRATION_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("SKY_DIVING_SHAKE", 0.0)
+	CAM.SHAKE_GAMEPLAY_CAM("SMALL_EXPLOSION_SHAKE", 0.0)
 	CAM.SHAKE_GAMEPLAY_CAM("VIBRATE_SHAKE", 0.0)
 end)
 
@@ -1652,7 +1664,11 @@ gentab:add_sameline()
 
 local DrawHost = gentab:add_checkbox("display host information") --只是一个开关，代码往后面找
 
-local pedgun = gentab:add_checkbox("PED gun (shoots NPC)") --只是一个开关，代码往后面找
+gentab:add_sameline()
+
+local allpause = gentab:add_checkbox("Allow local pause online") --只是一个开关，代码往后面找
+
+local pedgun = gentab:add_checkbox("PED gun (shoot NPC)") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -2507,13 +2523,34 @@ local efxrm = gentab:add_checkbox("Reset filters and lens shake") --只是一个
 
 gentab:add_sameline()
 
+local skippcus = gentab:add_checkbox("Continuously removing transitions") --只是一个开关，代码往后面找
+
 gentab:add_button("Diasble Ver Check", function()
     verchka1 = 100
     log.warning("The verification that the lua does not match the game version will be ignored, and you must bear the risk of online archive damage by using outdated scripts")
     gui.show_error("The verification that the lua does not match the game version will be ignored","You must bear the risk of online archive damage")
 end)
 
+gentab:add_sameline()
+
+gentab:add_button("ClearPEDtask", function()
+    TASK.CLEAR_PED_TASKS_IMMEDIATELY(PLAYER.PLAYER_PED_ID())
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("PauseProcess", function()
+    MISC.SET_GAME_PAUSED(true)
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("ResumeProcess", function()
+    MISC.SET_GAME_PAUSED(false)
+end)
+
 gentab:add_text("obj generation (Name)") 
+
 gentab:add_sameline()
 local iputobjname = gentab:add_input_string("objname")
 gentab:add_sameline()
@@ -2552,6 +2589,8 @@ end)
 gentab:add_text("PTFX generation") ;gentab:add_sameline()
 local iputptfxdic = gentab:add_input_string("PTFX Dic")
 local iputptfxname = gentab:add_input_string("PTFX Name")
+iputptfxdic:set_value("scr_rcbarry2")
+iputptfxname:set_value("scr_clown_appears")
 gentab:add_sameline()
 gentab:add_button("generate ptfx", function()
     script.run_in_fiber(function (cusptfx)
@@ -2567,7 +2606,21 @@ gentab:add_button("generate ptfx", function()
     end)
 end)
 
-local cashmtp = gentab:add_checkbox("Set contact task income multiplier")
+gentab:add_text("Play cutscenes") ;gentab:add_sameline()
+local iputcuts = gentab:add_input_string("CUTSCENE")
+iputcuts:set_value("mp_intro_concat")
+gentab:add_sameline()
+gentab:add_button("Play c", function()
+    CUTSCENE.REQUEST_CUTSCENE(iputcuts:get_value(), 8)
+    CUTSCENE.START_CUTSCENE(0)
+end)
+gentab:add_sameline()
+gentab:add_button("Stop c", function()
+    CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+    CUTSCENE.REMOVE_CUTSCENE()
+end)
+
+local cashmtp = gentab:add_checkbox("Set up Contact Person service income ratio")
 
 gentab:add_sameline()
 
@@ -2661,6 +2714,7 @@ local loopa24 = 0  --控制锁定小地图角度
 local loopa25 = 0  --控制防爆头
 local loopa26 = 0  --控制雷达假死
 local loopa27 = 0  --PTFX1
+local loopa28 = 0  --线上模式暂停
 
 --------------------------------------------------------------------------------------- 注册的循环脚本,主要用来实现Lua里面那些复选框的功能
 
@@ -3300,6 +3354,20 @@ script.register_looped("schlua-miscservice", function()
         end
     end
 
+    if  allpause:is_enabled() then --允许线上模式本地暂停
+        if loopa28 == 0 and HUD.GET_PAUSE_MENU_STATE() == 15 then  --这段代码只会在开启开关时执行一次，而不是循环
+            log.info("世界停止")
+            MISC.SET_GAME_PAUSED(true)
+            loopa28 = 1
+        end
+        if loopa28 == 1 and HUD.GET_PAUSE_MENU_STATE() == 0 then   
+            log.info("世界恢复")
+            MISC.SET_GAME_PAUSED(false)
+            loopa28 = 0
+        end
+    else
+    end
+
     if  rdded:is_enabled() then --雷达假死
         if loopa26 == 0 then  --这段代码只会在开启开关时执行一次，而不是循环
             if  ENTITY.GET_ENTITY_MAX_HEALTH(PLAYER.PLAYER_PED_ID()) ~= 0 then
@@ -3805,23 +3873,40 @@ script.register_looped("schlua-miscservice", function()
     else
     end
 
+    if  skippcus:is_enabled() then --阻止过场动画
+        if CUTSCENE.IS_CUTSCENE_PLAYING() then
+            CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+            CUTSCENE.REMOVE_CUTSCENE()
+        end
+    end
+
     if  efxrm:is_enabled() then --阻止镜头抖动、视觉效果滤镜
         GRAPHICS.ANIMPOSTFX_STOP_ALL()
         GRAPHICS.SET_TIMECYCLE_MODIFIER("DEFAULT")
         PED.SET_PED_MOTION_BLUR(PLAYER.PLAYER_PED_ID(), false)
+        CAM.SHAKE_GAMEPLAY_CAM("CLUB_DANCE_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("DAMPED_HAND_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("DEATH_FAIL_IN_EFFECT_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("DRONE_BOOST_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("DRUNK_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("FAMILY5_DRUG_TRIP_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("gameplay_explosion_shake", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("GRENADE_EXPLOSION_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_BUMP_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_ENGINE_START_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_ENGINE_STOP_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("GUNRUNNING_LOOP_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("HAND_SHAKE", 0.0)
-        CAM.SHAKE_GAMEPLAY_CAM("JOLT_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("HIGH_FALL_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("jolt_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("LARGE_EXPLOSION_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("MEDIUM_EXPLOSION_SHAKE", 0.0)
-        CAM.SHAKE_GAMEPLAY_CAM("SMALL_EXPLOSION_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("PLANE_PART_SPEED_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("ROAD_VIBRATION_SHAKE", 0.0)
         CAM.SHAKE_GAMEPLAY_CAM("SKY_DIVING_SHAKE", 0.0)
-        CAM.SHAKE_GAMEPLAY_CAM("VIBRATE_SHAKE", 0.0)    else
-    end
-
+        CAM.SHAKE_GAMEPLAY_CAM("SMALL_EXPLOSION_SHAKE", 0.0)
+        CAM.SHAKE_GAMEPLAY_CAM("VIBRATE_SHAKE", 0.0)
+        end
 end)
 
 script.register_looped("schlua-vehctrl", function() 
