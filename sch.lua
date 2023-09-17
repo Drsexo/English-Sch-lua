@@ -361,7 +361,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("kip Casino heist prep (Gold)", function()
+gentab:add_button("Skip Casino heist prep (Gold)", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     local mpx = "MP0_"
     if playerid == 1 then 
