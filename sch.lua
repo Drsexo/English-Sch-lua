@@ -2555,6 +2555,10 @@ emmode:set_enabled(1)
 local emmode2 = gentab:add_checkbox("Emergency mode 2-Press Ctrl+A+S to quickly escape from this battle") --只是一个开关，代码往后面找
 emmode2:set_enabled(1)
 
+gentab:add_sameline()
+
+local allclear = gentab:add_checkbox("Loop clear entity") --只是一个开关，代码往后面找
+
 gentab:add_text("obj generation (Name)") 
 gentab:add_sameline()
 local iputobjname = gentab:add_input_string("objname")
@@ -3992,7 +3996,21 @@ script.register_looped("schlua-vehctrl", function()
 end)
 
 script.register_looped("schlua-ectrlservice", function() 
-    
+    if  allclear:is_enabled() then --循环清除实体
+        for _, ent1221 in pairs(entities.get_all_objects_as_handles()) do
+            ENTITY.SET_ENTITY_AS_MISSION_ENTITY(ent1221,true,true) --不执行这个下面会删除失败
+            ENTITY.DELETE_ENTITY(ent1221)
+        end
+        for _, ent1222 in pairs(entities.get_all_peds_as_handles()) do
+            ENTITY.SET_ENTITY_AS_MISSION_ENTITY(ent1222,true,true) --不执行这个下面会删除失败
+            ENTITY.DELETE_ENTITY(ent1222)
+        end
+        for _, ent1223 in pairs(entities.get_all_vehicles_as_handles()) do
+            ENTITY.SET_ENTITY_AS_MISSION_ENTITY(ent1223,true,true) --不执行这个下面会删除失败
+            ENTITY.DELETE_ENTITY(ent1223)
+        end
+    end
+
     if  npcvehbr:is_enabled() then --控制NPC载具倒行
         for _, ped in pairs(entities.get_all_peds_as_handles()) do
             local veh = 0
