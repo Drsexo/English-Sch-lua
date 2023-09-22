@@ -1,4 +1,4 @@
--- v1.81 --
+-- v1.82 --
 --I do not limit or even encourage players to modify and customize lua according to their own needs.
 --I even added comments to some codes to explain what this is used for and the location of the relevant global in the decompiled script
 --[[
@@ -35,7 +35,7 @@ Websites that may be helpful for lua writing
 ]]
 
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
-local luaversion = "v1.81"
+local luaversion = "v1.82"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -636,7 +636,11 @@ local check6 = gentab:add_checkbox("swim mode") --这只是一个复选框,代�
 
 gentab:add_sameline()
 
-local checkfirebreath = gentab:add_checkbox("fire breathing")--这只是一个复选框,代码往最后的循环脚本部分找
+local partwater = gentab:add_checkbox("Separate bodies of water") --这只是一个复选框,代码往最后的循环脚本部分找
+
+gentab:add_sameline()
+
+local checkfirebreath = gentab:add_checkbox("Fire breath")--这只是一个复选框,代码往最后的循环脚本部分找
 
 gentab:add_sameline()
 
@@ -1150,7 +1154,7 @@ gentab:add_button("Kosatka Panel", function()
     end)
 end)
 
-gentab:add_button("facility", function()
+gentab:add_button("Facility", function()
     local PlayerPos = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER.PLAYER_PED_ID(), 0.0, 0.52, 0.0)
     local intr = INTERIOR.GET_INTERIOR_AT_COORDS(PlayerPos.x, PlayerPos.y, PlayerPos.z)
 
@@ -1226,7 +1230,7 @@ function tpnc() --传送到夜总会
     end
 end
 
-gentab:add_button("nightclub", function()
+gentab:add_button("Nightclub", function()
     tpnc()
 end)
 
@@ -1236,7 +1240,7 @@ gentab:add_button("Nightclub safe (enter the nightclub first)", function()
     PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), -1615.6832, -3015.7546, -75.204994)
 end)
 
-gentab:add_button("arcade", function()
+gentab:add_button("Arcade", function()
 
     local Blip = HUD.GET_FIRST_BLIP_INFO_ID(740) -- Arcade Blip
     local Pos = HUD.GET_BLIP_COORDS(Blip)
@@ -1278,8 +1282,12 @@ gentab:add_button("Arcade Plan Panel (Advanced Arcade)", function()
     PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  2711.773, -369.458, -54.781)
 end)
 
+gentab:add_button("Random location", function()
+    ENTITY.SET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), math.random(-1794,2940), math.random(-3026,6298), -199.9,1,0,0,1)
+end)
+
 gentab:add_separator()
-gentab:add_text("miscellaneous")
+gentab:add_text("Miscellaneous")
 
 local SEa = 0
 
@@ -2549,15 +2557,17 @@ gentab:add_button("ResumeProcess", function()
     MISC.SET_GAME_PAUSED(false)
 end)
 
-local emmode = gentab:add_checkbox("Emergency mode-press the ASD three buttons at the same time when the model is being swiped in large quantities to prevent the renderer from crashing") --只是一个开关，代码往后面找
-emmode:set_enabled(1)
+local emmode = gentab:add_checkbox("Emergency Mode - Press Ctrl+S+D at the same time to quickly escape from the scene and pause the network synchronization (without leaving the game) when the game lags significantly due to a large number of models being swiped - use it with the Cycle Entity Removal function if necessary.") --只是一个开关，代码往后面找
+emmode:set_enabled(1) --开启上方创建的复选框，删除此行代码后紧急模式1不会默认监听快捷键
 
-local emmode2 = gentab:add_checkbox("Emergency mode 2-Press Ctrl+A+S to quickly escape from this battle") --只是一个开关，代码往后面找
-emmode2:set_enabled(1)
+local emmode2 = gentab:add_checkbox("Emergency Mode 2 - Press Ctrl+A+S to quickly escape to a new battlefield") --只是一个开关，代码往后面找
+emmode2:set_enabled(1) --开启上方创建的复选框，删除此行代码后紧急模式2不会默认监听快捷键
 
 gentab:add_sameline()
 
 local allclear = gentab:add_checkbox("Loop clear entity") --只是一个开关，代码往后面找
+
+local emmode3 = gentab:add_checkbox("Emergency Mode 3 - Continuously removes any entities + stops PTFX fire columns and water columns + stops filter and lens shake + cleans up traces on the surface of objects") --只是一个开关，代码往后面找
 
 gentab:add_text("obj generation (Name)") 
 gentab:add_sameline()
@@ -2724,21 +2734,44 @@ local loopa25 = 0  --控制防爆头
 local loopa26 = 0  --控制雷达假死
 local loopa27 = 0  --PTFX1
 local loopa28 = 0  --线上模式暂停
-local loopa29 = 0  --紧急模式
+local loopa29 = 0  --紧急模式1
+local loopa30 = 0  --紧急模式3
 
 --------------------------------------------------------------------------------------- 注册的循环脚本,主要用来实现Lua里面那些复选框的功能
 local selfposen
-script.register_looped("schlua-emodedeamon", function() 
+script.register_looped("schlua-emodedeamon", function() --紧急模式1、2
     if  emmode2:is_enabled() then
         if PAD.IS_CONTROL_PRESSED(0, 33) and PAD.IS_CONTROL_PRESSED(0, 34) and PAD.IS_CONTROL_PRESSED(0, 36) then  
+        --PAD.IS_CONTROL_PRESSED(0, 33)表示按下键码为33的键时接收一个信号，上面一行表示同时按 33、34、36 时激活这个功能
+        --https://docs.fivem.net/docs/game-references/controls/ 如需自定义，到这个网站查询控制33这样的数字对应的是键盘或手柄上的什么物理按键，替换掉对应的数字即可
             command.call("joinsession", { 1 })
             log.info("走为上策,已创建新战局")
             gui.show_message("Going is the best policy", "A new battle situation has been created")
         end
     end
 
+    if  emmode3:is_enabled() then
+        if loopa30 == 0 then 
+            allclear:set_enabled(1)
+            DECALrm:set_enabled(1)
+            efxrm:set_enabled(1)
+            ptfxrm:set_enabled(1)
+            log.info("紧急模式3已开启")
+            loopa30 = 1
+        end
+    else 
+        if loopa30 == 1 then 
+            allclear:set_enabled(nil)
+            DECALrm:set_enabled(nil)
+            efxrm:set_enabled(nil)
+            ptfxrm:set_enabled(nil)
+            log.info("紧急模式3已关闭")
+            loopa30 = 0
+        end
+    end
+
     if  emmode:is_enabled() then
-        if loopa29 == 0 and PAD.IS_CONTROL_PRESSED(0, 33) and PAD.IS_CONTROL_PRESSED(0, 34) and PAD.IS_CONTROL_PRESSED(0, 35) then  
+        if loopa29 == 0 and PAD.IS_CONTROL_PRESSED(0, 33) and PAD.IS_CONTROL_PRESSED(0, 36) and PAD.IS_CONTROL_PRESSED(0, 35) then  
             log.info("紧急模式已开启,与所有玩家取消同步,同时按下WAD关闭")
             gui.show_message("Emergency mode is turned on "," Cancel synchronization with all players, and press WAD to close at the same time")
             NETWORK.NETWORK_START_SOLO_TUTORIAL_SESSION()
@@ -3793,6 +3826,23 @@ script.register_looped("schlua-miscservice", function()
 
     if  check6:is_enabled() then --随处游泳
         PED.SET_PED_CONFIG_FLAG(PLAYER.PLAYER_PED_ID(), 65, 81) --锁定玩家状态为游泳
+    end
+
+    if  partwater:is_enabled() then --分开水体
+        local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+        WATER.SET_DEEP_OCEAN_SCALER(0.0)
+
+        WATER.MODIFY_WATER(selfpos.x, selfpos.y, -500000.0, 0.2)
+        WATER.MODIFY_WATER(selfpos.x+2, selfpos.y, -500000.0, 0.2)
+        WATER.MODIFY_WATER(selfpos.x, selfpos.y+2, -500000.0, 0.2)
+        WATER.MODIFY_WATER(selfpos.x-2, selfpos.y, -500000.0, 0.2)
+        WATER.MODIFY_WATER(selfpos.x, selfpos.y-2, -500000.0, 0.2)
+
+        WATER.MODIFY_WATER(selfpos.x+math.random(4,10), selfpos.y, -500000.0, 0.2)
+        WATER.MODIFY_WATER(selfpos.x, selfpos.y+math.random(4,10), -500000.0, 0.2)
+        WATER.MODIFY_WATER(selfpos.x-math.random(4,10), selfpos.y, -500000.0, 0.2)
+        WATER.MODIFY_WATER(selfpos.x, selfpos.y-math.random(4,10), -500000.0, 0.2)
+
     end
 
     if vehboost:is_enabled() then --载具加速
