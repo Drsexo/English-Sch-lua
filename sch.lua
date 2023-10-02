@@ -1,4 +1,4 @@
--- v1.86 --
+-- v1.87 --
 --I do not limit or even encourage players to modify and customize lua according to their own needs.
 --I even added comments to some codes to explain what this is used for and the location of the relevant global in the decompiled script
 --[[
@@ -35,7 +35,7 @@ Websites that may be helpful for lua writing
 ]]
 
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
-luaversion = "v1.86"
+luaversion = "v1.87"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -199,6 +199,44 @@ end)
 ]]
 --------------------------------------------------------------------------------------- TEST
 
+FRDList = {   --友方NPC白名单
+--赌场事务
+joaat("IG_TaoCheng2"), --陈陶--已验证
+joaat("IG_TaosTranslator2"), --陶的翻译员--已验证
+joaat("IG_Agatha"), --贝克女士--已验证
+joaat("CSB_Vincent_2"), --文森特
+joaat("IG_Vincent_2"), --文森特
+--别惹德瑞
+joaat("IG_Johnny_Guns"), --约翰尼·贡斯
+joaat("IG_ARY_02"), --德瑞
+--老抢劫
+joaat("CSB_Rashcosvki"), --越狱-囚犯
+joaat("IG_Rashcosvki"), --越狱-囚犯
+joaat("CSB_AviSchwartzman_02"), --阿维
+joaat("CSB_AviSchwartzman_03"), --阿维
+joaat("IG_AviSchwartzman_02"), --阿维
+joaat("IG_AviSchwartzman_03"), --阿维
+joaat("CS_LesterCrest"), --莱斯特
+joaat("IG_LesterCrest"), --莱斯特
+--末日豪劫
+joaat("CSB_Bogdan"), --波格丹
+--最后一剂
+joaat("CSB_Dax"), --达克斯
+joaat("IG_Dax"), --达克斯
+joaat("CSB_Labrat"), --实验鼠
+joaat("IG_Labrat"), --实验鼠
+joaat("CSB_Luchadora"), --
+joaat("IG_Luchadora"), --
+joaat("IG_AcidLabCook"), --穆特
+--拉玛和小查
+joaat("CS_LamarDavis"), 
+joaat("CS_LamarDavis_02"), 
+joaat("IG_LamarDavis"), 
+joaat("IG_LamarDavis_02"), 
+joaat("A_C_Chop"), 
+joaat("A_C_Chop_02"), 
+}
+
 --------------------------------------------------------------------------------------- Lua管理器页面
 
 gentab:add_text("To use the player function, please select a player in the yim player list and scroll to the bottom of the player page") 
@@ -234,7 +272,7 @@ gentab:add_button("Complete the final chapter of Perico with one click", functio
         else
             log.info("失败,未成为脚本主机,队友可能任务立即失败,可能受到其他作弊者干扰.您真的在进行受支持的抢劫任务分红关吗?")
             log.info("已测试支持的任务:佩里科岛/ULP/数据泄露合约(别惹德瑞)")
-            gui.show_error("失败,未成为脚本主机","您可能不在支持一键完成的任务中")
+            gui.show_error("Failed to become a script host","You may not be in a task that supports one-click completion")
         end
     end)
 end)
@@ -768,9 +806,16 @@ gentab:add_sameline()
 gentab:add_button("Bodyguard", function()
     local pedtable = entities.get_all_peds_as_handles()
     for _, peds in pairs(pedtable) do
+        local foundfrd = false
+        for __, frd in pairs(FRDList) do
+            if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                foundfrd = true
+                break
+            end
+        end    
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-        if calcDistance(selfpos, ped_pos) <= 200 and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) == false and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
+        if calcDistance(selfpos, ped_pos) <= 200 and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) == false and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and foundfrd == false then 
             TASK.CLEAR_PED_TASKS(peds)
             PED.SET_PED_AS_GROUP_MEMBER(peds, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()))
             PED.SET_PED_RELATIONSHIP_GROUP_HASH(peds, PED.GET_PED_RELATIONSHIP_GROUP_HASH(PLAYER.PLAYER_PED_ID()))
@@ -804,7 +849,21 @@ end)
 
 gentab:add_sameline()
 
-local revitalizationped = gentab:add_checkbox("resurrection (unstable)") --只是一个开关，代码往后面找
+gentab:add_button("Heal A", function()
+    local pedtable = entities.get_all_peds_as_handles()
+    for _, peds in pairs(pedtable) do
+        local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+        local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
+        if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
+            request_control(peds)
+            ENTITY.SET_ENTITY_HEALTH(peds,1000,true)
+        end
+    end
+end)
+
+gentab:add_sameline()
+
+local revitalizationped = gentab:add_checkbox("Resurrection (unstable)") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -821,6 +880,8 @@ local stnpcany = gentab:add_checkbox("Electric shock A") --只是一个开关，
 gentab:add_sameline()
 
 local drawbox = gentab:add_checkbox("Light beam markera") --只是一个开关，代码往后面找
+
+gentab:add_text("(BETA testing) NPC control automatically excludes friendly whitelisting (list not yet complete, see below), lightpost markers still work globally") 
 
 gentab:add_text("Hostile NPC control") 
 
@@ -889,10 +950,6 @@ local aimreact5 = gentab:add_checkbox("Bodyguard B") --只是一个开关，代�
 gentab:add_sameline()
 
 local aimreact6 = gentab:add_checkbox("remove B") --只是一个开关，代码往后面找
-
-gentab:add_sameline()
-
-local aimreact7 = gentab:add_checkbox("Beam marker B") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -976,9 +1033,16 @@ gentab:add_sameline()
 gentab:add_button("Randomly shoot half of the NPCs in real name", function()
     local pedtable = entities.get_all_peds_as_handles()
     for _, peds in pairs(pedtable) do
+        local foundfrd = false
+        for __, frd in pairs(FRDList) do
+            if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                foundfrd = true
+                break
+            end
+        end    
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-        if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and math.random(0,1) >= 0.5 then 
+        if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and math.random(0,1) >= 0.5 and foundfrd == false then 
             MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
         end
     end
@@ -991,7 +1055,7 @@ gentab:add_button("Randomly shoot half of hostile NPCs in real name", function()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and math.random(0,1) >= 0.5 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
+        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and math.random(0,1) >= 0.5 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
             MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)
         end
     end
@@ -1002,9 +1066,16 @@ gentab:add_sameline()
 gentab:add_button("Real-name shooting NPC", function()
     local pedtable = entities.get_all_peds_as_handles()
     for _, peds in pairs(pedtable) do
+        local foundfrd = false
+        for __, frd in pairs(FRDList) do
+            if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                foundfrd = true
+                break
+            end
+        end    
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-        if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
+        if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and foundfrd == false then 
             MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)
         end
     end
@@ -1017,7 +1088,7 @@ gentab:add_button("Shoot and kill hostile NPCs in real name", function()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
+        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
             MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0) --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
         end
     end
@@ -1025,6 +1096,56 @@ end)
 
 gentab:add_text("Shooting and dying can keep NPC drops such as password clues and Perico access cards, but if you remove them, you will not be able to get any drops..") 
 gentab:add_text("Real-name shooting will be counted in the player's archived statistics and kill experience points will be obtained. Deaths under NPC control will be regarded as natural deaths of NPC, and removal is also anonymous. Shooting is using a special carbine MK2 simulation shooting") 
+
+gentab:add_button("Heal key NPCs", function()
+    for _, ped in pairs(entities.get_all_peds_as_handles()) do
+        for __, frd in pairs(FRDList) do
+            if ENTITY.GET_ENTITY_MODEL(ped) == frd then
+                request_control(ped)
+                ENTITY.SET_ENTITY_HEALTH(ped,1000,true)
+            end
+        end
+    end
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Make blue dot NPCs on the mini-map invincible", function()
+    for _, peds in pairs(entities.get_all_peds_as_handles()) do
+        if peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 3 then 
+            request_control(peds)
+            ENTITY.SET_ENTITY_HEALTH(peds,1000,true)
+            ENTITY.SET_ENTITY_PROOFS(peds, true, true, true, true, true, true, true, true) 
+            ENTITY.SET_ENTITY_INVINCIBLE(peds,true)
+        end
+    end
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Remove invincibility of blue dot NPCs", function()
+    for _, peds in pairs(entities.get_all_peds_as_handles()) do
+        if peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 3 then 
+            request_control(peds)
+            ENTITY.SET_ENTITY_HEALTH(peds,1000,true)
+            ENTITY.SET_ENTITY_INVINCIBLE(peds,false)
+            ENTITY.SET_ENTITY_PROOFS(peds, false, false, false, false, false, false, false, false) 
+        end
+    end
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Teleport blue dot NPCs to yourself", function()
+    for _, peds in pairs(entities.get_all_peds_as_handles()) do
+        if peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 3 then 
+            request_control(peds)
+            PED.SET_PED_COORDS_KEEP_VEHICLE(peds, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), false).x, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), false).y, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), false).z)
+        end
+    end
+end)
+
+gentab:add_text("Key NPCs entered: see source code line 199") 
 
 gentab:add_separator()
 
@@ -1215,20 +1336,23 @@ end
 
 gentab:add_button("Kosatka Panel", function()
     script.run_in_fiber(function (callkos)
-        local SubBlip = HUD.GET_FIRST_BLIP_INFO_ID(760)
-        local SubControlBlip = HUD.GET_FIRST_BLIP_INFO_ID(773)
-        if not HUD.DOES_BLIP_EXIST(SubBlip) and not HUD.DOES_BLIP_EXIST(SubControlBlip) then
-            local PlayerPos = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER.PLAYER_PED_ID(), 0.0, 0.0, 0.0)
-            local Interior = INTERIOR.GET_INTERIOR_AT_COORDS(PlayerPos.x, PlayerPos.y, PlayerPos.z)
-            if Interior ~= 281345 then
+        local PlayerPos = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER.PLAYER_PED_ID(), 0.0, 0.0, 0.0)
+        local Interior = INTERIOR.GET_INTERIOR_AT_COORDS(PlayerPos.x, PlayerPos.y, PlayerPos.z)
+        if Interior == 281345 then
+            PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),1561.2369, 385.8771, -49.689915)
+            PED.SET_PED_DESIRED_HEADING(PLAYER.PLAYER_PED_ID(), 175)
+        else   
+            local SubBlip = HUD.GET_FIRST_BLIP_INFO_ID(760)
+            local SubControlBlip = HUD.GET_FIRST_BLIP_INFO_ID(773)
+            while not HUD.DOES_BLIP_EXIST(SubBlip) and not HUD.DOES_BLIP_EXIST(SubControlBlip) do     
                 globals.set_int(2794162 + 960, 1) --呼叫虎鲸 --freemode.c 			func_12047("HELP_SUBMA_P" /*Go to the Planning Screen on board your new Kosatka ~a~~s~ to begin The Cayo Perico Heist as a VIP, CEO or MC President. You can also request the Kosatka nearby via the Services section of the Interaction Menu.*/, "H_BLIP_SUB2" /*~BLIP_SUB2~*/, func_3011(PLAYER::PLAYER_ID()), -1, false, true);
-                repeat callkos:yield() until HUD.DOES_BLIP_EXIST(SubBlip)
-                PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),1561.2369, 385.8771, -49.689915)
-                PED.SET_PED_DESIRED_HEADING(PLAYER.PLAYER_PED_ID(), 175)
+                SubBlip = HUD.GET_FIRST_BLIP_INFO_ID(760)
+                SubControlBlip = HUD.GET_FIRST_BLIP_INFO_ID(773)    
+                callkos:yield()
             end
+            PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),1561.2369, 385.8771, -49.689915)
+            PED.SET_PED_DESIRED_HEADING(PLAYER.PLAYER_PED_ID(), 175)         
         end
-        PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),1561.2369, 385.8771, -49.689915)
-        PED.SET_PED_DESIRED_HEADING(PLAYER.PLAYER_PED_ID(), 175)
     end)
 end)
 
@@ -1649,7 +1773,6 @@ gentab:add_sameline()
 
 gentab:add_button("Prevent everyone from using space-based cannons", function()
     script.run_in_fiber(function (blockorbroom)
-
         local objHash = joaat("prop_fnclink_03e")
         STREAMING.REQUEST_MODEL(objHash)
         while not STREAMING.HAS_MODEL_LOADED(objHash) do
@@ -1657,17 +1780,13 @@ gentab:add_button("Prevent everyone from using space-based cannons", function()
             log.info(3)
             blockorbroom:yield()
         end   
-
         local object = {}
-    
         object[1] = OBJECT.CREATE_OBJECT(objHash, 335.8 - 1.5,4833.9 + 1.5, -60,true, 1, 0)
         object[2] = OBJECT.CREATE_OBJECT(objHash, 335.8 - 1.5,4833.9 - 1.5, -60,true, 1, 0)
-    
         object[3] = OBJECT.CREATE_OBJECT(objHash, 335.8 + 1.5,4833.9 + 1.5, -60,true, 1, 0)
         local rot_3 = ENTITY.GET_ENTITY_ROTATION(object[3], 2)
         rot_3.z = -90.0
         ENTITY.SET_ENTITY_ROTATION(object[3], rot_3.x, rot_3.y, rot_3.z, 1, true)
-    
         object[4] = OBJECT.CREATE_OBJECT(objHash, 335.8 - 1.5,4833.9 + 1.5, -60,true, 1, 0)
         local rot_4 = ENTITY.GET_ENTITY_ROTATION(object[4], 2)
         rot_4.z = -90.0
@@ -1680,10 +1799,8 @@ gentab:add_button("Prevent everyone from using space-based cannons", function()
         ENTITY.SET_ENTITY_CAN_BE_DAMAGED(object[2], false) 
         ENTITY.SET_ENTITY_CAN_BE_DAMAGED(object[3], false) 
         ENTITY.SET_ENTITY_CAN_BE_DAMAGED(object[4], false) 
-    
         for i = 1, 4 do ENTITY.FREEZE_ENTITY_POSITION(object[i], true) end
         STREAMING.SET_MODEL_AS_NO_LONGER_NEEDED(objHash)
-    
     end)
 end)
 
@@ -2538,7 +2655,7 @@ gentab:add_button("PED collapse", function() --恶毒的东西
     
             local object_hash2 = joaat("prop_beach_parasol_03")
             STREAMING.REQUEST_MODEL(object_hash2)
-              while not STREAMING.HAS_MODEL_LOADED(object_hash2) do
+            while not STREAMING.HAS_MODEL_LOADED(object_hash2) do
                 pedpacrash:yield()
             end
             PLAYER.SET_PLAYER_PARACHUTE_MODEL_OVERRIDE(PLAYER.PLAYER_ID(),object_hash2)
@@ -2640,6 +2757,7 @@ gentab:add_sameline()
 
 gentab:add_button("ClearPEDtask", function()
     TASK.CLEAR_PED_TASKS_IMMEDIATELY(PLAYER.PLAYER_PED_ID())
+    ENTITY.FREEZE_ENTITY_POSITION(PLAYER.PLAYER_PED_ID(), false)
 end)
 
 gentab:add_sameline()
@@ -2656,14 +2774,50 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("forescripthost", function()
+gentab:add_button("forcescripthost", function()
     network.force_script_host("fm_mission_controller_2020") --抢脚本主机
     network.force_script_host("fm_mission_controller") --抢脚本主机
 end)
 
 gentab:add_sameline()
 
-local keepschost = gentab:add_checkbox("keepforescripthost") --只是一个开关，代码往后面找
+local keepschost = gentab:add_checkbox("keepscripthost") --只是一个开关，代码往后面找
+
+gentab:add_sameline()
+
+gentab:add_button("loadstats", function()
+    while STATS.STAT_SLOT_IS_LOADED(0) == false or STATS.STAT_SLOT_IS_LOADED(1) == false do
+    log.info("LOADINGSTATS")
+    STATS.STAT_LOAD(0)
+    STATS.STAT_LOAD(1)
+    end
+    log.info("LOADED")
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("savestats", function()
+    iVar0 = 0
+    while iVar0 <= 2 do 
+      STATS.STAT_SAVE(iVar0, 0, 0, 0)
+      iVar0 = iVar0 + 1
+    end
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("listblips", function()
+    local pedtable = entities.get_all_peds_as_handles()
+    for _, peds in pairs(pedtable) do
+        local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+        local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
+        if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            log.info(HUD.GET_BLIP_SPRITE(HUD.GET_BLIP_FROM_ENTITY(peds)).." color :"..HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)))
+        end
+    end
+    log.info("---------------------------------------------------------end------------------------------------------------------")
+
+end)
 
 local emmode = gentab:add_checkbox("Emergency mode-Press Ctrl+S+D at the same time when the game is stuck due to a large number of swiping models, quickly escape the scene and pause the network synchronization (no need to leave the war situation)-if necessary, use it with the cycle to clear the entity function") --只是一个开关，代码往后面找
 --emmode:set_enabled(1) --开启上方创建的复选框，删除此行代码后紧急模式1不会默认监听快捷键
@@ -3164,7 +3318,7 @@ script.register_looped("schlua-dataservice", function()
         globals.set_int(1890714+12,inputCEOcargo:get_value()) --核心代码 --freemode.c      func_17512("SRC_CRG_TICKER_1" /*~a~ Staff has sourced: ~n~1 Crate: ~a~*/, func_6676(hParam0), func_17513(Global_1890714.f_15), HUD_COLOUR_PURE_WHITE, HUD_COLOUR_PURE_WHITE);
 
         else
-            gui.show_error("超过限额", "进货数超过仓库容量上限")
+            gui.show_error("Exceeding the limit","The number of purchases exceeds the upper limit of warehouse capacity")
             checkCEOcargo:set_enabled(nil)
         end
     end
@@ -3434,7 +3588,7 @@ script.register_looped("schlua-dataservice", function()
 
     if checkzhongjia:is_enabled() then --锁定请求重甲花费
         if iputintzhongjia:get_value() <= 500 then --防止有人拿删除钱设置为负反向刷钱  乐
-            gui.show_error("错误", "金额需要大于500")
+            gui.show_error("Error","The amount needs to be greater than 500")
             checkzhongjia:set_enabled(nil)
             else
                 globals.set_int(262145 + 20468, iputintzhongjia:get_value())--核心代码 --am_pi_menu.c  func_1277("PIM_TBALLI" /*BALLISTIC EQUIPMENT SERVICES*/);
@@ -3551,13 +3705,13 @@ script.register_looped("schlua-miscservice", function()
     if  checkSONAR:is_enabled() then --控制声纳开关
         if loopa4 == 0 then  --这段代码只会在开启开关时执行一次，而不是循环
             HUD.SET_MINIMAP_SONAR_SWEEP(true)
-            gui.show_message("sonar","on")
+            gui.show_message("Sonar","On")
         end
         loopa4 = 1
     else
         if loopa4 == 1 then   
             HUD.SET_MINIMAP_SONAR_SWEEP(false)        
-            gui.show_message("sonar","close")
+            gui.show_message("Sonar","Off")
             loopa4 = 0
         end
     end
@@ -3565,13 +3719,13 @@ script.register_looped("schlua-miscservice", function()
     if  lockmapang:is_enabled() then --Lock the angle of the minimap
         if loopa24 == 0 then  --这段代码只会在开启开关时执行一次，而不是循环
             HUD.LOCK_MINIMAP_ANGLE(0)
-            gui.show_message("Lock the angle of the minimap","开启")
+            gui.show_message("Lock the angle of the minimap","On")
         end
         loopa24 = 1
     else
         if loopa24 == 1 then   
             HUD.UNLOCK_MINIMAP_ANGLE()        
-            gui.show_message("Lock the angle of the minimap","关闭")
+            gui.show_message("Lock the angle of the minimap","Off")
             loopa24 = 0
         end
     end
@@ -3635,7 +3789,7 @@ script.register_looped("schlua-miscservice", function()
     if  vehgodr:is_enabled() then --控制远程载具无敌
         if loopa14 == 0 then
             if not PED.IS_PED_IN_ANY_VEHICLE(PLAYER.GET_PLAYER_PED(network.get_selected_player()),true) then
-                gui.show_error("警告","玩家不在载具内")
+                gui.show_error("Warning","The player is not in the vehicle")
                 vehgodr:set_enabled(nil)
                 loopa14 = 0
             else
@@ -3662,7 +3816,7 @@ script.register_looped("schlua-miscservice", function()
     else
         if loopa14 == 1 then   
             if not PED.IS_PED_IN_ANY_VEHICLE(PLAYER.GET_PLAYER_PED(network.get_selected_player()),true) then
-                gui.show_error("警告","玩家不在载具内")
+                gui.show_error("Warning","Player not in vehicle")
                 vehgodr:set_enabled(nil)
                 loopa14 = 0
             else
@@ -3690,7 +3844,7 @@ script.register_looped("schlua-miscservice", function()
     if  vehnoclr:is_enabled() then --控制远程载具无碰撞
         if loopa15 == 0 then
             if not PED.IS_PED_IN_ANY_VEHICLE(PLAYER.GET_PLAYER_PED(network.get_selected_player()),true) then
-                gui.show_error("警告","玩家不在载具内")
+                gui.show_error("Warning","The player is not in the vehicle")
                 vehnoclr:set_enabled(nil)
                 loopa14 = 0
             else
@@ -4046,7 +4200,7 @@ script.register_looped("schlua-miscservice", function()
 
     if  pedvehctl:is_enabled() then --玩家选项-载具旋转
         if not PED.IS_PED_IN_ANY_VEHICLE(PLAYER.GET_PLAYER_PED(network.get_selected_player()),true) then
-            gui.show_error("警告","玩家不在载具内")
+            gui.show_error("Warning","The player is not in the vehicle")
         else
             tarveh123 = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED(network.get_selected_player()))
             local time123 = os.time()
@@ -4484,17 +4638,6 @@ script.register_looped("schlua-ectrlservice", function()
         end
     end
 
-    if  aimreact7:is_enabled() then --控制NPC瞄准反应7 -光柱标记
-        local pedtable = entities.get_all_peds_as_handles()
-        for _, peds in pairs(pedtable) do
-            local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
-            local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if PED.IS_PED_FACING_PED(peds, PLAYER.PLAYER_PED_ID(), 2) and ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(peds, PLAYER.PLAYER_PED_ID(), 17) and calcDistance(selfpos, ped_pos) <= npcaimprange:get_value()  and PED.GET_PED_CONFIG_FLAG(peds, 78, true) and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
-                GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,255,255,255)
-            end
-        end
-    end
-
     if  rmpedwp3:is_enabled() then --控制NPC瞄准反应8 -缴械
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
@@ -4739,9 +4882,16 @@ script.register_looped("schlua-ectrlservice", function()
     if  reactany:is_enabled() then --控制NPC-中断
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
+            local foundfrd = false
+            for __, frd in pairs(FRDList) do
+                if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                    foundfrd = true
+                    break
+                end
+            end    
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1) and PED.IS_PED_A_PLAYER(peds) ~= 1 and foundfrd == false then 
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
             end
@@ -4751,9 +4901,16 @@ script.register_looped("schlua-ectrlservice", function()
     if  react1any:is_enabled() then --控制NPC -摔倒
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
+            local foundfrd = false
+            for __, frd in pairs(FRDList) do
+                if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                    foundfrd = true
+                    break
+                end
+            end    
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and foundfrd == false then 
                 request_control(peds)
                 PED.SET_PED_TO_RAGDOLL(peds, 5000, 0,0 , false, false, false)
             end
@@ -4763,9 +4920,16 @@ script.register_looped("schlua-ectrlservice", function()
     if  react2any:is_enabled() then --控制NPC -死亡
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
+            local foundfrd = false
+            for __, frd in pairs(FRDList) do
+                if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                    foundfrd = true
+                    break
+                end
+            end    
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and foundfrd == false then 
                 request_control(peds)
                 ENTITY.SET_ENTITY_HEALTH(peds,0,true)
             end
@@ -4777,7 +4941,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
             end
@@ -4789,7 +4953,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 PED.SET_PED_TO_RAGDOLL(peds, 5000, 0,0 , false, false, false)
             end
@@ -4801,7 +4965,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 ENTITY.SET_ENTITY_HEALTH(peds,0,true)
             end
@@ -4823,9 +4987,16 @@ script.register_looped("schlua-ectrlservice", function()
     if  react3any:is_enabled() then --控制NPC -燃烧
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
+            local foundfrd = false
+            for __, frd in pairs(FRDList) do
+                if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                    foundfrd = true
+                    break
+                end
+            end    
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and foundfrd == false then 
                 request_control(peds)
                 FIRE.START_ENTITY_FIRE(peds)
                 FIRE.START_SCRIPT_FIRE(ped_pos.x, ped_pos.y, ped_pos.z, 25, true)
@@ -4837,9 +5008,16 @@ script.register_looped("schlua-ectrlservice", function()
     if  react4any:is_enabled() then --控制NPC-起飞
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
+            local foundfrd = false
+            for __, frd in pairs(FRDList) do
+                if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                    foundfrd = true
+                    break
+                end
+            end    
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 and foundfrd == false then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds) then
                     tarpensveh = PED.GET_VEHICLE_PED_IS_IN(peds)
@@ -4855,9 +5033,16 @@ script.register_looped("schlua-ectrlservice", function()
     if  rmpedwp:is_enabled() then --控制NPC-缴械
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
+            local foundfrd = false
+            for __, frd in pairs(FRDList) do
+                if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                    foundfrd = true
+                    break
+                end
+            end    
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 and foundfrd == false then 
                 request_control(peds)
                 WEAPON.REMOVE_ALL_PED_WEAPONS(peds,true)
             end
@@ -4867,9 +5052,16 @@ script.register_looped("schlua-ectrlservice", function()
     if  stnpcany:is_enabled() then --控制NPC-射击-电击枪
         local pedtable = entities.get_all_peds_as_handles()
         for _, peds in pairs(pedtable) do
+            local foundfrd = false
+            for __, frd in pairs(FRDList) do
+                if ENTITY.GET_ENTITY_MODEL(peds) == frd then
+                    foundfrd = true
+                    break
+                end
+            end    
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and foundfrd == false then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds) then
                     TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
@@ -4885,8 +5077,19 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
-                GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,255,255,255)
+            local ismarked = false
+            if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
+                if PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 then 
+                    ismarked = true
+                    GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,76,0,255)
+                end
+                if  HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 3 then 
+                    ismarked = true
+                    GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,87,213,255,255)
+                end
+                if ismarked == false then
+                    GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,255,255,255)
+                end
             end
         end
     end
@@ -4896,7 +5099,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 FIRE.START_ENTITY_FIRE(peds)
                 FIRE.START_SCRIPT_FIRE(ped_pos.x, ped_pos.y, ped_pos.z, 25, true)
@@ -4910,7 +5113,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds) then
                     tarpensveh = PED.GET_VEHICLE_PED_IS_IN(peds)
@@ -4928,7 +5131,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and PED.IS_PED_A_PLAYER(peds) == false then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and PED.IS_PED_A_PLAYER(peds) == false then 
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS(peds)
                 PED.SET_PED_AS_GROUP_MEMBER(peds, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()))
@@ -4966,9 +5169,9 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() then 
                 GRAPHICS.REQUEST_STREAMED_TEXTURE_DICT("golfputting", true)
-                GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,255,255,255)
+                GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,0,0,255)
             end
         end
     end
@@ -4978,7 +5181,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1  then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1  then 
                 request_control(peds)
                 WEAPON.REMOVE_ALL_PED_WEAPONS(peds,true)
             end
@@ -4990,7 +5193,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds) then
                     TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
@@ -5218,7 +5421,7 @@ script.register_looped("schlua-verckservice", function()
             if STREAMING.IS_PLAYER_SWITCH_IN_PROGRESS() then
             else
                 log.warning("sch-lua脚本不支持您的游戏版本,请立即删除,继续使用将损坏您的在线账户!")
-                gui.show_error("sch-lua不支持您的游戏版本","请立即删除以免损坏在线存档")
+                gui.show_error("sch-luaDoes not support your game version","Please delete it immediately so as not to damage any online data")
                 script_util:sleep(1000)
                 verchka1 = verchka1 + 1
             end
