@@ -1,4 +1,4 @@
--- v1.87 --
+-- v1.89 --
 --I do not limit or even encourage players to modify and customize lua according to their own needs.
 --I even added comments to some codes to explain what this is used for and the location of the relevant global in the decompiled script
 --[[
@@ -35,7 +35,7 @@ Websites that may be helpful for lua writing
 ]]
 
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
-luaversion = "v1.87"
+luaversion = "v1.89"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -139,12 +139,12 @@ function CreateVehicle(Hash, Pos, Heading, Invincible)
     script.run_in_fiber(function (ctveh)
         STREAMING.REQUEST_MODEL(Hash)
         while not STREAMING.HAS_MODEL_LOADED(Hash) do ctveh:yield() end
-        local SpawnedVehicle = VEHICLE.CREATE_VEHICLE(Hash, Pos.x,Pos.y,Pos.z, Heading , true, true, true)
+        CreateVehicle_rlt = VEHICLE.CREATE_VEHICLE(Hash, Pos.x,Pos.y,Pos.z, Heading , true, true, true)
         STREAMING.SET_MODEL_AS_NO_LONGER_NEEDED(Hash)
         if Invincible then
             ENTITY.SET_ENTITY_INVINCIBLE(SpawnedVehicle, true)
         end
-        return SpawnedVehicle
+        return CreateVehicle_rlt
     end)
 end
 
@@ -190,11 +190,9 @@ end
 
 --------------------------------------------------------------------------------------- TEST
 --[[
-
-gentab:add_button("test6", function()
-local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
-
-GRAPHICS.DRAW_BOX(selfpos.x-0.5,selfpos.y-0.5,selfpos.z-0.5,selfpos.x+0.5,selfpos.y+0.5,selfpos.z+0.5,200,200,200,200)
+gentab:add_button("Clear the police", function()
+    local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+    MISC.CLEAR_AREA_OF_COPS(selfpos.x,selfpos.y,selfpos.z,1000,0)
 end)
 ]]
 --------------------------------------------------------------------------------------- TEST
@@ -239,7 +237,7 @@ joaat("A_C_Chop_02"),
 
 --------------------------------------------------------------------------------------- Lua管理器页面
 
-gentab:add_text("To use the player function, please select a player in the yim player list and scroll to the bottom of the player page") 
+gentab:add_text("Minimum resolution requirement: 1920X1080. To use the player function, please select a player in the yim player list and turn to the bottom of the player page") 
 
 gentab:add_text("task function") 
 
@@ -779,6 +777,20 @@ gentab:add_sameline()
 
 local vehrm = gentab:add_checkbox("Delete V") --只是一个开关，代码往后面找
 
+gentab:add_text("Hostile NPC vehicle control") 
+
+gentab:add_sameline()
+
+local vehengdmg2 = gentab:add_checkbox("Flameout 2") --只是一个开关，代码往后面找
+
+gentab:add_sameline()
+
+local vehstopr2 = gentab:add_checkbox("Stop 2") --只是一个开关，代码往后面找
+
+gentab:add_sameline()
+
+local vehrm2 = gentab:add_checkbox("Delete 2") --只是一个开关，代码往后面找
+
 gentab:add_text("NPC control") 
 
 gentab:add_sameline()
@@ -1043,7 +1055,14 @@ gentab:add_button("Randomly shoot half of the NPCs in real name", function()
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
         if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and math.random(0,1) >= 0.5 and foundfrd == false then 
-            MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            if PED.IS_PED_IN_ANY_VEHICLE(peds) then
+                request_control(peds)
+                TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
+                ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            else
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            end
         end
     end
 end)
@@ -1055,8 +1074,15 @@ gentab:add_button("Randomly shoot half of hostile NPCs in real name", function()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and math.random(0,1) >= 0.5 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
-            MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)
+        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and math.random(0,1) >= 0.5 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
+            if PED.IS_PED_IN_ANY_VEHICLE(peds) then
+                request_control(peds)
+                TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
+                ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            else
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            end
         end
     end
 end)
@@ -1076,7 +1102,14 @@ gentab:add_button("Real-name shooting NPC", function()
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
         if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and foundfrd == false then 
-            MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)
+            if PED.IS_PED_IN_ANY_VEHICLE(peds) then
+                request_control(peds)
+                TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
+                ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            else
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            end
         end
     end
 end)
@@ -1088,8 +1121,31 @@ gentab:add_button("Shoot and kill hostile NPCs in real name", function()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
-            MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0) --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
+            if PED.IS_PED_IN_ANY_VEHICLE(peds) then
+                request_control(peds)
+                TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
+                ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            else
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(ped_pos.x, ped_pos.y, ped_pos.z + 1, ped_pos.x, ped_pos.y, ped_pos.z, 1000, true, 2526821735, PLAYER.GET_PLAYER_PED(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+            end
+        end
+    end
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Clean up the police and the National Security service", function()
+    local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+    MISC.CLEAR_AREA_OF_COPS(selfpos.x,selfpos.y,selfpos.z,npcctrlr:get_value(),0)
+    local pedtable = entities.get_all_peds_as_handles()
+    for _, peds in pairs(pedtable) do
+        local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+        local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
+        if ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
+            request_control(peds)
+            ENTITY.SET_ENTITY_HEALTH(peds,0,true)
         end
     end
 end)
@@ -1145,7 +1201,148 @@ gentab:add_button("Teleport blue dot NPCs to yourself", function()
     end
 end)
 
-gentab:add_text("Key NPCs entered: see source code line 199") 
+gentab:add_sameline()
+
+gentab:add_text("Key NPC has been entered: see line 199 of the source code") 
+
+gentab:add_text("Entity generation") 
+
+gentab:add_button("Generate bodyguard helicopter", function()
+    local heli_mod = joaat("valkyrie") --女武神 直升机
+    local drv_mod = joaat("s_m_y_blackops_01")
+    request_model(heli_mod)
+    request_model(drv_mod)
+    local selfpedPos_sp_heli = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), false)
+    selfpedPos_sp_heli.z = selfpedPos_sp_heli.z + 50
+    local heli_sp = VEHICLE.CREATE_VEHICLE(heli_mod, selfpedPos_sp_heli.x,selfpedPos_sp_heli.y,selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z , true, true, true)
+    vehNetId = NETWORK.VEH_TO_NET(heli_sp)
+    if NETWORK.NETWORK_GET_ENTITY_IS_NETWORKED(NETWORK.NET_TO_PED(vehNetId)) then
+    NETWORK.SET_NETWORK_ID_EXISTS_ON_ALL_MACHINES(vehNetId, true)
+    end
+    NETWORK.SET_NETWORK_ID_ALWAYS_EXISTS_FOR_PLAYER(vehNetId, PLAYER.PLAYER_ID(), true)
+    VEHICLE.SET_VEHICLE_ENGINE_ON(heli_sp, true, true, true)
+    VEHICLE.SET_VEHICLE_SEARCHLIGHT(heli_sp, true, true)
+    local heli_blip = HUD.ADD_BLIP_FOR_ENTITY(heli_sp)
+    HUD.SET_BLIP_AS_FRIENDLY(heli_blip, true)
+    HUD.SET_BLIP_AS_SHORT_RANGE(heli_blip,true)
+    ENTITY.SET_ENTITY_INVINCIBLE(heli_sp, true)
+    ENTITY.SET_ENTITY_MAX_HEALTH(heli_sp, 10000)
+    ENTITY.SET_ENTITY_HEALTH(heli_sp, 10000)
+    local heli_guard = PED.CREATE_PED(29, drv_mod, selfpedPos_sp_heli.x, selfpedPos_sp_heli.y, selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z, true, true)
+    PED.SET_PED_INTO_VEHICLE(heli_guard, heli_sp, -1)
+    PED.SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(heli_guard, true)
+    TASK.TASK_VEHICLE_FOLLOW(heli_guard, heli_sp, PLAYER.PLAYER_PED_ID(), 80, 1, 10, 10)
+    PED.SET_PED_KEEP_TASK(heli_guard, true)
+    ENTITY.SET_ENTITY_INVINCIBLE(heli_guard, true)
+    PED.SET_PED_MAX_HEALTH(heli_guard, 1000)
+    ENTITY.SET_ENTITY_HEALTH(heli_guard, 1000)
+
+    PED.SET_PED_AS_GROUP_MEMBER(heli_guard, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_RELATIONSHIP_GROUP_HASH(heli_guard, PED.GET_PED_RELATIONSHIP_GROUP_HASH(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_NEVER_LEAVES_GROUP(heli_guard, true)
+    PED.SET_CAN_ATTACK_FRIENDLY(heli_guard, 0, 1)
+    PED.SET_PED_COMBAT_ABILITY(heli_guard, 2)
+    PED.SET_PED_CAN_TELEPORT_TO_GROUP_LEADER(heli_guard, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()), true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard, 512, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard, 1024, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard, 2048, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard, 16384, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard, 131072, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard, 262144, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard, 5, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard, 13, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard, 394, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard, 400, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard, 134, true)
+    WEAPON.GIVE_WEAPON_TO_PED(heli_guard, joaat("weapon_combating_mk2"), 9999, false, false)
+    PED.SET_PED_ACCURACY(heli_guard,100)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+
+    local heli_guard2 = PED.CREATE_PED(29, drv_mod, selfpedPos_sp_heli.x, selfpedPos_sp_heli.y, selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z, true, true)
+    PED.SET_PED_INTO_VEHICLE(heli_guard2, heli_sp, 1)
+    PED.SET_PED_KEEP_TASK(heli_guard2, true)
+    ENTITY.SET_ENTITY_INVINCIBLE(heli_guard2, true)
+    PED.SET_PED_MAX_HEALTH(heli_guard2, 1000)
+    ENTITY.SET_ENTITY_HEALTH(heli_guard2, 1000)
+
+    PED.SET_PED_AS_GROUP_MEMBER(heli_guard2, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_RELATIONSHIP_GROUP_HASH(heli_guard2, PED.GET_PED_RELATIONSHIP_GROUP_HASH(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_NEVER_LEAVES_GROUP(heli_guard2, true)
+    PED.SET_CAN_ATTACK_FRIENDLY(heli_guard2, 0, 1)
+    PED.SET_PED_COMBAT_ABILITY(heli_guard2, 2)
+    PED.SET_PED_CAN_TELEPORT_TO_GROUP_LEADER(heli_guard2, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()), true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard2, 512, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard2, 1024, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard2, 2048, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard2, 16384, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard2, 131072, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard2, 262144, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard2, 5, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard2, 13, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard2, 394, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard2, 400, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard2, 134, true)
+    WEAPON.GIVE_WEAPON_TO_PED(heli_guard2, joaat("weapon_combating_mk2"), 9999, false, false)
+    PED.SET_PED_ACCURACY(heli_guard2,100)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+
+    local heli_guard3 = PED.CREATE_PED(29, drv_mod, selfpedPos_sp_heli.x, selfpedPos_sp_heli.y, selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z, true, true)
+    PED.SET_PED_INTO_VEHICLE(heli_guard3, heli_sp, 2)
+    PED.SET_PED_KEEP_TASK(heli_guard3, true)
+    ENTITY.SET_ENTITY_INVINCIBLE(heli_guard3, true)
+    PED.SET_PED_MAX_HEALTH(heli_guard3, 1000)
+    ENTITY.SET_ENTITY_HEALTH(heli_guard3, 1000)
+
+    PED.SET_PED_AS_GROUP_MEMBER(heli_guard3, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_RELATIONSHIP_GROUP_HASH(heli_guard3, PED.GET_PED_RELATIONSHIP_GROUP_HASH(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_NEVER_LEAVES_GROUP(heli_guard3, true)
+    PED.SET_CAN_ATTACK_FRIENDLY(heli_guard3, 0, 1)
+    PED.SET_PED_COMBAT_ABILITY(heli_guard3, 2)
+    PED.SET_PED_CAN_TELEPORT_TO_GROUP_LEADER(heli_guard3, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()), true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard3, 512, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard3, 1024, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard3, 2048, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard3, 16384, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard3, 131072, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard3, 262144, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard3, 5, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard3, 13, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard3, 394, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard3, 400, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard3, 134, true)
+    WEAPON.GIVE_WEAPON_TO_PED(heli_guard3, joaat("weapon_combating_mk2"), 9999, false, false)
+    PED.SET_PED_ACCURACY(heli_guard3,100)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+
+    local heli_guard4 = PED.CREATE_PED(29, drv_mod, selfpedPos_sp_heli.x, selfpedPos_sp_heli.y, selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z, true, true)
+    PED.SET_PED_INTO_VEHICLE(heli_guard4, heli_sp, 0)
+    PED.SET_PED_KEEP_TASK(heli_guard4, true)
+    ENTITY.SET_ENTITY_INVINCIBLE(heli_guard4, true)
+    PED.SET_PED_MAX_HEALTH(heli_guard4, 1000)
+    ENTITY.SET_ENTITY_HEALTH(heli_guard4, 1000)
+
+    PED.SET_PED_AS_GROUP_MEMBER(heli_guard4, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_RELATIONSHIP_GROUP_HASH(heli_guard4, PED.GET_PED_RELATIONSHIP_GROUP_HASH(PLAYER.PLAYER_PED_ID()))
+    PED.SET_PED_NEVER_LEAVES_GROUP(heli_guard4, true)
+    PED.SET_CAN_ATTACK_FRIENDLY(heli_guard4, 0, 1)
+    PED.SET_PED_COMBAT_ABILITY(heli_guard4, 2)
+    PED.SET_PED_CAN_TELEPORT_TO_GROUP_LEADER(heli_guard4, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()), true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard4, 512, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard4, 1024, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard4, 2048, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard4, 16384, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard4, 131072, true)
+    PED.SET_PED_FLEE_ATTRIBUTES(heli_guard4, 262144, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard4, 5, true)
+    PED.SET_PED_COMBAT_ATTRIBUTES(heli_guard4, 13, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard4, 394, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard4, 400, true)
+    PED.SET_PED_CONFIG_FLAG(heli_guard4, 134, true)
+    WEAPON.GIVE_WEAPON_TO_PED(heli_guard4, joaat("weapon_combating_mk2"), 9999, false, false)
+    PED.SET_PED_ACCURACY(heli_guard4,100)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+
+end)
 
 gentab:add_separator()
 
@@ -2806,17 +3003,31 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("listblips", function()
+gentab:add_button("listblips", function() --调试，增强NPC控制条件判断
+    log.info("-----------------------------begin------------PED------------------------------------------")
     local pedtable = entities.get_all_peds_as_handles()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
         if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
-            log.info(HUD.GET_BLIP_SPRITE(HUD.GET_BLIP_FROM_ENTITY(peds)).." color :"..HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)))
+            if HUD.GET_BLIP_SPRITE(HUD.GET_BLIP_FROM_ENTITY(peds)) ~= -1 then
+                log.info(HUD.GET_BLIP_SPRITE(HUD.GET_BLIP_FROM_ENTITY(peds)).." color :"..HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)))
+            end
         end
     end
-    log.info("---------------------------------------------------------end------------------------------------------------------")
-
+    log.info("-----------------------------end------------PED------------------------------------------")
+    log.info("-----------------------------begin------------VEH------------------------------------------")
+    local vehtable = entities.get_all_vehicles_as_handles()
+    for _, vehs in pairs(vehtable) do
+        local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+        local veh_pos = ENTITY.GET_ENTITY_COORDS(vehs)
+        if calcDistance(selfpos, veh_pos) <= npcctrlr:get_value() then 
+            if HUD.GET_BLIP_SPRITE(HUD.GET_BLIP_FROM_ENTITY(vehs)) ~= -1 then
+                log.info(HUD.GET_BLIP_SPRITE(HUD.GET_BLIP_FROM_ENTITY(vehs)).." color :"..HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehs)))
+            end
+        end
+    end
+    log.info("-----------------------------end------------VEH------------------------------------------")
 end)
 
 local emmode = gentab:add_checkbox("Emergency mode-Press Ctrl+S+D at the same time when the game is stuck due to a large number of swiping models, quickly escape the scene and pause the network synchronization (no need to leave the war situation)-if necessary, use it with the cycle to clear the entity function") --只是一个开关，代码往后面找
@@ -4392,6 +4603,21 @@ script.register_looped("schlua-ectrlservice", function()
             end
         end
     end
+            
+    if  vehengdmg2:is_enabled() then --控制敌对载具引擎破坏
+        local vehtable = entities.get_all_vehicles_as_handles()
+        local vehisin = PED.GET_VEHICLE_PED_IS_IN(PLAYER.PLAYER_PED_ID(), true)
+        for _, vehicle in pairs(vehtable) do
+            local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+            local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle)
+            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
+                if vehicle ~= vehisin then
+                    request_control(vehicle)
+                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, -4000)
+                end
+            end
+        end
+    end
         
     if  vehbr:is_enabled() then --控制载具混乱
         local vehtable = entities.get_all_vehicles_as_handles()
@@ -4422,7 +4648,22 @@ script.register_looped("schlua-ectrlservice", function()
             end
         end
     end
-                
+                  
+    if  vehrm2:is_enabled() then --控制敌对载具移除
+        local vehtable = entities.get_all_vehicles_as_handles()
+        local vehisin = PED.GET_VEHICLE_PED_IS_IN(PLAYER.PLAYER_PED_ID(), true)
+        for _, vehicle in pairs(vehtable) do
+            local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+            local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle)
+            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
+                if vehicle ~= vehisin then
+                    request_control(vehicle)
+                    delete_entity(vehicle)        
+                end
+            end
+        end
+    end
+
     if  vehsp1:is_enabled() then --控制载具旋转
         local vehtable = entities.get_all_vehicles_as_handles()
         local vehisin = PED.GET_VEHICLE_PED_IS_IN(PLAYER.PLAYER_PED_ID(), true)
@@ -4478,6 +4719,21 @@ script.register_looped("schlua-ectrlservice", function()
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle)
             if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() then
+                if vehicle ~= vehisin then
+                    request_control(vehicle)
+                    ENTITY.SET_ENTITY_VELOCITY(vehicle,0,0,0)
+                end
+            end
+        end
+    end
+
+    if  vehstopr2:is_enabled() then --控制敌对载具停止
+        local vehtable = entities.get_all_vehicles_as_handles()
+        local vehisin = PED.GET_VEHICLE_PED_IS_IN(PLAYER.PLAYER_PED_ID(), true)
+        for _, vehicle in pairs(vehtable) do
+            local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
+            local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle)
+            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
                 if vehicle ~= vehisin then
                     request_control(vehicle)
                     ENTITY.SET_ENTITY_VELOCITY(vehicle,0,0,0)
@@ -4941,7 +5197,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
             end
@@ -4953,7 +5209,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 PED.SET_PED_TO_RAGDOLL(peds, 5000, 0,0 , false, false, false)
             end
@@ -4965,7 +5221,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 ENTITY.SET_ENTITY_HEALTH(peds,0,true)
             end
@@ -5079,7 +5335,7 @@ script.register_looped("schlua-ectrlservice", function()
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
             local ismarked = false
             if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
-                if PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 then 
+                if PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") then 
                     ismarked = true
                     GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,76,0,255)
                 end
@@ -5099,7 +5355,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,1)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 FIRE.START_ENTITY_FIRE(peds)
                 FIRE.START_SCRIPT_FIRE(ped_pos.x, ped_pos.y, ped_pos.z, 25, true)
@@ -5113,7 +5369,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds) then
                     tarpensveh = PED.GET_VEHICLE_PED_IS_IN(peds)
@@ -5131,7 +5387,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and PED.IS_PED_A_PLAYER(peds) == false then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and PED.IS_PED_A_PLAYER(peds) == false then 
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS(peds)
                 PED.SET_PED_AS_GROUP_MEMBER(peds, PED.GET_PED_GROUP_INDEX(PLAYER.PLAYER_PED_ID()))
@@ -5169,7 +5425,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() then 
                 GRAPHICS.REQUEST_STREAMED_TEXTURE_DICT("golfputting", true)
                 GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,0,0,255)
             end
@@ -5181,7 +5437,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1  then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1  then 
                 request_control(peds)
                 WEAPON.REMOVE_ALL_PED_WEAPONS(peds,true)
             end
@@ -5193,7 +5449,7 @@ script.register_looped("schlua-ectrlservice", function()
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
+            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds) then
                     TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
