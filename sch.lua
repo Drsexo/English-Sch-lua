@@ -1,4 +1,4 @@
--- v1.89 --
+-- v1.90 --
 --I do not limit or even encourage players to modify and customize lua according to their own needs.
 --I even added comments to some codes to explain what this is used for and the location of the relevant global in the decompiled script
 --[[
@@ -35,7 +35,7 @@ Websites that may be helpful for lua writing
 ]]
 
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
-luaversion = "v1.89"
+luaversion = "v1.90"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -1224,7 +1224,7 @@ gentab:add_button("Generate bodyguard helicopter", function()
     VEHICLE.SET_VEHICLE_SEARCHLIGHT(heli_sp, true, true)
     local heli_blip = HUD.ADD_BLIP_FOR_ENTITY(heli_sp)
     HUD.SET_BLIP_AS_FRIENDLY(heli_blip, true)
-    HUD.SET_BLIP_AS_SHORT_RANGE(heli_blip,true)
+    HUD.SET_BLIP_AS_SHORT_RANGE(heli_blip,false)
     ENTITY.SET_ENTITY_INVINCIBLE(heli_sp, true)
     ENTITY.SET_ENTITY_MAX_HEALTH(heli_sp, 10000)
     ENTITY.SET_ENTITY_HEALTH(heli_sp, 10000)
@@ -1256,7 +1256,7 @@ gentab:add_button("Generate bodyguard helicopter", function()
     PED.SET_PED_CONFIG_FLAG(heli_guard, 134, true)
     WEAPON.GIVE_WEAPON_TO_PED(heli_guard, joaat("weapon_combating_mk2"), 9999, false, false)
     PED.SET_PED_ACCURACY(heli_guard,100)
-    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(heli_guard, 100, 67108864)
 
     local heli_guard2 = PED.CREATE_PED(29, drv_mod, selfpedPos_sp_heli.x, selfpedPos_sp_heli.y, selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z, true, true)
     PED.SET_PED_INTO_VEHICLE(heli_guard2, heli_sp, 1)
@@ -1284,7 +1284,7 @@ gentab:add_button("Generate bodyguard helicopter", function()
     PED.SET_PED_CONFIG_FLAG(heli_guard2, 134, true)
     WEAPON.GIVE_WEAPON_TO_PED(heli_guard2, joaat("weapon_combating_mk2"), 9999, false, false)
     PED.SET_PED_ACCURACY(heli_guard2,100)
-    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(heli_guard2, 100, 67108864)
 
     local heli_guard3 = PED.CREATE_PED(29, drv_mod, selfpedPos_sp_heli.x, selfpedPos_sp_heli.y, selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z, true, true)
     PED.SET_PED_INTO_VEHICLE(heli_guard3, heli_sp, 2)
@@ -1312,7 +1312,7 @@ gentab:add_button("Generate bodyguard helicopter", function()
     PED.SET_PED_CONFIG_FLAG(heli_guard3, 134, true)
     WEAPON.GIVE_WEAPON_TO_PED(heli_guard3, joaat("weapon_combating_mk2"), 9999, false, false)
     PED.SET_PED_ACCURACY(heli_guard3,100)
-    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(heli_guard3, 100, 67108864)
 
     local heli_guard4 = PED.CREATE_PED(29, drv_mod, selfpedPos_sp_heli.x, selfpedPos_sp_heli.y, selfpedPos_sp_heli.z, CAM.GET_GAMEPLAY_CAM_ROT(0).z, true, true)
     PED.SET_PED_INTO_VEHICLE(heli_guard4, heli_sp, 0)
@@ -1340,8 +1340,15 @@ gentab:add_button("Generate bodyguard helicopter", function()
     PED.SET_PED_CONFIG_FLAG(heli_guard4, 134, true)
     WEAPON.GIVE_WEAPON_TO_PED(heli_guard4, joaat("weapon_combating_mk2"), 9999, false, false)
     PED.SET_PED_ACCURACY(heli_guard4,100)
-    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(PLAYER.PLAYER_PED_ID(), 100, 67108864)
+    TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(heli_guard4, 100, 67108864)
 
+    PED.SET_PED_INTO_VEHICLE(heli_guard4, heli_sp, 0)
+    PED.SET_PED_INTO_VEHICLE(heli_guard3, heli_sp, 2)
+    PED.SET_PED_INTO_VEHICLE(heli_guard2, heli_sp, 1)
+    PED.SET_PED_INTO_VEHICLE(heli_guard, heli_sp, -1)
+    --TASK.CLEAR_PED_TASKS_IMMEDIATELY(PLAYER.PLAYER_PED_ID())
+    TASK.TASK_VEHICLE_FOLLOW(heli_guard, heli_sp, PLAYER.PLAYER_PED_ID(), 80, 1, 10, 10)
+    PED.SET_PED_KEEP_TASK(heli_guard, true)
 end)
 
 gentab:add_separator()
