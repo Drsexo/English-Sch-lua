@@ -1,4 +1,4 @@
-# SCH-LUA-YIMMENU by sch-lda 1.90
+# SCH-LUA-YIMMENU by sch-lda 1.92
 English Version translated by DrSexo \
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
 **Warning: If either total income or total expenses exceeds 2 billion, the "Remove Income-Expense Gap" function is prohibited from use, as it will result in negative values for the relevant data.** \
@@ -23,12 +23,12 @@ Remote access to industrial computers (Game Hall, Terrorbyte...) and terminals i
 One-click purchase Instant Buy for MC, Bunker, CEO cargo, Air cargo\
 One-click shipping (unstable) Instant Sell for MC (Unstable), Bunker, CEO cargo, Air cargo\
 Get Casino Lucky wheel control
-### 3. Entertainment function Entertainment
+### 3. Entertainment function 
 Fireworks \
 Flying Broom \
 Ghost Rider \
 Fire Wing 
-### 4. Entity Control Entity Control
+### 4. Entity Control
 Vehicle force field \
 NPC control \
 MPC aiming reaction(fall/kill/interrupt/go up/burn/ragdoll/kill/interrupt/launch/light...) \
@@ -38,7 +38,7 @@ TP to Waypoint with PTFX \
 Teleport to common plan panel and safe TP to NC safe, Heist panel (Facility & Kosatka)
 ### 6. Miscellaneous
 Too many options to list
-### 7. Global options Global Troll
+### 7. Global Troll options 
 Explode \
 Air Raid Siren Sound spam \
 Parachute crash \
@@ -52,7 +52,7 @@ TP to player with PTFX \
 Vehicle Godmode \
 Repair Vehicle \
 Spoof Troll
-## Related Github Repositories Related Github Repositories
+## Related Github Repositories
 Heist Lua by Wang (ZH_CN) https://github.com/wangzixuank/YimMenu-HeistLua \
 GTA5 Online Assistant Lua Repo (ZH_CN) GTA5OnlineTools' Online Lua Repo https://github.com/CrazyZhang666/GTA5OnlineLua \
 RScript (ZH_CN) https://github.com/TCRoid/YimMenu-Lua-RScript \
