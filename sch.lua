@@ -1,4 +1,4 @@
--- v2.01 --
+-- v2.02 --
 --I do not limit or even encourage players to modify and customize lua according to their own needs.
 --I even added comments to some codes to explain what this is used for and the location of the relevant global in the decompiled script
 --[[
@@ -35,7 +35,7 @@ Websites that may be helpful for lua writing
 ]]
 
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
-luaversion = "v2.01"
+luaversion = "v2.02"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -3021,17 +3021,6 @@ local plydist = gui.get_tab(""):add_input_float("distance (m)")
 gentab:add_separator()
 gentab:add_text("global options") 
 
-gentab:add_button("Global explosion", function()
-    for i = 0, 32 do
-        if PLAYER.GET_PLAYER_PED(network.get_selected_player()) ~= PLAYER.PLAYER_PED_ID() then --避免作用于自己
-            FIRE.ADD_OWNED_EXPLOSION(PLAYER.GET_PLAYER_PED(i), ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(i)).x, ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(i)).y, ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(i)).z, 82, 1, true, false, 100)
-        end
-    end
-end)
-
-gentab:add_sameline()
-
-gentab:add_button("Give away the MK2", function()
     script.run_in_fiber(function (giftmk2)
         STREAMING.REQUEST_MODEL(joaat("oppressor2"))
         while STREAMING.HAS_MODEL_LOADED(joaat("oppressor2")) ~= 1 do
