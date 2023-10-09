@@ -3021,6 +3021,7 @@ local plydist = gui.get_tab(""):add_input_float("distance (m)")
 gentab:add_separator()
 gentab:add_text("global options") 
 
+gentab:add_button("Gift the opressor MK2", function()
     script.run_in_fiber(function (giftmk2)
         STREAMING.REQUEST_MODEL(joaat("oppressor2"))
         while STREAMING.HAS_MODEL_LOADED(joaat("oppressor2")) ~= 1 do
