@@ -1593,7 +1593,7 @@ gentab:add_button("One-click completion of motorcycle shipment", function()
     if locals.get_int("gb_biker_contraband_sell",716) >= 1 then
         locals.set_int("gb_biker_contraband_sell","821","15")
     else
-        gui.show_error("This task type does not support one-click completion", "One-click for a total of one truck?"?")
+        gui.show_error("This task type does not support one-click completion", "One-click for a total of one truck")
         log.info("该任务类型不支持一键完成,否则不会有任何收入.一共就一辆送货载具也要使用一键完成??")
     end
 end)
