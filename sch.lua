@@ -1605,7 +1605,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("移除保镖直升机", function()
+gentab:add_button("Remove Bodyguard Helicopter", function()
     for _, hgt_ele in pairs(heli_guard_table) do
         delete_entity(hgt_ele)
     end
