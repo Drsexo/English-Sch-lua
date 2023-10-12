@@ -3,8 +3,8 @@ English Version translated by DrSexo \
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
 **Warning: If either total income or total expenses exceeds 2 billion, the "Remove Income-Expense Gap" function is prohibited from use, as it will result in negative values for the relevant data.** \
 This Github Repo is experimental and only kept as a backup archive. There is no guarantee of user optimization, stability, and security.
-***Dont expect a perfect translation as im not chinese***
-> ***Alternatively you can use the [official strrepl translation tool](https://github.com/sch-lda/SCH-LUA-YIMMENU/tree/main/Translation) provided by sch-lda to make your own translated file***
+***Dont expect a perfect translation as im not chinese*** \
+### ***Alternatively you can use the [official strrepl translation tool](https://github.com/sch-lda/SCH-LUA-YIMMENU/tree/main/Translation) provided by sch-lda to make your own translated file***
 
 
 ## User Agreement TOS
