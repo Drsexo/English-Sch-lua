@@ -1,4 +1,4 @@
-![1](https://github.com/Drsexo/English-Sch-lua/assets/101467921/8a61a55e-9748-4a9c-b661-4e895c19cc53)# SCH-LUA-YIMMENU by sch-lda 2.03
+# SCH-LUA-YIMMENU by sch-lda 2.03
 English Version translated by DrSexo \
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
 **Warning: If either total income or total expenses exceeds 2 billion, the "Remove Income-Expense Gap" function is prohibited from use, as it will result in negative values for the relevant data.** \
