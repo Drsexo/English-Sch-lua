@@ -60,16 +60,16 @@ local LuaTablesTab = gentab:add_tab("++ Table")
 local EntityTab = LuaTablesTab:add_tab("+Game entity list")
 
 local PlayerTableTab = EntityTab:add_tab("-Player table")
-PlayerTableTab:add_button("Write the player list", function()
+PlayerTableTab:add_button("Generate the player list", function()
     writeplayertable()
 end)
 PlayerTableTab:add_text("The player list is for the player's aiming response service")
 local NPCTableTab = EntityTab:add_tab("-NPC list")
-NPCTableTab:add_button("Write the NPC list", function()
+NPCTableTab:add_button("Generate the NPC list", function()
     writepedtable()
 end)
 local VehicleTableTab = EntityTab:add_tab("-Vehicle list")
-VehicleTableTab:add_button("Write a list of vehicles", function()
+VehicleTableTab:add_button("Generate a list of vehicles", function()
     writevehtable()
 end)
 
@@ -77,10 +77,10 @@ local LuaownedTab = LuaTablesTab:add_tab("+Lua internal list")
 local HeliTableTab = LuaownedTab:add_tab("-Bodyguard helicopter list")
 local NPCguardTableTab = LuaownedTab:add_tab("-Bodyguard NPC list")
 
-HeliTableTab:add_button("Write a bodyguard helicopter list", function()
+HeliTableTab:add_button("Generate a bodyguard helicopter list", function()
     writebodyguardhelitable()
 end)
-NPCguardTableTab:add_button("Write the bodyguard NPC list", function()
+NPCguardTableTab:add_button("Generate the bodyguard NPC list", function()
     writebodyguardtable()
 end)
 
@@ -419,7 +419,7 @@ function writeplayertable()
     PlayerTableTab:add_button("Refresh Player list", function()
         writeplayertable()
     end)
-    PlayerTableTab:add_text("The player sheet is for the player's aiming response")
+    PlayerTableTab:add_text("The player list is for the players reaction")
 
     createplayertable()
     for _, sg_player_id in pairs(player_Index_table) do
@@ -512,7 +512,7 @@ function writevehtable()
             delete_entity(t_veh_hd)        
         end)
         VehicleTableTab:add_sameline()
-        VehicleTableTab:add_button("Teleport to "..Veh_list_index, function()
+        VehicleTableTab:add_button("Teleport into "..Veh_list_index, function()
             request_control(t_veh_hd)
             PED.SET_PED_INTO_VEHICLE(PLAYER.PLAYER_PED_ID(), t_veh_hd, -1)
         end)
@@ -597,7 +597,7 @@ joaat("A_C_Chop_02"),
 
 gentab:add_text("Minimum resolution required: 1920x1080. To use the player function, select a player in the yim player list and scroll to the bottom of the player page. Players aiming to counterattack from the sub-menu Entity Table Access") 
 
-gentab:add_text("task function") 
+gentab:add_text("Task function") 
 
 gentab:add_button("Complete the final chapter of Perico with one click", function()
     script.run_in_fiber(function (pericoinstcpl)
@@ -645,7 +645,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Skip cayo perico setup (cheetah statue)", function()
+gentab:add_button("Skip cayo perico setup (Panther statue)", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID  --用于判断当前是角色1还是角色2
     local mpx = "MP0_"--用于判断当前是角色1还是角色2
     if playerid == 1 then --用于判断当前是角色1还是角色2
@@ -1288,7 +1288,7 @@ local aimreact2 = gentab:add_checkbox("Kill B") --只是一个开关，代码往
 
 gentab:add_sameline()
 
-local aimreact3 = gentab:add_checkbox("burn B") --只是一个开关，代码往后面找
+local aimreact3 = gentab:add_checkbox("Burn B") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1619,7 +1619,7 @@ gentab:add_sameline()
 
 t_guard_table = {}
 
-gentab:add_button("Generate bodyguard", function()
+gentab:add_button("Generate bodyguards", function()
     script.run_in_fiber(function (t_guard_f)
 
     local guardteam_mod = joaat("CSB_Avon")
@@ -1698,10 +1698,10 @@ end)
 gentab:add_sameline()
 
 gentab:add_button("One-click completion of hangar (air freight) shipment", function()
-    gui.show_message("Autoship "," may show that the task failed, but you should get the money!")
+    gui.show_message("Autoshipment","may show that the task failed, but you should get the money!")
     local integer = locals.get_int("gb_smuggler", "3007")
     locals_set_int("gb_smuggler","2964",integer)
-    gui.show_message("Autoshipment"," may show that the task failed, but you should get the money!")
+    gui.show_message("Autoshipment","may show that the task failed, but you should get the money!")
 end)
 
 local ccrgsl = gentab:add_checkbox("CEO warehouse shipment locks the transport ship")
@@ -1818,7 +1818,7 @@ gentab:add_sameline()
 
 local checklkw = gentab:add_checkbox("Casino carousel draw (the carousel may appear as something else, but you do get vehicles)")
 
-local checkxsdped = gentab:add_checkbox("NPC drops 2000 yuan cycle (high risk)")
+local checkxsdped = gentab:add_checkbox("NPC drops 2000 bucks cycle (high risk)")
 
 gentab:add_separator()
 gentab:add_text("Send")
@@ -2259,7 +2259,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Increase brightness", function()
+gentab:add_button("Increased brightness", function()
     GRAPHICS.SET_TIMECYCLE_MODIFIER("AmbientPush")
 end)
 
@@ -2436,7 +2436,7 @@ local vehnoclr = gui.get_tab(""):add_checkbox("The vehicle is completely collisi
 
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("repair vehicle", function()
+gui.get_tab(""):add_button("Repair vehicle", function()
     script.run_in_fiber(function (repvehr)
         if not PED.IS_PED_IN_ANY_VEHICLE(PLAYER.GET_PLAYER_PED(network.get_selected_player()),true) then
             gui.show_error("Warning","The player is not in the vehicle")
@@ -2460,7 +2460,7 @@ end)
 --[[
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("remove vehicle", function()
+gui.get_tab(""):add_button("Remove vehicle", function()
     script.run_in_fiber(function (rmvehr)
         if not PED.IS_PED_IN_ANY_VEHICLE(PLAYER.GET_PLAYER_PED(network.get_selected_player()),true) then
             gui.show_error("Warning","The player is not in the vehicle")
@@ -2487,7 +2487,7 @@ end)
 
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("deluxo", function()
+gui.get_tab(""):add_button("Deluxo", function()
     script.run_in_fiber(function (giftdls)
         local giftvehhash = joaat("deluxo")
         STREAMING.REQUEST_MODEL(giftvehhash)
@@ -2521,7 +2521,7 @@ gui.get_tab(""):add_button("Teleport to player (particle effect)", function()
     end)
 end)
 
-gui.get_tab(""):add_button("small cage", function()
+gui.get_tab(""):add_button("Small cage", function()
     script.run_in_fiber(function (smallcage)
         local objHash = joaat("prop_gold_cont_01")
         STREAMING.REQUEST_MODEL(objHash)
@@ -2537,7 +2537,7 @@ end)
 
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("fence cage", function()
+gui.get_tab(""):add_button("Fence cage", function()
     local objHash = joaat("prop_fnclink_03e")
     STREAMING.REQUEST_MODEL(objHash)
 
@@ -2573,7 +2573,7 @@ end)
 
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("competitive tube cage", function()
+gui.get_tab(""):add_button("Competitive tube cage", function()
     script.run_in_fiber(function (dubcage)
         local pos = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
         STREAMING.REQUEST_MODEL(2081936690)
@@ -2595,7 +2595,7 @@ end)
 
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("safe cage", function()
+gui.get_tab(""):add_button("Safe cage", function()
     script.run_in_fiber(function (safecage)
         local pos = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
         local hash = 1089807209
@@ -2625,14 +2625,14 @@ local pedvehctl = gui.get_tab(""):add_checkbox("Vehicle rotation")
 
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("electric shock", function()
+gui.get_tab(""):add_button("Electric shock", function()
     local pos = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
     MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(pos.x, pos.y, pos.z + 1, pos.x, pos.y, pos.z, 1000, true, joaat("weapon_stungun"), false, false, true, 1.0)
 end)
 
 gui.get_tab(""):add_sameline()
 
-gui.get_tab(""):add_button("bombing", function()
+gui.get_tab(""):add_button("Bombing", function()
     script.run_in_fiber(function (airst)
         local pos = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
         airshash = joaat("vehicle_weapon_trailer_dualaa")
@@ -2784,7 +2784,7 @@ end)
 
 gui.get_tab(""):add_sameline()
 
-local check8 = gui.get_tab(""):add_checkbox("circulating water column")
+local check8 = gui.get_tab(""):add_checkbox("Water column")
 
 gui.get_tab(""):add_sameline()
 
@@ -2810,7 +2810,7 @@ local checkspped = gui.get_tab(""):add_checkbox("Cycle brush PED")
 
 gui.add_tab(""):add_sameline()
 
-local checkxsdpednet = gui.add_tab(""):add_checkbox("NPC drops 2000 yuan cycle")
+local checkxsdpednet = gui.add_tab(""):add_checkbox("NPC drops 2000 bucks cycle")
 
 gui.add_tab(""):add_sameline()
 
@@ -2819,7 +2819,7 @@ local checkmoney = gui.get_tab(""):add_checkbox("Cash drop (only visible to your
 gui.add_tab(""):add_button("Fragment crash", function()
     script.run_in_fiber(function (fragcrash)
         if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-            gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+            gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
             return
         end
         fraghash = joaat("prop_fragtest_cnst_04")
@@ -2835,7 +2835,7 @@ gui.add_tab(""):add_button("Fragment crash", function()
             OBJECT.BREAK_OBJECT_FRAGMENT_CHILD(object, 1, false)
         for i = 0, 100 do 
             if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-                gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+                gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
                 return
             end    
             local TargetPlayerPos = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
@@ -2856,7 +2856,7 @@ gui.add_tab(""):add_button("Fragment crash", function()
         STREAMING.REQUEST_MODEL(fraghash)
         for i=1,10 do
             if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-                gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+                gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
                 return
             end    
             local object = OBJECT.CREATE_OBJECT(fraghash, TargetCrds.x, TargetCrds.y, TargetCrds.z, true, false, false)
@@ -2922,7 +2922,7 @@ gui.add_tab(""):add_sameline()
 gui.add_tab(""):add_button("Model crash", function()
     script.run_in_fiber(function (vtcrash)
         if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-            gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+            gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
             return
         end
         local ship = {-1043459709, -276744698, 1861786828, -2100640717,}
@@ -2932,13 +2932,13 @@ gui.add_tab(""):add_button("Model crash", function()
             local c = {} 
             for i = 1, 10, 1 do 
                 if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-                    gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+                    gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
                     return
                 end        
                 local pos2010 = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
                 local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
                 if calcDistance(selfpos, pos2010) <= 300 then 
-                    gui.show_message("The attack has stopped", "Please stay away from the target first")
+                    gui.show_message("The attack has stopped","Please stay away from the target first")
                     return
                 end
                 c[crash] = CreateVehicle(value, pos2010, 0)
@@ -2967,7 +2967,7 @@ gui.add_tab(""):add_button("Model crash", function()
     end)
     script.run_in_fiber(function (vtcrash3)
         if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-            gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+            gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
             return
         end
         local mdl = joaat("mp_m_freemode_01")
@@ -2978,12 +2978,12 @@ gui.add_tab(""):add_button("Model crash", function()
                 local pos114 = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
                 local ped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(network.get_selected_player())
                 if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-                    gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+                    gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
                     return
                 end        
                 local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
                 if calcDistance(selfpos, pos114) <= 300 then 
-                    gui.show_message("The attack has stopped", "Please stay away from the target first")
+                    gui.show_message("The attack has stopped","Please stay away from the target first")
                     return
                 end
                 local veh = CreateVehicle(veh_mdl, pos114, 0)
@@ -3006,7 +3006,7 @@ gui.add_tab(""):add_button("Model crash", function()
     script.run_in_fiber(function (vtcrash2)
         for i = 1, 10, 1 do 
             if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-                gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+                gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
                 return
             end    
             local anim_dict = "anim@mp_player_intupperstinker"
@@ -3017,7 +3017,7 @@ gui.add_tab(""):add_button("Model crash", function()
         local pos115 = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
         if calcDistance(selfpos, pos115) <= 300 then 
-            gui.show_message("The attack has stopped", "Please stay away from the target first")
+            gui.show_message("The attack has stopped","Please stay away from the target first")
             return
         end
         local ped = PED.CREATE_RANDOM_PED(pos115.x, pos115.y, pos115.z+10)
@@ -3028,13 +3028,13 @@ gui.add_tab(""):add_button("Model crash", function()
         PED.SET_PED_COMBAT_ABILITY(ped, 3)
         for i = 1, 10 do
             if PLAYER.GET_PLAYER_PED(network.get_selected_player()) == PLAYER.PLAYER_PED_ID() then --避免目标离开战局后作用于自己
-                gui.show_message("The attack has stopped", "The target has been detected to have left or the target is himself")
+                gui.show_message("The attack has stopped","The target has been detected to have left or the target is himself")
                 return
             end    
             local pos116 = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             if calcDistance(selfpos, pos116) <= 300 then 
-                gui.show_message("The attack has stopped", "Please stay away from the target first")
+                gui.show_message("The attack has stopped","Please stay away from the target first")
                 return
             end
             ENTITY.SET_ENTITY_COORDS_NO_OFFSET(ped, pos116.x, pos116.y, pos116.z+5, true, true, true)
@@ -3050,9 +3050,9 @@ end)
 
 gui.add_tab(""):add_sameline()
 
-local audiospam = gui.add_tab(""):add_checkbox("sound bombing")
+local audiospam = gui.add_tab(""):add_checkbox("Sound bombing")
 
-gui.add_tab(""):add_button("launch upwards", function()
+gui.add_tab(""):add_button("Launch upwards", function()
     script.run_in_fiber(function (launchply)
 
     local ped = PLAYER.GET_PLAYER_PED(network.get_selected_player())
@@ -3074,7 +3074,7 @@ end)
 
 gui.get_tab(""):add_sameline()
 
-gui.add_tab(""):add_button("squeeze down", function()
+gui.add_tab(""):add_button("Squeeze down", function()
     script.run_in_fiber(function (launchply)
 
     local ped = PLAYER.GET_PLAYER_PED(network.get_selected_player())
@@ -3193,9 +3193,9 @@ npcaimprange:set_value(1000)
 
 gentab:add_text("Taxi automation at random intervals") 
 gentab:add_sameline()
-local taximin = gentab:add_input_int("Min (milliseconds)")
+local taximin = gentab:add_input_int("Min (ms)")
 taximin:set_value(0)
-local taximax = gentab:add_input_int("max(ms)")
+local taximax = gentab:add_input_int("Max(ms)")
 taximax:set_value(0)
 gentab:add_sameline()
 local taximina = 0
@@ -3204,7 +3204,7 @@ gentab:add_button("Write Interval", function()
     if taximax:get_value() >= taximin:get_value() and taximin:get_value() >= 0 then
         taximina = taximin:get_value()
         taximaxa = taximax:get_value()
-        gui.show_message("SUCCESS","applied")
+        gui.show_message("SUCCESS","Applied")
     else
         gui.show_message("Error ","Illegal input, has been reset")
         taximin:set_value(0)
@@ -3228,7 +3228,7 @@ gtnum = gentab:add_input_int("Number of people")
 gtnum:set_value(5)
 
 gentab:add_separator()
-gentab:add_text("debugging") 
+gentab:add_text("Debugging") 
 
 local DrawInteriorID = gentab:add_checkbox("Show Interior ID") --只是一个开关，代码往后面找
 
@@ -3291,7 +3291,7 @@ local keepschost = gentab:add_checkbox("Keep script host") --只是一个开关�
 
 gentab:add_sameline()
 
-gentab:add_button("loadstats", function()
+gentab:add_button("Load stats", function()
     while STATS.STAT_SLOT_IS_LOADED(0) == false or STATS.STAT_SLOT_IS_LOADED(1) == false do
     log.info("LOADINGSTATS")
     STATS.STAT_LOAD(0)
@@ -3302,7 +3302,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("savestats", function()
+gentab:add_button("Save stats", function()
     iVar0 = 0
     while iVar0 <= 2 do 
       STATS.STAT_SAVE(iVar0, 0, 0, 0)
@@ -3312,7 +3312,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("listblips", function() --调试，增强NPC控制条件判断
+gentab:add_button("List blips", function() --调试，增强NPC控制条件判断
     log.info("-----------------------------begin------------PED------------------------------------------")
     local pedtable = entities.get_all_peds_as_handles()
     for _, peds in pairs(pedtable) do
@@ -3349,7 +3349,7 @@ gentab:add_sameline()
 
 local allclear = gentab:add_checkbox("Loop clear entity") --只是一个开关，代码往后面找
 
-local emmode3 = gentab:add_checkbox("Emergency Mode 3 - Continuously removes any entities + stops PTFX fire columns and water columns + stops filter and lens shake + cleans up traces on the surface of objects") --只是一个开关，代码往后面找
+local emmode3 = gentab:add_checkbox("Emergency Mode 3 - Continuously removes any entities + stops PTFX fire/water columns + stops filter and lens shake + cleans up traces on the surface of objects") --只是一个开关，代码往后面找
 
 local rHDonly = gentab:add_checkbox("Render HD only") --只是一个开关，代码往后面找
 
@@ -3433,9 +3433,9 @@ gentab:add_sameline()
 
 local cashmtpin = gentab:add_input_float("times-contact")
 
-gui.get_tab(""):add_text("debugging") 
+gui.get_tab(""):add_text("Debugging") 
 
-gui.get_tab(""):add_text("obj generation (Name)") 
+gui.get_tab(""):add_text("Obj generation (Name)") 
 gui.get_tab(""):add_sameline()
 local iputobjnamer = gui.get_tab(""):add_input_string("objname")
 gui.get_tab(""):add_sameline()
@@ -3454,7 +3454,7 @@ gui.get_tab(""):add_button("Generate N", function()
         end)
 end)
 
-gui.get_tab(""):add_text("obj generation (Hash)") 
+gui.get_tab(""):add_text("Obj generation (Hash)") 
 gui.get_tab(""):add_sameline()
 local iputobjhashr = gui.get_tab(""):add_input_string("objhash")
 gui.get_tab(""):add_sameline()
@@ -3477,7 +3477,7 @@ gui.get_tab(""):add_text("PTFX generation") ;gui.get_tab(""):add_sameline()
 local iputptfxdicr = gui.get_tab(""):add_input_string("PTFX Dic")
 local iputptfxnamer = gui.get_tab(""):add_input_string("PTFX Name")
 gui.get_tab(""):add_sameline()
-gui.get_tab(""):add_button("generate ptfx", function()
+gui.get_tab(""):add_button("Generate ptfx", function()
     script.run_in_fiber(function (cusptfxr)
         iputptfxdicvalr = iputptfxdicr:get_value()
         iputptfxnamevalr = iputptfxnamer:get_value()
@@ -3512,7 +3512,7 @@ end)
 
 EntityTab:add_sameline()
 
-tableautorf = EntityTab:add_checkbox("Getting the player table and refreshing it automatically (the basis of the operation of the player targeting counterattack)")
+tableautorf = EntityTab:add_checkbox("Getting the player table and refreshing it automatically (used to counterattack enemies)")
 EntityTab:add_text("Player Aiming Reaction")
 plyaimkarma1 = EntityTab:add_checkbox("Shoot F") --这只是一个复选框,代码往最后的循环脚本部分找
 EntityTab:add_sameline()
@@ -3621,7 +3621,7 @@ script.register_looped("schlua-emodedeamon", function() --紧急模式1、2
         --https://docs.fivem.net/docs/game-references/controls/ 如需自定义，到这个网站查询控制35这样的数字对应的是键盘或手柄上的什么物理按键，替换掉对应的数字即可
             command.call("joinsession", { 1 })
             log.info("sch lua紧急模式2,已创建新战局")
-            gui.show_message("sch lua emergency mode 2","New game has been created")
+            gui.show_message("sch lua emergency mode 2","New session has been created")
         end
     end
 
@@ -3648,7 +3648,7 @@ script.register_looped("schlua-emodedeamon", function() --紧急模式1、2
     if  emmode:is_enabled() then
         if loopa29 == 0 and PAD.IS_CONTROL_PRESSED(0, 33) and PAD.IS_CONTROL_PRESSED(0, 36) and PAD.IS_CONTROL_PRESSED(0, 35) then  
             log.info("紧急模式已开启,与所有玩家取消同步,同时按下WAD关闭")
-            gui.show_message("Emergency mode is turned on "," Cancel synchronization with all players, and press WAD to close at the same time")
+            gui.show_message("Emergency mode is turned on","Cancel synchronization with all players, and press WAD to close at the same time")
             NETWORK.NETWORK_START_SOLO_TUTORIAL_SESSION()
             selfposen = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID())
             PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), -832, 177, 3000)
@@ -4019,7 +4019,7 @@ script.register_looped("schlua-dataservice", function()
 
     if  ncspup:is_enabled() then--锁定夜总会生产速度
         if loopa20 == 0 then
-            gui.show_message("It will take effect the next time production is triggered","reassign employees to take effect immediately")
+            gui.show_message("It will take effect the next time production is triggered","Reassign employees to take effect immediately")
         end
         if globals.get_int(262145 + 24548) ~= 5000 then
             globals_set_int(262145 + 24548, 5000) -- tuneables_processing.c -147565853
@@ -4067,7 +4067,7 @@ script.register_looped("schlua-dataservice", function()
 
     if  ncspupa1:is_enabled() then--锁定夜总会生产速度x4
         if loopa21 == 0 then
-            gui.show_message("It will take effect the next time production is triggered","reassign employees to take effect immediately")
+            gui.show_message("It will take effect the next time production is triggered","Reassign employees to take effect immediately")
         end
         if globals.get_int(262145 + 24548) ~= 3600000 then
             globals_set_int(262145 + 24548, 3600000) -- tuneables_processing.c -147565853
@@ -4106,7 +4106,7 @@ script.register_looped("schlua-dataservice", function()
 
     if  ncspupa2:is_enabled() then--锁定夜总会生产速度x10
         if loopa22 == 0 then
-            gui.show_message("It will take effect the next time production is triggered","reassign employees to take effect immediately")
+            gui.show_message("It will take effect the next time production is triggered","Reassign employees to take effect immediately")
         end
         if globals.get_int(262145 + 24548) ~= 1440000 then
             globals_set_int(262145 + 24548, 1440000) -- tuneables_processing.c -147565853
@@ -4145,7 +4145,7 @@ script.register_looped("schlua-dataservice", function()
 
     if  ncspupa3:is_enabled() then--锁定夜总会生产速度x20
         if loopa23 == 0 then
-            gui.show_message("It will take effect the next time production is triggered","reassign employees to take effect immediately")
+            gui.show_message("It will take effect the next time production is triggered","Reassign employees to take effect immediately")
         end
         if globals.get_int(262145 + 24548) ~= 720000 then
             globals_set_int(262145 + 24548, 720000) -- tuneables_processing.c -147565853
@@ -4307,7 +4307,7 @@ script.register_looped("schlua-miscservice", function()
     else
         if loopa1 == 1 then     --这段代码只会在关掉开关时执行一次，而不是循环               
         AUDIO.SET_PED_FOOTSTEPS_EVENTS_ENABLED(PLAYER.PLAYER_PED_ID(),true)
-        gui.show_message("Footstep control","with sound")
+        gui.show_message("Footstep control","With sound")
         loopa1 = 0
         end
     end
@@ -4495,7 +4495,7 @@ script.register_looped("schlua-miscservice", function()
                 end
                 gui.show_message("sch lua","Request control was successful")
                 ENTITY.SET_ENTITY_COLLISION(tarveh2,true,true)
-                gui.show_message("Vehicle has no collision","removed")
+                gui.show_message("Vehicle has no collision","Removed")
                 loopa15 = 0
             end
         end
@@ -4546,13 +4546,13 @@ script.register_looped("schlua-miscservice", function()
     if  checkpedaudio:is_enabled() then --控制自己的PED是否产生声音
         PLAYER.SET_PLAYER_NOISE_MULTIPLIER(PLAYER.PLAYER_ID(), 0.0)
         if loopa3 == 0 then
-            gui.show_message("PED sound control "," Mute")
+            gui.show_message("PED sound control ","Mute")
         end
         loopa3 = 1
     else
         if loopa3 == 1 then                    
         PLAYER.SET_PLAYER_NOISE_MULTIPLIER(PLAYER.PLAYER_ID(), 1.0)
-        gui.show_message("PED sound control "," with sound")
+        gui.show_message("PED sound control ","With sound")
         loopa3 = 0
         end
     end
@@ -4565,7 +4565,7 @@ script.register_looped("schlua-miscservice", function()
     if loopa8 == 1 then 
         PED.RESET_AI_WEAPON_DAMAGE_MODIFIER()
         PED.RESET_AI_MELEE_WEAPON_DAMAGE_MODIFIER()
-        gui.show_message("Prompt ","NPC damage has been restored")
+        gui.show_message("Prompt","NPC damage has been restored")
     loopa8 = 0
     end
     end
@@ -4711,7 +4711,7 @@ script.register_looped("schlua-miscservice", function()
 
         GRAPHICS.SET_PARTICLE_FX_LOOPED_COLOUR(vehptfx1, 200, 200, 200, false)
         
-        gui.show_message("Ghost Rider","on")
+        gui.show_message("Ghost Rider","On")
         end
         loopa10 = 1
     else
@@ -4844,7 +4844,7 @@ script.register_looped("schlua-miscservice", function()
     else
         if loopa7 == 1 then 
         PLAYER.SET_DISPATCH_COPS_FOR_PLAYER(PLAYER.PLAYER_ID(), true)
-        gui.show_message("Prompt "," the police will be dispatched when wanted")
+        gui.show_message("Prompt","the police will be dispatched when wanted")
         loopa7 = 0
         end
     end
@@ -4876,13 +4876,13 @@ script.register_looped("schlua-miscservice", function()
     if  desync:is_enabled() then --创建新手教程战局以取消与其他玩家同步
         if loopa9 == 0 then
             NETWORK.NETWORK_START_SOLO_TUTORIAL_SESSION()
-            gui.show_message("Unsync"," will unsync with all players")
+            gui.show_message("Unsync","Will unsync with all players")
         end
         loopa9 = 1
     else
         if loopa9 == 1 then                    
             NETWORK.NETWORK_END_TUTORIAL_SESSION()
-            gui.show_message("cancel sync","off")
+            gui.show_message("Cancel sync","Syncing back again")
         loopa9 = 0
         end
     end
@@ -5106,7 +5106,7 @@ script.register_looped("schlua-ectrlservice", function()
                     end
                 end
             end
-            gui.show_message("Prompt "," unlocked") 
+            gui.show_message("Prompt","Unlocked") 
         end
         loopa18 = 0
     end
@@ -6115,7 +6115,7 @@ void func_12234(var uParam0, var uParam1, Blip* pblParam2, Blip* pblParam3, Blip
 ---------------------------------------------------------------------------------------以下是废弃的东西
 
 --[[  已被检测
-gentab:add_button("Removed casino roulette cooldown", function()
+gentab:add_button("Remove casino roulette cooldown", function()
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
 
 local mpx = "MP0_"
