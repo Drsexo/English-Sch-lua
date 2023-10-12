@@ -1109,7 +1109,7 @@ gentab:add_text("Vehicle control")
 
 gentab:add_sameline()
 
-local vehengdmg = gentab:add_checkbox("Flameout") --只是一个开关，代码往后面找
+local vehengdmg = gentab:add_checkbox("Burn") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1230,7 +1230,7 @@ local stnpcany = gentab:add_checkbox("Electric shock A") --只是一个开关，
 
 gentab:add_sameline()
 
-local drawbox = gentab:add_checkbox("Light beam markera") --只是一个开关，代码往后面找
+local drawbox = gentab:add_checkbox("Light beam marker A") --只是一个开关，代码往后面找
 
 gentab:add_text("(BETA testing) NPC control automatically excludes friendly whitelisting (list not yet complete, see below), lightpost markers still work globally") 
 
@@ -1326,7 +1326,7 @@ local aimreact2any = gentab:add_checkbox("Kill C") --只是一个开关，代码
 
 gentab:add_sameline()
 
-local aimreact3any = gentab:add_checkbox("burn C") --只是一个开关，代码往后面找
+local aimreact3any = gentab:add_checkbox("Burn C") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -2016,7 +2016,7 @@ gentab:add_button("Remove balance", function()
         SE = SE - 10000
         stats.set_int(mpx.."MONEY_EARN_JOBS",stats.get_int(mpx.."MONEY_EARN_JOBS") + SE )
         stats.set_int("MPPLY_TOTAL_EVC",stats.get_int("MPPLY_TOTAL_EVC") + SE )
-        gui.show_message("Remove balance difference","executed successfully")
+        gui.show_message("Remove balance difference","Executed successfully")
         log.info("已移除收支差:"..SE)    
         SEa = 1
     else
