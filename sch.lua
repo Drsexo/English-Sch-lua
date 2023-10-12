@@ -55,7 +55,7 @@ suppver = "1.67" --支持的游戏版本
 autoresply = 0
 
 gentab = gui.add_tab("sch-lua-Alpha-"..luaversion)
-local LuaTablesTab = gentab:add_tab("++ table")
+local LuaTablesTab = gentab:add_tab("++ Table")
 
 local EntityTab = LuaTablesTab:add_tab("+Game entity list")
 
@@ -73,7 +73,7 @@ VehicleTableTab:add_button("Write a list of vehicles", function()
     writevehtable()
 end)
 
-local LuaownedTab = LuaTablesTab:add_tab("+lua internal list")
+local LuaownedTab = LuaTablesTab:add_tab("+Lua internal list")
 local HeliTableTab = LuaownedTab:add_tab("-Bodyguard helicopter list")
 local NPCguardTableTab = LuaownedTab:add_tab("-Bodyguard NPC list")
 
@@ -343,21 +343,21 @@ function writebodyguardtable()
         local npc_t_health = ENTITY.GET_ENTITY_HEALTH(guard_ped_id)
         NPCguardTableTab:add_text(guard_ped_id.." distance: "..formattednpcDistance.." HP: "..npc_t_health)
         NPCguardTableTab:add_sameline()
-        NPCguardTableTab:add_button("transfer"..npcguard_list_index, function()
+        NPCguardTableTab:add_button("Teleport to "..npcguard_list_index, function()
             PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), ENTITY.GET_ENTITY_COORDS(guard_ped_id).x, ENTITY.GET_ENTITY_COORDS(guard_ped_id).y, ENTITY.GET_ENTITY_COORDS(guard_ped_id).z)
         end)
         NPCguardTableTab:add_sameline()
-        NPCguardTableTab:add_button("deletion"..npcguard_list_index, function()
+        NPCguardTableTab:add_button("Delete "..npcguard_list_index, function()
             request_control(guard_ped_id)
             delete_entity(guard_ped_id)        
         end)
         NPCguardTableTab:add_sameline()
-        NPCguardTableTab:add_button("healing"..npcguard_list_index, function()
+        NPCguardTableTab:add_button("Heal "..npcguard_list_index, function()
             request_control(guard_ped_id)
             ENTITY.SET_ENTITY_HEALTH(guard_ped_id,1000,true)
         end)
         NPCguardTableTab:add_sameline()
-        NPCguardTableTab:add_button("generate"..npcguard_list_index, function()
+        NPCguardTableTab:add_button("Clone "..npcguard_list_index, function()
             request_control(guard_ped_id)
             ENTITY.SET_ENTITY_COORDS_NO_OFFSET(guard_ped_id, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID()).x, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID()).y, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID()).z, false, false, false)
         end)
@@ -384,7 +384,7 @@ function writebodyguardhelitable()
         formattednpcDistance = string.format("%.1f", npcdist)
         HeliTableTab:add_text(guard_veh_hd.." distance: "..formattednpcDistance)
         HeliTableTab:add_sameline()
-        HeliTableTab:add_button("join"..npcguardheli_list_index, function()
+        HeliTableTab:add_button("Teleport to "..npcguardheli_list_index, function()
             if not VEHICLE.IS_VEHICLE_SEAT_FREE(guarddrvped, -1, 0) then
                 guarddrvped = VEHICLE.GET_PED_IN_VEHICLE_SEAT(guard_veh_hd, -1, 0)
                 TASK.CLEAR_PED_TASKS_IMMEDIATELY(guarddrvped)    
@@ -392,12 +392,12 @@ function writebodyguardhelitable()
             PED.SET_PED_INTO_VEHICLE(PLAYER.PLAYER_PED_ID(), guard_veh_hd, -1)
         end)
         HeliTableTab:add_sameline()
-        HeliTableTab:add_button("deletion"..npcguardheli_list_index, function()
+        HeliTableTab:add_button("Delete "..npcguardheli_list_index, function()
             request_control(guard_veh_hd)
             delete_entity(guard_veh_hd)        
         end)
         HeliTableTab:add_sameline()
-        HeliTableTab:add_button("generate"..npcguardheli_list_index, function()
+        HeliTableTab:add_button("Clone "..npcguardheli_list_index, function()
             request_control(guard_veh_hd)
             ENTITY.SET_ENTITY_COORDS_NO_OFFSET(guard_veh_hd, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID()).x, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID()).y, ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID()).z + 20, false, false, false)
         end)
@@ -459,16 +459,16 @@ function writepedtable()
         local npc_t_health = ENTITY.GET_ENTITY_HEALTH(ped_id)
         NPCTableTab:add_text(ped_id.." distance: "..formattednpcDistance.." Blip: "..npcblipsprite.." Color: "..npcblipcolor.." HP: "..npc_t_health)
         NPCTableTab:add_sameline()
-        NPCTableTab:add_button("join"..ped_list_index, function()
+        NPCTableTab:add_button("Teleport to "..ped_list_index, function()
             PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), ENTITY.GET_ENTITY_COORDS(ped_id).x, ENTITY.GET_ENTITY_COORDS(ped_id).y, ENTITY.GET_ENTITY_COORDS(ped_id).z)
         end)
         NPCTableTab:add_sameline()
-        NPCTableTab:add_button("deletion"..ped_list_index, function()
+        NPCTableTab:add_button("Delete "..ped_list_index, function()
             request_control(ped_id)
             delete_entity(ped_id)        
         end)
         NPCTableTab:add_sameline()
-        NPCTableTab:add_button("heal"..ped_list_index, function()
+        NPCTableTab:add_button("Heal "..ped_list_index, function()
             request_control(ped_id)
             ENTITY.SET_ENTITY_HEALTH(ped_id,1000,true)
         end)
@@ -507,22 +507,22 @@ function writevehtable()
         local veh_disp_name = HUD.GET_FILENAME_FOR_AUDIO_CONVERSATION(veh_mod_name)
         VehicleTableTab:add_text("Handle:"..t_veh_hd.." model:"..veh_mod_name.." name:"..veh_disp_name.." distance:"..formattedvehDistance.." Blip:"..vehblipsprite.." Color:"..vehblipcolor.." HP:"..veh_t_health)
         VehicleTableTab:add_sameline()
-        VehicleTableTab:add_button("deletion"..Veh_list_index, function()
+        VehicleTableTab:add_button("Delete "..Veh_list_index, function()
             request_control(t_veh_hd)
             delete_entity(t_veh_hd)        
         end)
         VehicleTableTab:add_sameline()
-        VehicleTableTab:add_button("join"..Veh_list_index, function()
+        VehicleTableTab:add_button("Teleport to "..Veh_list_index, function()
             request_control(t_veh_hd)
             PED.SET_PED_INTO_VEHICLE(PLAYER.PLAYER_PED_ID(), t_veh_hd, -1)
         end)
         VehicleTableTab:add_sameline()
-        VehicleTableTab:add_button("Destroy the engine"..Veh_list_index, function()
+        VehicleTableTab:add_button("Destroy the engine "..Veh_list_index, function()
             request_control(t_veh_hd)
             VEHICLE.SET_VEHICLE_ENGINE_HEALTH(t_veh_hd, -4000)
         end)
         VehicleTableTab:add_sameline()
-        VehicleTableTab:add_button("throw"..Veh_list_index, function()
+        VehicleTableTab:add_button("Throw "..Veh_list_index, function()
             request_control(t_veh_hd)
             ENTITY.APPLY_FORCE_TO_ENTITY(t_veh_hd, 1, math.random(0, 3), math.random(0, 3), math.random(-10, 10), 0.0, 0.0, 0.0, 0, true, false, true, false, true)
         end)
@@ -924,7 +924,7 @@ end)
 gentab:add_separator()
 gentab:add_text("Entertainment function (low stability, full of bugs) (the particle effect will not continue to be generated after reaching the memory limit, please enable and disable the function of cleaning PTFX water column and fire column at the bottom of this page)") --不解释，我自己也搞不明白
 
-gentab:add_button("light fireworks", function()
+gentab:add_button("Light fireworks", function()
     script.run_in_fiber(function (firew)
         
     local animlib = 'anim@mp_fireworks'
@@ -987,7 +987,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("broomstick", function()
+gentab:add_button("Broomstick", function()
     script.run_in_fiber(function (mk2ac1)
         local pos = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER.PLAYER_PED_ID(), 0.0, 0.52, 0.0)
         local broomstick = joaat("prop_tool_broom")
@@ -1010,7 +1010,7 @@ end)
 
 gentab:add_sameline()
 
-local fwglb = gentab:add_checkbox("range fireworks") --这只是一个复选框,代码往最后的循环脚本部分找
+local fwglb = gentab:add_checkbox("Range fireworks") --这只是一个复选框,代码往最后的循环脚本部分找
 
 gentab:add_sameline()
 
@@ -1025,15 +1025,15 @@ local object5201 --注册为全局变量以便后续移除520
 local object5202--注册为全局变量以便后续移除520
 local object5203--注册为全局变量以便后续移除520
 
-local check666 = gentab:add_checkbox("Head666") --这只是一个复选框,代码往最后的循环脚本部分找
+local check666 = gentab:add_checkbox("Header 666") --这只是一个复选框,代码往最后的循环脚本部分找
 
 gentab:add_sameline()
 
-local check520 = gentab:add_checkbox("Overhead 520") --这只是一个复选框,代码往最后的循环脚本部分找
+local check520 = gentab:add_checkbox("Header 520") --这只是一个复选框,代码往最后的循环脚本部分找
 
 gentab:add_sameline()
 
-local check6 = gentab:add_checkbox("swim mode") --这只是一个复选框,代码往最后的循环脚本部分找
+local check6 = gentab:add_checkbox("Swim mode") --这只是一个复选框,代码往最后的循环脚本部分找
 
 gentab:add_sameline()
 
@@ -1077,7 +1077,7 @@ bigfireWings = {
 
 gentab:add_sameline()
 
-local checkfirew = gentab:add_checkbox("flame wings")
+local checkfirew = gentab:add_checkbox("Flame wings")
 
 gentab:add_separator()
 
@@ -1143,7 +1143,7 @@ gentab:add_text("Hostile NPC vehicle control")
 
 gentab:add_sameline()
 
-local vehengdmg2 = gentab:add_checkbox("Flameout 2") --只是一个开关，代码往后面找
+local vehengdmg2 = gentab:add_checkbox("Burn 2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1157,11 +1157,11 @@ gentab:add_text("NPC control")
 
 gentab:add_sameline()
 
-local reactany = gentab:add_checkbox("interrupt A") --只是一个开关，代码往后面找
+local reactany = gentab:add_checkbox("Interrupt A") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react1any = gentab:add_checkbox("fall A") --只是一个开关，代码往后面找
+local react1any = gentab:add_checkbox("Fall A") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1169,11 +1169,11 @@ local react2any = gentab:add_checkbox("Kill a") --只是一个开关，代码往
 
 gentab:add_sameline()
 
-local react3any = gentab:add_checkbox("burn A") --只是一个开关，代码往后面找
+local react3any = gentab:add_checkbox("Burn A") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react4any = gentab:add_checkbox("take off A") --只是一个开关，代码往后面找
+local react4any = gentab:add_checkbox("Take off A") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1218,7 +1218,7 @@ local revitalizationped = gentab:add_checkbox("Resurrection (unstable)") --只�
 
 gentab:add_sameline()
 
-local rmdied = gentab:add_checkbox("remove the body A") --只是一个开关，代码往后面找
+local rmdied = gentab:add_checkbox("Remove the body A") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1238,11 +1238,11 @@ gentab:add_text("Hostile NPC control")
 
 gentab:add_sameline()
 
-local reactanyac = gentab:add_checkbox("interrupt A1") --只是一个开关，代码往后面找
+local reactanyac = gentab:add_checkbox("Interrupt A1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react1anyac = gentab:add_checkbox("fall A1") --只是一个开关，代码往后面找
+local react1anyac = gentab:add_checkbox("Fall A1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1250,11 +1250,11 @@ local react2anyac = gentab:add_checkbox("Kill A1") --只是一个开关，代码
 
 gentab:add_sameline()
 
-local react3anyac = gentab:add_checkbox("burn A1") --只是一个开关，代码往后面找
+local react3anyac = gentab:add_checkbox("Burn A1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react4anyac = gentab:add_checkbox("take off A1") --只是一个开关，代码往后面找
+local react4anyac = gentab:add_checkbox("Take off A1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1276,7 +1276,7 @@ gentab:add_text("Punish targeting NPC")
 
 gentab:add_sameline()
 
-local aimreact = gentab:add_checkbox("interrupt B") --只是一个开关，代码往后面找
+local aimreact = gentab:add_checkbox("Interrupt B") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1292,7 +1292,7 @@ local aimreact3 = gentab:add_checkbox("burn B") --只是一个开关，代码往
 
 gentab:add_sameline()
 
-local aimreact4 = gentab:add_checkbox("take off B") --只是一个开关，代码往后面找
+local aimreact4 = gentab:add_checkbox("Take off B") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1300,7 +1300,7 @@ local aimreact5 = gentab:add_checkbox("Bodyguard B") --只是一个开关，代�
 
 gentab:add_sameline()
 
-local aimreact6 = gentab:add_checkbox("remove B") --只是一个开关，代码往后面找
+local aimreact6 = gentab:add_checkbox("Remove B") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1314,15 +1314,15 @@ gentab:add_text("Punish targeting NPC")
 
 gentab:add_sameline()
 
-local aimreactany = gentab:add_checkbox("interrupt C") --只是一个开关，代码往后面找
+local aimreactany = gentab:add_checkbox("Interrupt C") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact1any = gentab:add_checkbox("fall C") --只是一个开关，代码往后面找
+local aimreact1any = gentab:add_checkbox("Fall C") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact2any = gentab:add_checkbox("kill C") --只是一个开关，代码往后面找
+local aimreact2any = gentab:add_checkbox("Kill C") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1330,7 +1330,7 @@ local aimreact3any = gentab:add_checkbox("burn C") --只是一个开关，代码
 
 gentab:add_sameline()
 
-local aimreact4any = gentab:add_checkbox("take off C") --只是一个开关，代码往后面找
+local aimreact4any = gentab:add_checkbox("Take off C") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1338,7 +1338,7 @@ local aimreact5any = gentab:add_checkbox("Bodyguard C") --只是一个开关，�
 
 gentab:add_sameline()
 
-local aimreact6any = gentab:add_checkbox("remove C") --只是一个开关，代码往后面找
+local aimreact6any = gentab:add_checkbox("Remove C") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -1619,7 +1619,7 @@ gentab:add_sameline()
 
 t_guard_table = {}
 
-gentab:add_button("Generate bodyguard formation", function()
+gentab:add_button("Generate bodyguard", function()
     script.run_in_fiber(function (t_guard_f)
 
     local guardteam_mod = joaat("CSB_Avon")
@@ -1651,7 +1651,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Remove the bodyguard formation", function()
+gentab:add_button("Remove bodyguards", function()
     for _, tgt_ele in pairs(t_guard_table) do
         delete_entity(tgt_ele)
     end
@@ -2149,7 +2149,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Ka Yun retreats offline", function()
+gentab:add_button("Force to story mode", function()
     if NETWORK.NETWORK_CAN_BAIL() then
         NETWORK.NETWORK_BAIL(0, 0, 0)
     end
@@ -2165,7 +2165,7 @@ local checkbypassconv = gentab:add_checkbox("Automatically skip NPC dialogue")
 
 gentab:add_sameline()
 
-gentab:add_button("stop all local sounds", function()
+gentab:add_button("Stop all local sounds", function()
     for i=-1,100 do
         AUDIO.STOP_SOUND(i)
         AUDIO.RELEASE_SOUND_ID(i)
@@ -2210,11 +2210,11 @@ gentab:add_button("Force save", function()
     globals_set_int(2694471, 27)
 end)
 
-gentab:add_text("vision")
+gentab:add_text("Vision")
 
 gentab:add_sameline()
 
-gentab:add_button("remove all visual effects", function()
+gentab:add_button("Remove all visual effects", function()
     GRAPHICS.ANIMPOSTFX_STOP_ALL()
     GRAPHICS.SET_TIMECYCLE_MODIFIER("DEFAULT")
 	PED.SET_PED_MOTION_BLUR(PLAYER.PLAYER_PED_ID(), false)
@@ -2259,19 +2259,19 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("increase brightness", function()
+gentab:add_button("Increase brightness", function()
     GRAPHICS.SET_TIMECYCLE_MODIFIER("AmbientPush")
 end)
 
 gentab:add_sameline()
 
-gentab:add_button("heavy fog", function()
+gentab:add_button("Heavy fog", function()
     GRAPHICS.SET_TIMECYCLE_MODIFIER("casino_main_floor_heist")
 end)
 
 gentab:add_sameline()
 
-gentab:add_button("drunk", function()
+gentab:add_button("Drunk", function()
     GRAPHICS.SET_TIMECYCLE_MODIFIER("Drunk")
 end)
 
@@ -2281,7 +2281,7 @@ local fakeban1 = gentab:add_checkbox("Display false warning") --只是一个开�
 
 gentab:add_sameline()
 
-gentab:add_button("Prevent everyone from using space-based cannons", function()
+gentab:add_button("Prevent everyone from using orbital cannons", function()
     script.run_in_fiber(function (blockorbroom)
         local objHash = joaat("prop_fnclink_03e")
         STREAMING.REQUEST_MODEL(objHash)
@@ -2353,9 +2353,9 @@ local checkzhongjia = gentab:add_checkbox("Request heavy armor spend (used to re
 
 gentab:add_sameline()
 
-local iputintzhongjia = gentab:add_input_int("cash")
+local iputintzhongjia = gentab:add_input_int("Cash")
 
-local checkfootaudio = gentab:add_checkbox("turn off footsteps") --只是一个开关，代码往后面找
+local checkfootaudio = gentab:add_checkbox("Turn off footsteps") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -2371,11 +2371,11 @@ local checkSONAR = gentab:add_checkbox("Minimap showing sonar") --只是一个�
 
 gentab:add_sameline()
 
-local disalight = gentab:add_checkbox("global lights out") --只是一个开关，代码往后面找
+local disalight = gentab:add_checkbox("Global lights out") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local DrawHost = gentab:add_checkbox("display host information") --只是一个开关，代码往后面找
+local DrawHost = gentab:add_checkbox("Display host information") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -2385,11 +2385,11 @@ local pedgun = gentab:add_checkbox("PED gun (shoot NPC)") --只是一个开关�
 
 gentab:add_sameline()
 
-local bsktgun = gentab:add_checkbox("basketball gun") --只是一个开关，代码往后面找
+local bsktgun = gentab:add_checkbox("Basketball gun") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local bballgun = gentab:add_checkbox("big ball gun") --只是一个开关，代码往后面找
+local bballgun = gentab:add_checkbox("Big ball gun") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -2397,7 +2397,7 @@ local drawcs = gentab:add_checkbox("Draw + Sight") --只是一个开关，代码
 
 gentab:add_sameline()
 
-local disablecops = gentab:add_checkbox("stop the police from being dispatched") --只是一个开关，代码往后面找
+local disablecops = gentab:add_checkbox("Stop the police from being dispatched") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -2792,11 +2792,11 @@ local checknodmgexp = gui.get_tab(""):add_checkbox("No damage explosion")
 
 gui.get_tab(""):add_sameline()
 
-local checkcollection1 = gui.get_tab(""):add_checkbox("Cycle swiping cards") --来自fhen123_06870
+local checkcollection1 = gui.get_tab(""):add_checkbox("Drop playing cards") --来自fhen123_06870
 
 gui.get_tab(""):add_sameline()
 
-local checkCollectible = gui.get_tab(""):add_checkbox("Cyclic brush mannequin")
+local checkCollectible = gui.get_tab(""):add_checkbox("Figurines RP drop")
 
 local check2 = gui.get_tab(""):add_checkbox("Drop frame attack (as far away from the target as possible)")
 
@@ -2814,7 +2814,7 @@ local checkxsdpednet = gui.add_tab(""):add_checkbox("NPC drops 2000 yuan cycle")
 
 gui.add_tab(""):add_sameline()
 
-local checkmoney = gui.get_tab(""):add_checkbox("Cycle through the purse (only visible to yourself)") --来自fhen123_06870
+local checkmoney = gui.get_tab(""):add_checkbox("Cash drop (only visible to yourself)") --来自fhen123_06870
 
 gui.add_tab(""):add_button("Fragment crash", function()
     script.run_in_fiber(function (fragcrash)
@@ -3094,10 +3094,10 @@ gui.add_tab(""):add_button("squeeze down", function()
     end)
 end)
 
-local plydist = gui.get_tab(""):add_input_float("distance (m)")
+local plydist = gui.get_tab(""):add_input_float("Distance (m)")
 
 gentab:add_separator()
-gentab:add_text("global options") 
+gentab:add_text("Global options") 
 
 gentab:add_button("Gift the opressor MK2", function()
     script.run_in_fiber(function (giftmk2)
@@ -3122,7 +3122,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("apartment invitation", function()
+gentab:add_button("Apartment invitation", function()
     for pid = 0, 31 do
     network.trigger_script_event(1 << pid, {3592101251, 1, 0, -1, 4, 127, 0, 0, 0,PLAYER.GET_PLAYER_INDEX(), pid})
     end
@@ -3234,7 +3234,7 @@ local DrawInteriorID = gentab:add_checkbox("Show Interior ID") --只是一个开
 
 gentab:add_sameline()
 
-local desync = gentab:add_checkbox("cancel sync") --只是一个开关，代码往后面找
+local desync = gentab:add_checkbox("Cancel sync") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -3287,7 +3287,7 @@ end)
 
 gentab:add_sameline()
 
-local keepschost = gentab:add_checkbox("keepscripthost") --只是一个开关，代码往后面找
+local keepschost = gentab:add_checkbox("Keep script host") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -3342,7 +3342,7 @@ end)
 local emmode = gentab:add_checkbox("Emergency mode-Press Ctrl+S+D at the same time when the game is stuck due to a large number of swiping models, quickly escape the scene and pause the network synchronization (no need to leave the war situation)-if necessary, use it with the cycle to clear the entity function") --只是一个开关，代码往后面找
 --emmode:set_enabled(1) --开启上方创建的复选框，删除此行代码后紧急模式1不会默认监听快捷键
 
-local emmode2 = gentab:add_checkbox("Emergency Mode 2 - Press Ctrl+A+D to quickly escape to a new battlefield") --只是一个开关，代码往后面找
+local emmode2 = gentab:add_checkbox("Emergency Mode 2 - Press Ctrl+A+D to quickly escape to a new session") --只是一个开关，代码往后面找
 emmode2:set_enabled(1) --开启上方创建的复选框，删除此行代码后紧急模式2不会默认监听快捷键
 
 gentab:add_sameline()
@@ -3357,7 +3357,7 @@ gentab:add_sameline()
 
 local deautocalc = gentab:add_checkbox("Disable calculation of player distance") --只是一个开关，代码往后面找
 
-gentab:add_text("obj generation (Name)") 
+gentab:add_text("Obj generation (Name)") 
 gentab:add_sameline()
 local iputobjname = gentab:add_input_string("objname")
 gentab:add_sameline()
@@ -3375,7 +3375,7 @@ gentab:add_button("Generate N", function()
         end)
 end)
 
-gentab:add_text("obj generation (Hash)") 
+gentab:add_text("Obj generation (Hash)") 
 gentab:add_sameline()
 local iputobjhash = gentab:add_input_string("objhash")
 gentab:add_sameline()
@@ -4603,7 +4603,7 @@ script.register_looped("schlua-miscservice", function()
             objectsix3 = OBJECT.CREATE_OBJECT(md6hash, 0.0,0.0,0, true, true, false)
             ENTITY.ATTACH_ENTITY_TO_ENTITY(objectsix3, user_ped, PED.GET_PED_BONE_INDEX(PLAYER.PLAYER_PED_ID(), 0), -1.0, 0, 1.7, 0, 0, 0, false, false, false, false, 2, true) 
         
-            gui.show_message("Overhead 666", "generating")
+            gui.show_message("Header 666", "Generated")
         end
         loopa2 = 1
     else
@@ -4611,7 +4611,7 @@ script.register_looped("schlua-miscservice", function()
             delete_entity(objectsix1)
             delete_entity(objectsix2)
             delete_entity(objectsix3)
-            gui.show_message("Heads 666", "Remove")
+            gui.show_message("Header 666", "Removed")
             loopa2 = 0
         end
     end
@@ -4653,7 +4653,7 @@ script.register_looped("schlua-miscservice", function()
             object5203 = OBJECT.CREATE_OBJECT(num0hash, 0.0,0.0,0, true, true, false)
             ENTITY.ATTACH_ENTITY_TO_ENTITY(object5203, user_ped, PED.GET_PED_BONE_INDEX(PLAYER.PLAYER_PED_ID(), 0),   1.0, 0, 1.7, 0, 0, 0, false, false, false, false, 2, true) 
         
-            gui.show_message("Overhead 520", "generated")
+            gui.show_message("Header 520", "Generated")
         end
         loopa17 = 1
     else
@@ -4661,7 +4661,7 @@ script.register_looped("schlua-miscservice", function()
             delete_entity(object5201)
             delete_entity(object5202)
             delete_entity(object5203)
-            gui.show_message("Head 520","Remove")
+            gui.show_message("Header 520","Removed")
             loopa17 = 0
         end
     end
