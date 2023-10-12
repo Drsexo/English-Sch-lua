@@ -1,5 +1,7 @@
 -- v2.03 --
-
+--I don't restrict or even encourage players to modify and customize the lua to suit their needs.
+--Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
+--[[
     I do not restrict and even encourage players to modify and customize Lua scripts according to their own needs and usage habits.
     Some code sections even have comments explaining what they are for and the relevant globals used in the decompiled script.
 
@@ -37,7 +39,6 @@ Sites that may be helpful for lua writing
 Multi-language maintainer.
 Simplified Chinese:sch https://github.com/sch-lda
 English:Drsexo https://github.com/Drsexo
-
 ]]
 
 luaversion = "v2.03"
