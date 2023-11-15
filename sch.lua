@@ -1,4 +1,4 @@
--- v2.03 --
+-- v2.04 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -19,26 +19,34 @@
     Github: https://github.com/sch-lda/SCH-LUA-YIMMENU
 
     External Links:
-    Yimmenu lib By Discord@alice2333 - https://discord.com/channels/388227343862464513/1124473215436214372, providing support for developers
-    YimMenu-HeistLua - https://github.com/wangzixuank/YimMenu-HeistLua, an open-source Yim task script
+    Yimmenu lib By Discord@alice2333 (zh_CN) - https://discord.com/channels/388227343862464513/1124473215436214372, providing support for developers
+    GTA5OnlineTools Lua repo (zh_CN) - https://github.com/CrazyZhang666/GTA5OnlineTools
+    Yimmenu official Lua repo (EN) https://github.com/YimMenu-Lua
 
-    Globals and Locals used in Lua are widely borrowed from UnknownCheats forum, Heist Control script, and MusinessBanager script. Although Blue-Flag Lua is somewhat outdated, it also provides some inspiration.
-    Alice, wangzixuan, and nord123 in the small assistant's official Discord provided assistance in Lua writing.
+    Globals and Locals used in Lua are widely copied from UnknownCheats forum, Heist Control script, and MusinessBanager script. Although Blue-Flag' Kiddion Lua is somewhat outdated, it also provides some inspiration.
+    [Alice, nord123, rostal315 and wangzixuan in GTA5OnlineTools (zh_CN) official Discord server] & [gir489returns, tupoy-ya and xiaoxiao921 on Github] provided assistance in Lua writing.
 
 Sites that may be helpful for lua writing
     1.Yimmenu Lua API https://github.com/YimMenu/YimMenu/tree/master/docs/lua
     2.GTA5 Native Reference https://nativedb.dotindustries.dev/natives
     3.GTA5 Decompile Script https://github.com/Primexz/GTAV-Decompiled-Scripts
     4.PlebMaster (fast search model hash) https://forge.plebmasters.de
-    5.gta-v-data-dumps (check ptfx/sound/model) https://github.com/DurtyFree/gta-v-data-dumps
+    5.gta-v-data-dumps (Check ptfx/sound/model/action, provide preview) https://github.com/DurtyFree/gta-v-data-dumps
     6.FiveM Native Reference https://docs.fivem.net/docs/
 
 Multi-language maintainer.
 Simplified Chinese:sch https://github.com/sch-lda
 English:Drsexo https://github.com/Drsexo
+    Websites that may be helpful for Lua writing:
+    1. Yimmenu Lua API - https://github.com/YimMenu/YimMenu/tree/master/docs/lua
+    2. GTA5 Native Reference (Native functions) - https://nativedb.dotindustries.dev/natives
+    3. GTA5 Decompiled Scripts - https://github.com/Primexz/GTAV-Decompiled-Scripts
+    4. PlebMaster (GTA5 data search & preview) - https://forge.plebmasters.de
+    5. gta-v-data-dumps (Lookup PTFX/sounds/models) - https://github.com/DurtyFree/gta-v-data-dumps
+    6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v2.03"
+luaversion = "v2.04"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -186,14 +194,14 @@ function upgrade_vehicle(vehicle)
     end
 end
 
-function run_script(scriptName) --启动脚本线程
+function run_script(scriptName, stackSize) --启动脚本线程
     script.run_in_fiber(function (runscript)
         if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(MISC.GET_HASH_KEY(scriptName)) >= 1 then
         gui.show_error("Warning","Do not start script threads repeatedly!")
         else
-        SCRIPT.REQUEST_SCRIPT(scriptName)  
+        SCRIPT.REQUEST_SCRIPT(scriptName)
         repeat runscript:yield() until SCRIPT.HAS_SCRIPT_LOADED(scriptName)
-        SYSTEM.START_NEW_SCRIPT(scriptName, 5000)
+        SYSTEM.START_NEW_SCRIPT(scriptName, stackSize)
         SCRIPT.SET_SCRIPT_AS_NO_LONGER_NEEDED(scriptName)
         end
     end)
@@ -828,15 +836,15 @@ gentab:add_sameline()
 gentab:add_button("Show office computer", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
-        run_script("appfixersecurity")
+        run_script("appfixersecurity", 4592)
     else
         if globals.get_int(1895156+playerIndex*609+10+429+1) == 1 then
             globals_set_int(1895156+playerIndex*609+10+429+1,0)
             gui.show_message("Prompt","has been converted to CEO")
-            run_script("appfixersecurity")
+            run_script("appfixersecurity", 4592)
             else
             gui.show_message("Don't forget to register as CEO/Leader","It may also be a script detection error, a known problem, no feedback required")
-            run_script("appfixersecurity")
+            run_script("appfixersecurity", 4592)
         end
     end
 end)
@@ -846,13 +854,13 @@ gentab:add_sameline()
 gentab:add_button("Show bunker computer", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
-        run_script("appbunkerbusiness")
+        run_script("appbunkerbusiness", 1424)
     else
         if globals.get_int(1895156+playerIndex*609+10+429+1) == 1 then
-            run_script("appbunkerbusiness")
+            run_script("appbunkerbusiness", 1424)
             else
                 gui.show_message("Don't forget to register as CEO/Leader","It may also be a script detection error, a known problem, no feedback required")
-                run_script("appbunkerbusiness")
+                run_script("appbunkerbusiness", 1424)
             end
     end
 end)
@@ -862,13 +870,13 @@ gentab:add_sameline()
 gentab:add_button("Show hangar computer", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
-        run_script("appsmuggler")
+        run_script("appsmuggler", 4592)
     else
         if globals.get_int(1895156+playerIndex*609+10+429+1) == 1 then
-            run_script("appsmuggler")
+            run_script("appsmuggler", 4592)
             else
                 gui.show_message("Don't forget to register as CEO/Leader","It may also be a script detection error, a known problem, no feedback required")
-                run_script("appsmuggler")
+                un_script("appsmuggler", 4592)
             end
     end
 end)
@@ -878,13 +886,15 @@ gentab:add_sameline()
 gentab:add_button("Show arcade computer", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
-        run_script("apparcadebusinesshub")
+        PLAYER.FORCE_CLEANUP_FOR_ALL_THREADS_WITH_THIS_NAME("appArcadeBusinessHub", 1)
+        run_script("apparcadebusinesshub", 1424)
     else
         if globals.get_int(1895156+playerIndex*609+10+429+1) == 1 then
-            run_script("apparcadebusinesshub")
+            PLAYER.FORCE_CLEANUP_FOR_ALL_THREADS_WITH_THIS_NAME("appArcadeBusinessHub", 1)
+            run_script("apparcadebusinesshub", 1424)
         else
                 gui.show_message("Don't forget to register as CEO/Leader","It may also be a script detection error, a known problem, no feedback required")
-                run_script("apparcadebusinesshub")
+                run_script("apparcadebusinesshub", 1424)
         end
     end
 end)
@@ -894,13 +904,13 @@ gentab:add_sameline()
 gentab:add_button("Show the Terrorbyte Dashboard", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
-        run_script("apphackertruck")
+        run_script("apphackertruck", 4592)
     else
         if globals.get_int(1895156+playerIndex*609+10+429+1) == 1 then
-            run_script("apphackertruck")
+            run_script("apphackertruck", 4592)
         else
             gui.show_message("Don't forget to register as CEO/Leader","It may also be a script detection error, a known problem, no feedback required")
-            run_script("apphackertruck")
+            run_script("apphackertruck",4592)
         end
     end
 end)
@@ -910,13 +920,13 @@ gentab:add_sameline()
 gentab:add_button("Show Avengers panel", function()
     local playerIndex = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     if globals.get_int(1895156+playerIndex*609+10+429+1) == 0 then
-        run_script("appAvengerOperations")
+        run_script("appAvengerOperations", 4592)
     else
         if globals.get_int(1895156+playerIndex*609+10+429+1) == 1 then
-            run_script("appAvengerOperations")
+            run_script("appAvengerOperations", 4592)
         else
             gui.show_message("Don't forget to register as CEO/Leader","It may also be a script detection error, a known problem, no feedback required")
-            run_script("appAvengerOperations")
+            run_script("appAvengerOperations", 4592)
         end
     end
 end)
