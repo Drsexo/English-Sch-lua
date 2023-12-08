@@ -80,8 +80,8 @@ local VehicleTableTab = EntityTab:add_tab("-Vehicle list")
 VehicleTableTab:add_button("Generate a list of vehicles", function()
     writevehtable()
 end)
-local ObjTableTab = EntityTab:add_tab("-物体表")
-ObjTableTab:add_button("写出物体表", function()
+local ObjTableTab = EntityTab:add_tab("-Object List")
+ObjTableTab:add_button("Generate a list of objects", function()
     writeobjtable()
 end)
 
@@ -4091,7 +4091,7 @@ script.register_looped("schlua-dataservice", function()
     if  bussp:is_enabled() then--锁定地堡摩托帮致幻剂生产速度
         local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID  --用于判断当前是角色1还是角色2
         if loopa32 == 0 then
-            gui.show_message("下次触发生产生效","换战局有时能够立即生效?")
+            gui.show_message("Next time the production is triggered to take effect","Change session immediately?"")
         end
         if tunables.get_int("BIKER_WEED_PRODUCTION_TIME") ~= 5000 then
             tunables.set_int("BIKER_WEED_PRODUCTION_TIME", 5000)
