@@ -1,8 +1,9 @@
-# SCH-LUA-YIMMENU by sch-lda 2.05
+# SCH-LUA-YIMMENU by sch-lda 2.06
 English Version translated by DrSexo \
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
 **Warning: If either total income or total expenses exceeds 2 billion, the "Remove Income-Expense Gap" function is prohibited from use, as it will result in negative values for the relevant data.** \
 The developer will update the script during holiday periods due to academic obligations.
+Partially unavailable! Yimmenu has modified SOL_ALL_SAFETIES_ON on 20231210, enforcing Lua type checking. I've attempted to fix most of the functionalities, but there are still a few that remain unavailable. 
 This Github Repo is experimental and only kept as a backup archive. There is no guarantee of user optimization, stability, and security.
 ***Dont expect a perfect translation as im not chinese*** \
 ### ***Alternatively you can use the [official strrepl translation tool](https://github.com/sch-lda/SCH-LUA-YIMMENU/tree/main/Translation) provided by sch-lda to make your own translated file***
