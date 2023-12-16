@@ -1,4 +1,4 @@
--- v3.03 --
+-- v3.04 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.03"
+luaversion = "v3.04"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -61,6 +61,7 @@ verchka1 = 0
 verchkok = 2 --版本检查状态 0:不支持 1:支持 2:未检查
 suppver = "1.68" --支持的游戏版本
 autoresply = 0
+devmode = 0 --0:禁用某些调试功能 1:启用某些调试功能
 
 gentab = gui.add_tab("sch-lua-Alpha-"..luaversion)
 local LuaTablesTab = gentab:add_tab("++ Table")
@@ -341,7 +342,7 @@ function npc2bodyguard(peds_func) --将NPC设置为自己的保镖
     end
     PED.SET_PED_ACCURACY(peds_func,100)
     TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(peds_func, 100, 67108864)
-    ENTITY.SET_ENTITY_HEALTH(peds_func,1000,0)
+    ENTITY.SET_ENTITY_HEALTH(peds_func,1000,0,0)
     HUD.SET_PED_HAS_AI_BLIP_WITH_COLOUR(peds_func, true, 3)
     HUD.SET_PED_AI_BLIP_SPRITE(peds_func, 270)
     table.insert(allbodyguardtable,peds_func)            
@@ -379,7 +380,7 @@ function writebodyguardtable()
         NPCguardTableTab:add_sameline()
         NPCguardTableTab:add_button("Heal "..npcguard_list_index, function()
             request_control(guard_ped_id)
-            ENTITY.SET_ENTITY_HEALTH(guard_ped_id,1000,0)
+            ENTITY.SET_ENTITY_HEALTH(guard_ped_id,1000,0,0)
         end)
         NPCguardTableTab:add_sameline()
         NPCguardTableTab:add_button("Clone "..npcguard_list_index, function()
@@ -538,7 +539,7 @@ function writepedtable()
         NPCTableTab:add_sameline()
         NPCTableTab:add_button("Heal "..ped_list_index, function()
             request_control(ped_id)
-            ENTITY.SET_ENTITY_HEALTH(ped_id,1000,0)
+            ENTITY.SET_ENTITY_HEALTH(ped_id,1000,0,0)
         end)
         ped_list_index = ped_list_index + 1
     end
@@ -625,6 +626,22 @@ gentab:add_button("test01", function()
     end
     log.info("done")
 end)
+
+gentab:add_button("testmode on", function()
+    devmode = 1
+    deva1 = 71
+    deva2 = 72
+    deva3 = 73
+    deva4 = 74
+end)
+gentab:add_sameline()
+gentab:add_button("testmode off", function()
+    devmode = 0
+    deva1 = 71
+    deva2 = 72
+    deva3 = 73
+    deva4 = 74
+end)
 ]]
 --------------------------------------------------------------------------------------- TEST
 
@@ -672,7 +689,7 @@ gentab:add_text("Minimum resolution required: 1920x1080. To use the player funct
 
 gentab:add_text("Task function") 
 
-gentab:add_button("Complete the final chapter of Perico with one click", function()
+gentab:add_button("Perico/Firm Contract Final Chapter / ULP 1 click Completion", function()
     script.run_in_fiber(function (pericoinstcpl)
         network.force_script_host("fm_mission_controller_2020") --抢脚本主机
         network.force_script_host("fm_mission_controller") --抢脚本主机
@@ -694,9 +711,9 @@ gentab:add_button("Complete the final chapter of Perico with one click", functio
         if FMMC2020host == PLAYER.PLAYER_ID() or FMMChost == PLAYER.PLAYER_ID() then
             gui.show_message("Has become the script host","Try to complete automatically...")
             locals_set_int("fm_mission_controller_2020",48514,51338752)  --关键代码  --3095
-            locals_set_int("fm_mission_controller_2020",50279,50) --关键代码 --3095
+            locals_set_int("fm_mission_controller_2020",50279,100) --关键代码 --3095
             locals_set_int("fm_mission_controller", 19728, 12) --3095
-            --locals_set_int("fm_mission_controller", 28332, 99999)
+            locals_set_int("fm_mission_controller", 27489 + 859, 99999) --3095
             locals_set_int("fm_mission_controller", 31603 + 69, 99999) --3095
         else
             log.info("失败,未成为脚本主机,队友可能任务立即失败,可能受到其他作弊者干扰.您真的在进行受支持的抢劫任务分红关吗?")
@@ -704,16 +721,6 @@ gentab:add_button("Complete the final chapter of Perico with one click", functio
             gui.show_error("Failed to become a script host","You may not be in a task that supports 1 click completion")
         end
     end)
-end)
-
-gentab:add_sameline()
-
-gentab:add_button("Complete the final chapter of Perico with one click (mandatory)", function()
-    locals_set_int("fm_mission_controller_2020",48514,51338752)  --关键代码  --3095
-    locals_set_int("fm_mission_controller_2020",50279,50) --关键代码 --3095
-    locals_set_int("fm_mission_controller", 19728, 12) --3095
-    --locals_set_int("fm_mission_controller", 28332, 99999)
-    locals_set_int("fm_mission_controller", 31603 + 69, 99999) --3095
 end)
 
 gentab:add_sameline()
@@ -1253,7 +1260,7 @@ gentab:add_button("Heal A", function()
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
         if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
             request_control(peds)
-            ENTITY.SET_ENTITY_HEALTH(peds,1000,0)
+            ENTITY.SET_ENTITY_HEALTH(peds,1000,0,0)
         end
     end
 end)
@@ -1534,7 +1541,7 @@ gentab:add_button("Clean up the police and the National Security service", funct
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
         if ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
             request_control(peds)
-            ENTITY.SET_ENTITY_HEALTH(peds,0,0)
+            ENTITY.SET_ENTITY_HEALTH(peds,0,0,0,0)
         end
     end
 end)
@@ -1547,7 +1554,7 @@ gentab:add_button("Heal key NPCs", function()
         for __, frd in pairs(FRDList) do
             if ENTITY.GET_ENTITY_MODEL(ped) == frd then
                 request_control(ped)
-                ENTITY.SET_ENTITY_HEALTH(ped,1000,0)
+                ENTITY.SET_ENTITY_HEALTH(ped,1000,0,0)
             end
         end
     end
@@ -1559,7 +1566,7 @@ gentab:add_button("Make blue dot NPCs on the mini-map invincible", function()
     for _, peds in pairs(entities.get_all_peds_as_handles()) do
         if peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 3 then 
             request_control(peds)
-            ENTITY.SET_ENTITY_HEALTH(peds,1000,0)
+            ENTITY.SET_ENTITY_HEALTH(peds,1000,0,0)
             ENTITY.SET_ENTITY_PROOFS(peds, true, true, true, true, true, true, true, true) 
             ENTITY.SET_ENTITY_INVINCIBLE(peds,true)
         end
@@ -1572,7 +1579,7 @@ gentab:add_button("Remove invincibility of blue dot NPCs", function()
     for _, peds in pairs(entities.get_all_peds_as_handles()) do
         if peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 3 then 
             request_control(peds)
-            ENTITY.SET_ENTITY_HEALTH(peds,1000,0)
+            ENTITY.SET_ENTITY_HEALTH(peds,1000,0,0)
             ENTITY.SET_ENTITY_INVINCIBLE(peds,false)
             ENTITY.SET_ENTITY_PROOFS(peds, false, false, false, false, false, false, false) 
         end
@@ -1629,7 +1636,7 @@ gentab:add_button("Generate bodyguard helicopter", function()
     VEHICLE.SET_VEHICLE_SEARCHLIGHT(heli_sp, true, true)
     ENTITY.SET_ENTITY_INVINCIBLE(heli_sp, true)
     ENTITY.SET_ENTITY_MAX_HEALTH(heli_sp, 10000)
-    ENTITY.SET_ENTITY_HEALTH(heli_sp, 10000, 0)
+    ENTITY.SET_ENTITY_HEALTH(heli_sp, 10000, 0, 0)
 
     local heli_guards = {}
     for i = 1, 4 do
@@ -1637,7 +1644,7 @@ gentab:add_button("Generate bodyguard helicopter", function()
         PED.SET_PED_KEEP_TASK(heli_guard, true)
         ENTITY.SET_ENTITY_INVINCIBLE(heli_guard, true)
         PED.SET_PED_MAX_HEALTH(heli_guard, 1000)
-        ENTITY.SET_ENTITY_HEALTH(heli_guard, 1000, 0)
+        ENTITY.SET_ENTITY_HEALTH(heli_guard, 1000, 0, 0)
         npc2bodyguard(heli_guard)
         table.insert(heli_guard_table, heli_guard)
         heli_guards[i] = heli_guard
@@ -1690,7 +1697,7 @@ gentab:add_button("Generate bodyguards", function()
         PED.SET_PED_KEEP_TASK(t_guard, true)
         ENTITY.SET_ENTITY_INVINCIBLE(t_guard, true)
         PED.SET_PED_MAX_HEALTH(t_guard, 1000)
-        ENTITY.SET_ENTITY_HEALTH(t_guard, 1000, 0)
+        ENTITY.SET_ENTITY_HEALTH(t_guard, 1000, 0, 0)
         npc2bodyguard(t_guard)
         table.insert(t_guard_table, t_guard)
     end
@@ -3444,6 +3451,16 @@ gentab:add_sameline()
 
 local allclear = gentab:add_checkbox("Loop clear entity") --只是一个开关，代码往后面找
 
+gentab:add_sameline()
+
+gentab:add_button("Perico/Firm Contract Final Chapter/ULP 1 click Completion (Mandatory)", function()
+    locals_set_int("fm_mission_controller_2020",48514,51338752)  --关键代码  --3095
+    locals_set_int("fm_mission_controller_2020",50279,100) --关键代码 --3095
+    locals_set_int("fm_mission_controller", 19728, 12) --3095
+    locals_set_int("fm_mission_controller", 27489 + 859, 99999) --3095
+    locals_set_int("fm_mission_controller", 31603 + 69, 99999) --3095
+end)
+
 local emmode3 = gentab:add_checkbox("Emergency Mode 3 - Continuously removes any entities + stops PTFX fire/water columns + stops filter and lens shake + cleans up traces on the surface of objects") --只是一个开关，代码往后面找
 
 local rHDonly = gentab:add_checkbox("Render HD only") --只是一个开关，代码往后面找
@@ -3663,6 +3680,29 @@ loopa30 = 0  --紧急模式3
 loopa31 = 0  --仅渲染高清
 loopa32 = 0  --控制摩托帮地堡致幻剂生产速度
 --------------------------------------------------------------------------------------- 注册的循环脚本,主要用来实现Lua里面那些复选框的功能
+deva1 = 71
+deva2 = 72
+deva3 = 73
+deva4 = 74
+script.register_looped("schlua-test", function(script) 
+    if  devmode == 1 then
+        localmon1 = 50279
+        deva1 = locals.get_int("fm_mission_controller_2020", localmon1)
+        if deva1 ~= deva2 then
+            deva2 = deva1
+            log.info(tostring(localmon1.." : "..deva2))
+        end
+
+        localmon2 = 48514
+        deva3 = locals.get_int("fm_mission_controller_2020", localmon2)
+        if deva3 ~= deva4 then
+            deva4 = deva3
+            log.info(tostring(localmon2.." : "..deva4))
+        end
+    end
+end)
+
+
 script.register_looped("schlua-luatableautorefresh", function(script) 
     if  tableautorf:is_enabled() then
         writeplayertable()
@@ -3911,7 +3951,7 @@ script.register_looped("schlua-recoveryservice", function(script)
         STREAMING.REQUEST_MODEL(3552233440)
         local PED1 = PED.CREATE_PED(28, 3552233440, TargetPPos.x, TargetPPos.y, TargetPPos.z, 0, true, true)--刷出的NPC是 席桑达
         PED.SET_PED_MONEY(PED1,2000) --上限就是2000,不能超过
-        ENTITY.SET_ENTITY_HEALTH(PED1,1,0)--刷出的NPC 席桑达 血量只有 1
+        ENTITY.SET_ENTITY_HEALTH(PED1,1,0,0)--刷出的NPC 席桑达 血量只有 1
         script:sleep(300) --间隔 300 毫秒
     end
 
@@ -3923,7 +3963,7 @@ script.register_looped("schlua-recoveryservice", function(script)
             STREAMING.REQUEST_MODEL(3552233440)
             local netxsdPed = PED.CREATE_PED(28, 3552233440, TargetPPos.x, TargetPPos.y, TargetPPos.z, 0, true, true)--刷出的NPC是 席桑达
             PED.SET_PED_MONEY(netxsdPed,2000) --上限就是2000,不能超过
-            ENTITY.SET_ENTITY_HEALTH(netxsdPed,1,0)--刷出的NPC 席桑达 血量只有 1
+            ENTITY.SET_ENTITY_HEALTH(netxsdPed,1,0,0)--刷出的NPC 席桑达 血量只有 1
             script:sleep(300) --间隔 300 毫秒
 
         else
@@ -4361,7 +4401,7 @@ script.register_looped("schlua-defpservice", function(script)
             local pcrds = ENTITY.GET_ENTITY_COORDS(sppedtarget, false)
             local spped = PED.CREATE_PED(26, 0x705E61F2, pcrds.x, pcrds.y, pcrds.z -1 , 0, true, false)
             WEAPON.GIVE_WEAPON_TO_PED(spped,-270015777,80,true,true)
-            ENTITY.SET_ENTITY_HEALTH(spped,1000,0)
+            ENTITY.SET_ENTITY_HEALTH(spped,1000,0,0)
             MISC.SET_RIOT_MODE_ENABLED(true)
             script:sleep(30)
         else
@@ -4522,7 +4562,7 @@ script.register_looped("schlua-miscservice", function(script)
     end
 
     if  lockhlt:is_enabled() then --锁血
-        ENTITY.SET_ENTITY_HEALTH(PLAYER.PLAYER_PED_ID(), PED.GET_PED_MAX_HEALTH(PLAYER.PLAYER_PED_ID()), 0)
+        ENTITY.SET_ENTITY_HEALTH(PLAYER.PLAYER_PED_ID(), PED.GET_PED_MAX_HEALTH(PLAYER.PLAYER_PED_ID()), 0, 0)
     end
 
     if  disalight:is_enabled() then --控制世界灯光开关
@@ -4916,7 +4956,7 @@ script.register_looped("schlua-miscservice", function(script)
             peds = PED.CREATE_RANDOM_PED(pos.x, pos.y, pos.z)    
             ENTITY.SET_ENTITY_ROTATION(peds, camrot.x, camrot.y, camrot.z, 1, false)    
             ENTITY.APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(peds, 1, 0, 1000, 0, false, true, true, true)
-            ENTITY.SET_ENTITY_HEALTH(peds,1000,0)
+            ENTITY.SET_ENTITY_HEALTH(peds,1000,0,0)
         end
     end
 
@@ -5404,7 +5444,7 @@ script.register_looped("schlua-ectrlservice", function(script)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
             if PED.IS_PED_FACING_PED(peds, PLAYER.PLAYER_PED_ID(), 2) and ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(peds, PLAYER.PLAYER_PED_ID(), 17) and calcDistance(selfpos, ped_pos) <= npcaimprange:get_value()  and PED.GET_PED_CONFIG_FLAG(peds, 78, true) and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
-                ENTITY.SET_ENTITY_HEALTH(peds,0,0)
+                ENTITY.SET_ENTITY_HEALTH(peds,0,0,0)
             end
         end
     end
@@ -5526,7 +5566,7 @@ script.register_looped("schlua-ectrlservice", function(script)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
             if calcDistance(selfpos, ped_pos) <= npcaimprange:get_value()  and PED.GET_PED_CONFIG_FLAG(peds, 78, true) and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
-                ENTITY.SET_ENTITY_HEALTH(peds,0,0)
+                ENTITY.SET_ENTITY_HEALTH(peds,0,0,0)
             end
         end
     end
@@ -5681,7 +5721,7 @@ script.register_looped("schlua-ectrlservice", function(script)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
             if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and foundfrd == false then 
                 request_control(peds)
-                ENTITY.SET_ENTITY_HEALTH(peds,0,0)
+                ENTITY.SET_ENTITY_HEALTH(peds,0,0,0)
             end
         end
     end
@@ -5717,7 +5757,7 @@ script.register_looped("schlua-ectrlservice", function(script)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
             if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
-                ENTITY.SET_ENTITY_HEALTH(peds,0,0)
+                ENTITY.SET_ENTITY_HEALTH(peds,0,0,0)
             end
         end
     end
@@ -5973,7 +6013,7 @@ script.register_looped("schlua-ectrlservice", function(script)
                 WEAPON.GIVE_WEAPON_TO_PED(peds, joaat("WEAPON_CARBINERIFLE_MK2"), 9999, false, true)
                 PED.SET_PED_ACCURACY(peds,100)
                 TASK.TASK_COMBAT_HATED_TARGETS_AROUND_PED(peds, 100, 67108864)
-                ENTITY.SET_ENTITY_HEALTH(peds,1000,0)
+                ENTITY.SET_ENTITY_HEALTH(peds,1000,0,0)
                 PED.RESURRECT_PED(peds)
             end
         end
@@ -6202,6 +6242,8 @@ end)
 --------------------------------------------------------------------------------------- 注册的循环脚本,主要用来实现Lua里面那些复选框的功能
 ---------------------------------------------------------------------------------------存储一些小发现、用不上的东西
 --[[
+
+    heist cut Regular Expression ([\S]+)\[0\][\s]*=[\s]*100;[\n\r\t]*\1\[1\][\s]*=[\s]*0;[\n\r\t]*\1\[2\][\s]*=[\s]*0;[\n\r\t]*\1\[3\][\s]*=[\s]*0;
 
     Global_1574996 = etsParam0;   Global_1574996 战局切换状态 0:TRANSITION_STATE_EMPTY  freemode.c
 
