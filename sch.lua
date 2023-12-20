@@ -2615,19 +2615,19 @@ gentab:add_text("PTFX collection")
 
 local ptfxt1 = gentab:add_checkbox("Thunder and lightning A") --只是一个开关，代码往后面找
 
-gentab:add_button("佩里科栅栏立即切割", function()
+gentab:add_button("Perico fence instant cut", function()
     locals_set_int("fm_mission_controller_2020", 29118, 6) --3095 --https://www.unknowncheats.me/forum/3418914-post13398.html
 end)
 
 gentab:add_sameline()
 
-gentab:add_button("佩里科等离子切割立即完成", function()
+gentab:add_button("Perico instant plasma cutting", function()
     locals_set_float("fm_mission_controller_2020", 30357 + 3, 100) --3095 --https://www.unknowncheats.me/forum/3418914-post13398.html
 end)
 
 gentab:add_sameline()
 
-gentab:add_button("佩里科指纹锁破解", function()
+gentab:add_button("Perico fingerprint bypass", function()
     locals_set_int("fm_mission_controller_2020", 24333, 5) --3095 --https://www.unknowncheats.me/forum/3418914-post13398.html
 end)
 --------------------------------------------------------------------------------------- Players 页面
@@ -3770,27 +3770,27 @@ EntityTab:add_sameline()
 plyaimkarma4 = EntityTab:add_checkbox("Kick out F") --这只是一个复选框,代码往最后的循环脚本部分找
 
 --------------------------------------------------------------------------------------- 可调整项
-TuneablesandStatsTab:add_text("篡改可调整项获取大量金钱可能导致封禁!")
+TuneablesandStatsTab:add_text("Tampering with adjustable items to obtain a lot of money may lead to a ban!")
 
-TuneablesandStatsTab:add_button("联网重载所有可调整项", function()
+TuneablesandStatsTab:add_button("Reload all adjustable items", function()
     NETWORK.NETWORK_REQUEST_CLOUD_TUNABLES()
 end)
-TuneablesandStatsTab:add_text("修改流程: 1.读取 2.修改 3.应用")
+TuneablesandStatsTab:add_text("Modification process: 1.Retrieve 2.Modify 3.Apply")
 
-t_heisttab = TuneablesandStatsTab:add_tab("抢劫任务")
+t_heisttab = TuneablesandStatsTab:add_tab("Robbery mission")
 
-t_heisttab:add_text("佩里科岛抢劫")
-t_heisttab:add_text("主要目标价值")
-perico_value_STATUE = t_heisttab:add_input_int("猎豹雕像")
-perico_value_DIAMOND = t_heisttab:add_input_int("粉钻")
-perico_value_FILES = t_heisttab:add_input_int("马德拉索文件")
-perico_value_BONDS = t_heisttab:add_input_int("不记名债卷")
-perico_value_NECKLACE = t_heisttab:add_input_int("项链")
-perico_value_TEQUILA = t_heisttab:add_input_int("西西米托龙舌兰")
-t_heisttab:add_text("杂项")
-perico_pack_vol = t_heisttab:add_input_int("战利品包容量")
+t_heisttab:add_text("Robbery on Cayo Perico")
+t_heisttab:add_text("Main target value")
+perico_value_STATUE = t_heisttab:add_input_int("Panther statue")
+perico_value_DIAMOND = t_heisttab:add_input_int("Pink diamond")
+perico_value_FILES = t_heisttab:add_input_int("Madraso Files")
+perico_value_BONDS = t_heisttab:add_input_int("Bearer bonds")
+perico_value_NECKLACE = t_heisttab:add_input_int("Necklace")
+perico_value_TEQUILA = t_heisttab:add_input_int("Tequila")
+t_heisttab:add_text("Miscellaneous")
+perico_pack_vol = t_heisttab:add_input_int("Loot Bag Capacity")
 
-t_heisttab:add_button("读取##preicov", function()
+t_heisttab:add_button("Retrieve ##preicov", function()
     perico_value_TEQUILA:set_value(tunables.get_int("IH_PRIMARY_TARGET_VALUE_TEQUILA"))
     perico_value_NECKLACE:set_value(tunables.get_int("IH_PRIMARY_TARGET_VALUE_PEARL_NECKLACE"))
     perico_value_BONDS:set_value(tunables.get_int("IH_PRIMARY_TARGET_VALUE_BEARER_BONDS"))
@@ -3803,45 +3803,45 @@ end)
 
 t_heisttab:add_sameline()
 
-perico_pri_target_val_lock = t_heisttab:add_checkbox("应用##preicov") --这只是一个复选框,代码往最后的循环脚本部分找
+perico_pri_target_val_lock = t_heisttab:add_checkbox("Apply ##preicov") --这只是一个复选框,代码往最后的循环脚本部分找
 
 t_heisttab:add_separator()
-t_heisttab:add_text("事务所数据泄露合约-别惹德瑞")
+t_heisttab:add_text("Firm Data Breach Contract - Don't Mess With DRE")
 
-fixer_final_value = t_heisttab:add_input_int("合约终章奖励")
+fixer_final_value = t_heisttab:add_input_int("Reward for the final chapter")
 
-t_heisttab:add_button("读取##drev", function()
+t_heisttab:add_button("Retrieve ##drev", function()
     fixer_final_value:set_value(tunables.get_int("FIXER_FINALE_LEADER_CASH_REWARD"))
 end)
 
 t_heisttab:add_sameline()
-fixer_final_val_lock = t_heisttab:add_checkbox("应用##drev") --这只是一个复选框,代码往最后的循环脚本部分找
+fixer_final_val_lock = t_heisttab:add_checkbox("Apply ##drev") --这只是一个复选框,代码往最后的循环脚本部分找
 
 t_heisttab:add_separator()
-t_heisttab:add_text("末日抢劫")
+t_heisttab:add_text("Doomsday heist")
 
-h2_d1_awd = t_heisttab:add_input_int("末日1")
-h2_d2_awd = t_heisttab:add_input_int("末日2")
-h2_d3_awd = t_heisttab:add_input_int("末日3")
+h2_d1_awd = t_heisttab:add_input_int("Doomsday 1")
+h2_d2_awd = t_heisttab:add_input_int("Doomsday 2")
+h2_d3_awd = t_heisttab:add_input_int("Doomsday 3")
 
-t_heisttab:add_button("读取##h2v", function()
+t_heisttab:add_button("Retrieve ##h2v", function()
     h2_d1_awd:set_value(tunables.get_int("GANGOPS_THE_IAA_JOB_CASH_REWARD"))
     h2_d2_awd:set_value(tunables.get_int("GANGOPS_THE_SUBMARINE_JOB_CASH_REWARD"))
     h2_d3_awd:set_value(tunables.get_int("GANGOPS_THE_MISSILE_SILO_JOB_CASH_REWARD"))
 end)
 
 t_heisttab:add_sameline()
-h2_awd_lock = t_heisttab:add_checkbox("应用##h2v") --这只是一个复选框,代码往最后的循环脚本部分找
+h2_awd_lock = t_heisttab:add_checkbox("Apply ##h2v") --这只是一个复选框,代码往最后的循环脚本部分找
 
 t_heisttab:add_separator()
-t_heisttab:add_text("名钻赌场抢劫")
+t_heisttab:add_text("Diamonds Casino Heist")
 
-h3_t1_awd = t_heisttab:add_input_int("现金")
-h3_t2_awd = t_heisttab:add_input_int("画作")
-h3_t3_awd = t_heisttab:add_input_int("黄金")
-h3_t4_awd = t_heisttab:add_input_int("钻石")
+h3_t1_awd = t_heisttab:add_input_int("Cash")
+h3_t2_awd = t_heisttab:add_input_int("Painting")
+h3_t3_awd = t_heisttab:add_input_int("Gold")
+h3_t4_awd = t_heisttab:add_input_int("Diamonds")
 
-t_heisttab:add_button("读取##h3v", function()
+t_heisttab:add_button("Retrieve ##h3v", function()
     h3_t1_awd:set_value(tunables.get_int(-1638885821))
     h3_t2_awd:set_value(tunables.get_int(1934398910))
     h3_t3_awd:set_value(tunables.get_int(-582734553))
@@ -3849,55 +3849,55 @@ t_heisttab:add_button("读取##h3v", function()
 end)
 
 t_heisttab:add_sameline()
-h3_awd_lock = t_heisttab:add_checkbox("应用##h3v") --这只是一个复选框,代码往最后的循环脚本部分找
+h3_awd_lock = t_heisttab:add_checkbox("Apply ##h3v") --这只是一个复选框,代码往最后的循环脚本部分找
 
-odatatab = TuneablesandStatsTab:add_tab("时间和金钱")
+odatatab = TuneablesandStatsTab:add_tab("Time & Money")
 
-odatatab:add_text("当数值大于2147483647时无法正常读取，但仍能写入.")
-odatatab:add_text("此lua不能将被修改的数据恢复默认,修改前自行拍照记录")
+odatatab:add_text("When the value is greater than 2147483647, it cannot be read normally, but it can still be written.")
+odatatab:add_text("This lua can't restore the modified data to the default, take a picture of it before modifying it.")
 
-odatatab:add_text("修改统计数据存在风险,操作之前确认自己在做什么")
+odatatab:add_text("Modifying stats is risky, so make sure you know what you're doing.")
 
 local statstable1 = {
-    [1]  = {statstring = "MP_PLAYING_TIME", friendlyname = "在线模式游戏时间(ms)", p1 = mp_mo_ply_time_val, p2 = mp_mo_ply_time},
-    [2]  = {statstring = "MP_FIRST_PERSON_CAM_TIME", friendlyname = "第一人称游戏时间(ms)", p1 = mp_mo_ply_firstcam_time_val, p2 = mp_mo_ply_firstcam_time},
-    [3]  = {statstring = "MP0_TOTAL_PLAYING_TIME", friendlyname = "角色1第三人称游戏时间(ms)", p1 = mp_mo_ply1_thirdcam_time_val, p2 = mp_mo_ply1_thirdcam_time},
-    [4]  = {statstring = "MP1_TOTAL_PLAYING_TIME", friendlyname = "角色2第三人称游戏时间(ms)", p1 = mp_mo_ply2_thirdcam_time_val, p2 = mp_mo_ply2_thirdcam_time},
+    [1]  = {statstring = "MP_PLAYING_TIME", friendlyname = "Online mode playtime (ms)", p1 = mp_mo_ply_time_val, p2 = mp_mo_ply_time},
+    [2]  = {statstring = "MP_FIRST_PERSON_CAM_TIME", friendlyname = "First-person playtime (ms)", p1 = mp_mo_ply_firstcam_time_val, p2 = mp_mo_ply_firstcam_time},
+    [3]  = {statstring = "MP0_TOTAL_PLAYING_TIME", friendlyname = "Character 1 Third Person playtime(ms)", p1 = mp_mo_ply1_thirdcam_time_val, p2 = mp_mo_ply1_thirdcam_time},
+    [4]  = {statstring = "MP1_TOTAL_PLAYING_TIME", friendlyname = "Character 2 Third Person playtime(ms)", p1 = mp_mo_ply2_thirdcam_time_val, p2 = mp_mo_ply2_thirdcam_time},
 
-    [5]  = {statstring = "MPPLY_TOTAL_EVC", friendlyname = "总收入$", p1 = mp_mo_total_earn_val, p2 = mp_mo_total_earn},
-    [6]  = {statstring = "MPPLY_TOTAL_SVC", friendlyname = "总支出$", p1 = mp_mo_total_sp_val, p2 = mp_mo_total_sp},
+    [5]  = {statstring = "MPPLY_TOTAL_EVC", friendlyname = "Total income $", p1 = mp_mo_total_earn_val, p2 = mp_mo_total_earn},
+    [6]  = {statstring = "MPPLY_TOTAL_SVC", friendlyname = "Total expenses $", p1 = mp_mo_total_sp_val, p2 = mp_mo_total_sp},
 
-    [7]  = {statstring = "MP0_MONEY_EARN_JOBS", friendlyname = "角色1差事收入$", p1 = mp_mo_job_ply1_val, p2 = mp_mo_job_ply1},
-    [8]  = {statstring = "MP1_MONEY_EARN_JOBS", friendlyname = "角色2差事收入$", p1 = mp_mo_job_ply2_val, p2 = mp_mo_job_ply2},
-    [9]  = {statstring = "MP0_MONEY_EARN_BETTING", friendlyname = "角色1赌博收入$", p1 = mp_mo_bt_ply1_val, p2 = mp_mo_bt_ply1},
-    [10]  = {statstring = "MP1_MONEY_EARN_BETTING", friendlyname = "角色2赌博收入$", p1 = mp_mo_bt_ply2_val, p2 = mp_mo_bt_ply2},
-    [11]  = {statstring = "MP0_MONEY_EARN_SELLING_VEH", friendlyname = "角色1卖车收入$", p1 = mp_mo_sv_ply1_val, p2 = mp_mo_sv_ply1},
-    [12]  = {statstring = "MP1_MONEY_EARN_SELLING_VEH", friendlyname = "角色2卖车收入$", p1 = mp_mo_sv_ply2_val, p2 = mp_mo_sv_ply2},
-    [13]  = {statstring = "MP0_MONEY_EARN_GOOD_SPORT", friendlyname = "角色1良民收入$", p1 = mp_mo_gs_ply1_val, p2 = mp_mo_gs_ply1},
-    [14]  = {statstring = "MP1_MONEY_EARN_GOOD_SPORT", friendlyname = "角色2良民收入$", p1 = mp_mo_gs_ply2_val, p2 = mp_mo_gs_ply2},
-    [15]  = {statstring = "MP0_MONEY_EARN_PICKED_UP", friendlyname = "角色1拾取收入$", p1 = mp_mo_pu_ply1_val, p2 = mp_mo_pu_ply1},
-    [16]  = {statstring = "MP1_MONEY_EARN_PICKED_UP", friendlyname = "角色2拾取收入$", p1 = mp_mo_pu_ply2_val, p2 = mp_mo_pu_ply2},
+    [7]  = {statstring = "MP0_MONEY_EARN_JOBS", friendlyname = "Character 1 income $", p1 = mp_mo_job_ply1_val, p2 = mp_mo_job_ply1},
+    [8]  = {statstring = "MP1_MONEY_EARN_JOBS", friendlyname = "Character 2 income $", p1 = mp_mo_job_ply2_val, p2 = mp_mo_job_ply2},
+    [9]  = {statstring = "MP0_MONEY_EARN_BETTING", friendlyname = "Character 1 gambling income $", p1 = mp_mo_bt_ply1_val, p2 = mp_mo_bt_ply1},
+    [10]  = {statstring = "MP1_MONEY_EARN_BETTING", friendlyname = "Character 2 gambling income$", p1 = mp_mo_bt_ply2_val, p2 = mp_mo_bt_ply2},
+    [11]  = {statstring = "MP0_MONEY_EARN_SELLING_VEH", friendlyname = "Character 1 car sales income $", p1 = mp_mo_sv_ply1_val, p2 = mp_mo_sv_ply1},
+    [12]  = {statstring = "MP1_MONEY_EARN_SELLING_VEH", friendlyname = "Character 2 car sales income $", p1 = mp_mo_sv_ply2_val, p2 = mp_mo_sv_ply2},
+    [13]  = {statstring = "MP0_MONEY_EARN_GOOD_SPORT", friendlyname = "Character 1 good sport income $", p1 = mp_mo_gs_ply1_val, p2 = mp_mo_gs_ply1},
+    [14]  = {statstring = "MP1_MONEY_EARN_GOOD_SPORT", friendlyname = "Character 2 good sport income $", p1 = mp_mo_gs_ply2_val, p2 = mp_mo_gs_ply2},
+    [15]  = {statstring = "MP0_MONEY_EARN_PICKED_UP", friendlyname = "Character 1 picked up income $", p1 = mp_mo_pu_ply1_val, p2 = mp_mo_pu_ply1},
+    [16]  = {statstring = "MP1_MONEY_EARN_PICKED_UP", friendlyname = "Character 2 picked up income $", p1 = mp_mo_pu_ply2_val, p2 = mp_mo_pu_ply2},
 
-    [17]  = {statstring = "MP0_MONEY_SPENT_WEAPON_ARMOR", friendlyname = "角色1武器护甲支出$", p1 = mp_mo_wa_ply1_val, p2 = mp_mo_wa_ply1},
-    [18]  = {statstring = "MP1_MONEY_SPENT_WEAPON_ARMOR", friendlyname = "角色2武器护甲支出$", p1 = mp_mo_wa_ply2_val, p2 = mp_mo_wa_ply2},
-    [19]  = {statstring = "MP0_MONEY_SPENT_VEH_MAINTENANCE", friendlyname = "角色1载具支出$", p1 = mp_mo_veh_ply1_val, p2 = mp_mo_veh_ply1},
-    [20]  = {statstring = "MP1_MONEY_SPENT_VEH_MAINTENANCE", friendlyname = "角色2载具支出$", p1 = mp_mo_veh_ply2_val, p2 = mp_mo_veh_ply2},
-    [21]  = {statstring = "MP0_MONEY_SPENT_STYLE_ENT", friendlyname = "角色1风格娱乐支出$", p1 = mp_mo_st_ply1_val, p2 = mp_mo_st_ply1},
-    [22]  = {statstring = "MP1_MONEY_SPENT_STYLE_ENT", friendlyname = "角色2风格娱乐支出$", p1 = mp_mo_st_ply2_val, p2 = mp_mo_st_ply2},
-    [23]  = {statstring = "MP0_MONEY_SPENT_PROPERTY_UTIL", friendlyname = "角色1资产支出$", p1 = mp_mo_pr_ply1_val, p2 = mp_mo_pr_ply1},
-    [24]  = {statstring = "MP1_MONEY_SPENT_PROPERTY_UTIL", friendlyname = "角色2资产支出$", p1 = mp_mo_pr_ply2_val, p2 = mp_mo_pr_ply2},
-    [25]  = {statstring = "MP0_MONEY_SPENT_JOB_ACTIVITY", friendlyname = "角色1差事支出$", p1 = mp_mo_pre_ply1_val, p2 = mp_mo_pre_ply1},
-    [26]  = {statstring = "MP1_MONEY_SPENT_JOB_ACTIVITY", friendlyname = "角色2差事支出$", p1 = mp_mo_pre_ply2_val, p2 = mp_mo_pre_ply2},
-    [27]  = {statstring = "MP0_MONEY_SPENT_CONTACT_SERVICE", friendlyname = "角色1联系人支出$", p1 = mp_mo_ct_ply1_val, p2 = mp_mo_ct_ply1},
-    [28]  = {statstring = "MP1_MONEY_SPENT_CONTACT_SERVICE", friendlyname = "角色2联系人支出$", p1 = mp_mo_ct_ply2_val, p2 = mp_mo_ct_ply2},
-    [29]  = {statstring = "MP0_MONEY_SPENT_HEALTHCARE", friendlyname = "角色1医疗支出$", p1 = mp_mo_hc_ply1_val, p2 = mp_mo_hc_ply1},
-    [30]  = {statstring = "MP1_MONEY_SPENT_HEALTHCARE", friendlyname = "角色2医疗支出$", p1 = mp_mo_hc_ply2_val, p2 = mp_mo_hc_ply2},
-    [31]  = {statstring = "MP0_MONEY_SPENT_DROPPED_STOLEN", friendlyname = "角色1丢失被盗支出$", p1 = mp_mo_lt_ply1_val, p2 = mp_mo_lt_ply1},
-    [32]  = {statstring = "MP1_MONEY_SPENT_DROPPED_STOLEN", friendlyname = "角色2丢失被盗支出$", p1 = mp_mo_lt_ply2_val, p2 = mp_mo_lt_ply2},
+    [17]  = {statstring = "MP0_MONEY_SPENT_WEAPON_ARMOR", friendlyname = "Character 1 weapon armor expenses $", p1 = mp_mo_wa_ply1_val, p2 = mp_mo_wa_ply1},
+    [18]  = {statstring = "MP1_MONEY_SPENT_WEAPON_ARMOR", friendlyname = "Character 2 weapon armor expenses $", p1 = mp_mo_wa_ply2_val, p2 = mp_mo_wa_ply2},
+    [19]  = {statstring = "MP0_MONEY_SPENT_VEH_MAINTENANCE", friendlyname = "Character 1 vehicle expenses $", p1 = mp_mo_veh_ply1_val, p2 = mp_mo_veh_ply1},
+    [20]  = {statstring = "MP1_MONEY_SPENT_VEH_MAINTENANCE", friendlyname = "Character 2 vehicle expenses $", p1 = mp_mo_veh_ply2_val, p2 = mp_mo_veh_ply2},
+    [21]  = {statstring = "MP0_MONEY_SPENT_STYLE_ENT", friendlyname = "Character 1 style entertainment expenses $", p1 = mp_mo_st_ply1_val, p2 = mp_mo_st_ply1},
+    [22]  = {statstring = "MP1_MONEY_SPENT_STYLE_ENT", friendlyname = "Character 2 style entertainment expenses $", p1 = mp_mo_st_ply2_val, p2 = mp_mo_st_ply2},
+    [23]  = {statstring = "MP0_MONEY_SPENT_PROPERTY_UTIL", friendlyname = "Character 1 property expenses $", p1 = mp_mo_pr_ply1_val, p2 = mp_mo_pr_ply1},
+    [24]  = {statstring = "MP1_MONEY_SPENT_PROPERTY_UTIL", friendlyname = "Character 2 property expenses $", p1 = mp_mo_pr_ply2_val, p2 = mp_mo_pr_ply2},
+    [25]  = {statstring = "MP0_MONEY_SPENT_JOB_ACTIVITY", friendlyname = "Character 1 job activity expenses $", p1 = mp_mo_pre_ply1_val, p2 = mp_mo_pre_ply1},
+    [26]  = {statstring = "MP1_MONEY_SPENT_JOB_ACTIVITY", friendlyname = "Character 2 job activity expenses $", p1 = mp_mo_pre_ply2_val, p2 = mp_mo_pre_ply2},
+    [27]  = {statstring = "MP0_MONEY_SPENT_CONTACT_SERVICE", friendlyname = "Character 1 contact expenses $", p1 = mp_mo_ct_ply1_val, p2 = mp_mo_ct_ply1},
+    [28]  = {statstring = "MP1_MONEY_SPENT_CONTACT_SERVICE", friendlyname = "Character 2 contact expenses $", p1 = mp_mo_ct_ply2_val, p2 = mp_mo_ct_ply2},
+    [29]  = {statstring = "MP0_MONEY_SPENT_HEALTHCARE", friendlyname = "Character 1 medical expenses $", p1 = mp_mo_hc_ply1_val, p2 = mp_mo_hc_ply1},
+    [30]  = {statstring = "MP1_MONEY_SPENT_HEALTHCARE", friendlyname = "Character 2 medical expenses $", p1 = mp_mo_hc_ply2_val, p2 = mp_mo_hc_ply2},
+    [31]  = {statstring = "MP0_MONEY_SPENT_DROPPED_STOLEN", friendlyname = "Character 1 dropped expenses $", p1 = mp_mo_lt_ply1_val, p2 = mp_mo_lt_ply1},
+    [32]  = {statstring = "MP1_MONEY_SPENT_DROPPED_STOLEN", friendlyname = "Character 2 dropped expenses $", p1 = mp_mo_lt_ply2_val, p2 = mp_mo_lt_ply2},
 
 }
 
-odatatab:add_button("我同意", function()
+odatatab:add_button("I agree", function()
     if islistwed == 1 then
         return
     end
@@ -3905,11 +3905,11 @@ odatatab:add_button("我同意", function()
     for i = 1, 32 do
         statstable1[i].p1 = odatatab:add_input_string(statstable1[i].friendlyname)
         odatatab:add_sameline()
-        odatatab:add_button(tostring("读取##"..i), function()
+        odatatab:add_button(tostring("Retrieve ##"..i), function()
             statstable1[i].p1:set_value(tostring(stats.get_int(statstable1[i].statstring)))
         end)
         odatatab:add_sameline()
-        odatatab:add_button(tostring("应用##"..i), function()
+        odatatab:add_button(tostring("Apply ##"..i), function()
             statstable1[i].p2 = tonumber(statstable1[i].p1:get_value())
             if statstable1[i].p2 > 2147483647 then
                 local inc_time = string.format("%.0f",  statstable1[i].p2 / 2147483647)
@@ -4023,7 +4023,7 @@ script.register_looped("schlua-tuneables-lock", function(script)
 
     if  fixer_final_val_lock:is_enabled() then
         if fixer_final_value:get_value() > 2000000 or fixer_final_value:get_value() <= 0 then
-            gui.show_message("错误","终章收入不得超过2000000且必须大于0")
+            gui.show_message("Error", "Final chapter income may not exceed 2.000.000 and must be greater than 0")
             fixer_final_val_lock:set_enabled(false)
            return
        end
@@ -4032,7 +4032,7 @@ script.register_looped("schlua-tuneables-lock", function(script)
 
     if  h2_awd_lock:is_enabled() then
         if h2_d1_awd:get_value() > 2500000 or h2_d1_awd:get_value() <= 0 or h2_d2_awd:get_value() > 2500000 or h2_d2_awd:get_value() <= 0 or h2_d3_awd:get_value() > 2500000 or h2_d3_awd:get_value() <= 0 then
-            gui.show_message("错误","终章收入不得超过2500000且必须大于0")
+            gui.show_message("Error", "Final chapter income may not exceed 2.500.000 and must be greater than 0")
             h2_awd_lock:set_enabled(false)
            return
        end
