@@ -908,7 +908,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Skip Casino heist prep (Gold))", function()
+gentab:add_button("Skip Casino heist prep (Gold)", function()
     stats.set_int("MPX_H3OPT_APPROACH", 2)--https://beholdmystuff.github.io/perico-stattext-maker/ 生成的stat们
     stats.set_int("MPX_H3_LAST_APPROACH", 3)
     stats.set_int("MPX_H3OPT_TARGET", 1) --主目标: 黄金
