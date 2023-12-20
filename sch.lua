@@ -5005,7 +5005,7 @@ script.register_looped("schlua-miscservice", function(script)
     else
         if loopa15 == 1 then
             if not PED.IS_PED_IN_ANY_VEHICLE(PLAYER.GET_PLAYER_PED(network.get_selected_player()),true) then
-                gui.show_error("Warning","The player is not in the vehicle)
+                gui.show_error("Warning","The player is not in the vehicle")
                 vehnoclr:set_enabled(false)
                 loopa15 = 0
             else
