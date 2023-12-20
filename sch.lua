@@ -3777,9 +3777,9 @@ TuneablesandStatsTab:add_button("Reload all adjustable items", function()
 end)
 TuneablesandStatsTab:add_text("Modification process: 1.Retrieve 2.Modify 3.Apply")
 
-t_heisttab = TuneablesandStatsTab:add_tab("Robbery mission")
+t_heisttab = TuneablesandStatsTab:add_tab("Heists")
 
-t_heisttab:add_text("Robbery on Cayo Perico")
+t_heisttab:add_text("Cayo Perico")
 t_heisttab:add_text("Main target value")
 perico_value_STATUE = t_heisttab:add_input_int("Panther statue")
 perico_value_DIAMOND = t_heisttab:add_input_int("Pink diamond")
