@@ -4460,7 +4460,7 @@ script.register_looped("schlua-dataservice", function(script)
     if  bussp:is_enabled() then--锁定地堡摩托帮致幻剂生产速度
         local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID  --用于判断当前是角色1还是角色2
         if loopa32 == 0 then
-            gui.show_message("Next time the production is triggered to take effect","Change session immediately?"")
+            gui.show_message("Next time the production is triggered to take effect","Change session immediately?")
         end
         if tunables.get_int("BIKER_WEED_PRODUCTION_TIME") ~= 5000 then
             tunables.set_int("BIKER_WEED_PRODUCTION_TIME", 5000)
