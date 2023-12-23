@@ -1,4 +1,4 @@
--- v3.05 --
+-- v3.06 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.05"
+luaversion = "v3.06"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -67,6 +67,8 @@ islistwed = 0 --是否已展开时间和金钱stats表单
 
 gentab = gui.add_tab("sch-lua-Alpha-"..luaversion)
 TuneablesandStatsTab = gentab:add_tab("Adjustables and stats")
+tpmenu = gentab:add_tab("Special Teleportation Point Menu")
+
 LuaTablesTab = gentab:add_tab("++Table")
 
 EntityTab = LuaTablesTab:add_tab("+Game entity list")
@@ -720,12 +722,12 @@ gentab:add_sameline()
 gentab:add_button("montable reset", function()
     prevValues = {}
 end)
-]]
+
 
 gentab:add_button("test02", function()
     STATS.STAT_INCREMENT(joaat("MPPLY_TOTAL_EVC"), 2147483647)
 end)
-
+]]
 --------------------------------------------------------------------------------------- TEST
 
 FRDList = {   --友方NPC白名单
@@ -3302,7 +3304,13 @@ gui.add_tab(""):add_button("Squeeze down", function()
     end)
 end)
 
-local plydist = gui.get_tab(""):add_input_float("Distance (m)")
+followply_n = gui.add_tab(""):add_checkbox("Follow the player (regular)")
+gui.get_tab(""):add_sameline()
+followply_a = gui.add_tab(""):add_checkbox("Follow the Player (aggressive)")
+
+gui.get_tab(""):add_sameline()
+
+plydist = gui.get_tab(""):add_input_float("Distance (m)")
 
 gentab:add_separator()
 gentab:add_text("Global options") 
@@ -3805,6 +3813,20 @@ t_heisttab:add_sameline()
 
 perico_pri_target_val_lock = t_heisttab:add_checkbox("Apply ##preicov") --这只是一个复选框,代码往最后的循环脚本部分找
 
+t_ottab = TuneablesandStatsTab:add_tab("Miscellaneous")
+bk_rs_t1 = t_ottab:add_input_int("Bunker research takes time 1")
+bk_rs_t2 = t_ottab:add_input_int("Bunker research takes time 2")
+bk_rs_t3 = t_ottab:add_input_int("Bunker research takes time 3")
+t_ottab:add_button("Retrieve ##miscv", function()
+    bk_rs_t1:set_value(tunables.get_int("GR_RESEARCH_PRODUCTION_TIME"))
+    bk_rs_t2:set_value(tunables.get_int("GR_RESEARCH_UPGRADE_EQUIPMENT_REDUCTION_TIME"))
+    bk_rs_t3:set_value(tunables.get_int("GR_RESEARCH_UPGRADE_STAFF_REDUCTION_TIME"))
+end)
+
+t_ottab:add_sameline()
+
+misc_tu_lock = t_ottab:add_checkbox("Apply ##miscv") --这只是一个复选框,代码往最后的循环脚本部分找
+
 t_heisttab:add_separator()
 t_heisttab:add_text("Firm Data Breach Contract - Don't Mess With DRE")
 
@@ -3927,6 +3949,58 @@ odatatab:add_button("I agree", function()
         end)
     end
 end)
+
+--------------------------------------------------------------------------------------- 传送点tab
+
+tpmenu:add_text("Teleport page")
+
+local v3snowmen = {
+	{ -374.0548, 6230.472, 30.4462 },
+	{ 1558.484, 6449.396, 22.8348 },
+	{ 3314.504, 5165.038, 17.386 },
+	{ 1709.097, 4680.172, 41.919 },
+	{ -1414.734, 5101.661, 59.248 },
+	{ 1988.997, 3830.344, 31.376 },
+	{ 234.725, 3103.582, 41.434 },
+	{ 2357.556, 2526.069, 45.5 },
+	{ 1515.591, 1721.268, 109.26 },
+	{ -45.725, 1963.218, 188.93 },
+	{ -1517.221, 2140.711, 54.936 },
+	{ -2830.558, 1420.358, 99.885 },
+	{ -2974.729, 713.9555, 27.3101 },
+	{ -1938.257, 589.845, 118.757 },
+	{ -456.1271, 1126.606, 324.7816 },
+	{ -820.763, 165.984, 70.254 },
+	{ 218.7153, -104.1239, 68.7078 },
+	{ 902.2285, -285.8174, 64.6523 },
+	{ -777.0854, 880.5856, 202.3774 },
+	{ 1270.095, -645.7452, 66.9289 },
+	{ 180.9037, -904.4719, 29.6439 },
+	{ -958.819, -780.149, 16.819 },
+	{ -1105.382, -1398.65, 4.1505 },
+	{ -252.2187, -1561.523, 30.8514 },
+	{ 1340.639, -1585.771, 53.218 }
+}
+
+tpmenu:add_button("Snowman Teleportation Point", function()
+    for i = 1, 25 do
+        tpmenu:add_button(tostring("Snowman"..i), function()
+            script.run_in_fiber(function (snmbm)
+
+            local pos = v3snowmen[i]
+            if pos then
+                local x, y, z = pos[1], pos[2], pos[3]
+                PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), x+5, y, z)
+                snmbm:sleep(2000)
+                MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(x, y, z, x+1, y+1, z+1, 100, true, 1752584910, PLAYER.PLAYER_PED_ID(), true, true, 0.1)
+            end
+            end)
+        end)
+        if i % 5 ~= 0 then
+            tpmenu:add_sameline()
+        end
+    end
+end)
 --------------------------------------------------------------------------------------- 注册的循环脚本,主要用来实现Lua里面那些复选框的功能
 --存放一些变量，阻止无限循环，间接实现 checkbox 的 on_enable() 和 on_disable()
 
@@ -4019,6 +4093,12 @@ script.register_looped("schlua-tuneables-lock", function(script)
         tunables.set_int("IH_PRIMARY_TARGET_VALUE_MADRAZO_FILES", perico_value_FILES:get_value())
         tunables.set_int("IH_PRIMARY_TARGET_VALUE_SAPPHIRE_PANTHER_STATUE", perico_value_STATUE:get_value())
         tunables.set_int(1859395035, perico_pack_vol:get_value())
+    end
+
+    if  misc_tu_lock:is_enabled() then
+        tunables.set_int("GR_RESEARCH_PRODUCTION_TIME", bk_rs_t1:get_value())
+        tunables.set_int("GR_RESEARCH_UPGRADE_EQUIPMENT_REDUCTION_TIME", bk_rs_t2:get_value())
+        tunables.set_int("GR_RESEARCH_UPGRADE_STAFF_REDUCTION_TIME", bk_rs_t3:get_value())
     end
 
     if  fixer_final_val_lock:is_enabled() then
@@ -4825,6 +4905,11 @@ script.register_looped("schlua-defpservice", function(script)
 end)
 
 script.register_looped("schlua-miscservice", function(script) 
+    if  followply_a:is_enabled() then
+        local targpos = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
+        PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), targpos.x, targpos.y, targpos.z + 1)
+    end
+
     if  checkfootaudio:is_enabled() then --控制自己是否产生脚步声
         AUDIO.SET_PED_FOOTSTEPS_EVENTS_ENABLED(PLAYER.PLAYER_PED_ID(),false)
         if loopa1 == 0 then --这段代码只会在开启开关时执行一次，而不是循环
@@ -6536,6 +6621,9 @@ script.register_looped("schlua-calcservice", function(script)
         local pos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), false)
         local targpos = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(network.get_selected_player()), false)
         distance = calcDistance(pos,targpos)
+        if distance > 5 and followply_n:is_enabled(true) then 
+            PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), targpos.x, targpos.y, targpos.z + 1)
+        end
         formattedDistance = string.format("%.3f", distance)
         plydist:set_value(tonumber(formattedDistance))
     end
