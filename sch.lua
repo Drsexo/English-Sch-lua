@@ -1,4 +1,4 @@
--- v3.06 --
+-- v3.09 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.06"
+luaversion = "v3.09"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -57,13 +57,22 @@ end
 is_money = 0
 is_GK = 0
 is_collection1 = 0
-verchka1 = 0 
-verchkok = 2 --版本检查状态 0:不支持 1:支持 2:未检查
+verchkok = 0 --版本检查状态 0:不支持 1:支持
 suppver = "1.68" --支持的游戏版本
 autoresply = 0
 devmode = 0 --0:禁用某些调试功能 1:启用某些调试功能
 devmode2 = 0 --0:禁用某些调试功能 1:启用某些调试功能
+devmode3 = 0 --0:禁用某些调试功能 1:启用某些调试功能
 islistwed = 0 --是否已展开时间和金钱stats表单
+
+gtaoversion = memory.scan_pattern("8B C3 33 D2 C6 44 24 20"):add(0x24):rip()
+if gtaoversion:get_string() ~= "3095" then
+    verchkok = 0
+    log.warning("sch-lua脚本不支持您的游戏版本,为避免损坏存档,涉及数据修改的功能将自动停用!")
+else
+    log.info("sch-lua已适配您的当前游戏版本.")
+    verchkok = 1
+end
 
 gentab = gui.add_tab("sch-lua-Alpha-"..luaversion)
 TuneablesandStatsTab = gentab:add_tab("Adjustables and stats")
@@ -124,14 +133,6 @@ end)
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
 
 function globals_set_int(intglobal, intval) --当游戏版本不受支持时拒绝修改globals避免损坏线上存档
-    if verchkok == 2 then
-        log.info("正在检查sch-lua是否支持当前游戏版本")
-        if NETWORK.GET_ONLINE_VERSION() == suppver then
-            verchka1 = 100
-            verchkok = 1
-            log.info("通过检测")
-        end
-    end
     if verchkok == 1 then
         globals.set_int(intglobal, intval)
     else
@@ -140,14 +141,6 @@ function globals_set_int(intglobal, intval) --当游戏版本不受支持时拒�
 end
 
 function globals_set_float(floatglobal, floatval) --当游戏版本不受支持时拒绝修改globals避免损坏线上存档
-    if verchkok == 2 then
-        log.info("正在检查sch-lua是否支持当前游戏版本")
-        if NETWORK.GET_ONLINE_VERSION() == suppver then
-            verchka1 = 100
-            verchkok = 1
-            log.info("通过检测")
-        end
-    end
     if verchkok == 1 then
         globals.set_float(floatglobal, floatval)
     else
@@ -156,14 +149,6 @@ function globals_set_float(floatglobal, floatval) --当游戏版本不受支持�
 end
 
 function locals_set_int(scriptname, intlocal, intlocalval) --当游戏版本不受支持时拒绝修改locals避免损坏线上存档
-    if verchkok == 2 then
-        log.info("正在检查sch-lua是否支持当前游戏版本")
-        if NETWORK.GET_ONLINE_VERSION() == suppver then
-            verchka1 = 100
-            verchkok = 1
-            log.info("通过检测")
-        end
-    end
     if verchkok == 1 then
         locals.set_int(scriptname, intlocal, intlocalval)
     else
@@ -172,14 +157,6 @@ function locals_set_int(scriptname, intlocal, intlocalval) --当游戏版本不�
 end
 
 function locals_set_float(scriptname, flocal, flocalval) --当游戏版本不受支持时拒绝修改locals避免损坏线上存档
-    if verchkok == 2 then
-        log.info("正在检查sch-lua是否支持当前游戏版本")
-        if NETWORK.GET_ONLINE_VERSION() == suppver then
-            verchka1 = 100
-            verchkok = 1
-            log.info("通过检测")
-        end
-    end
     if verchkok == 1 then
         locals.set_float(scriptname, flocal, flocalval)
     else
@@ -188,14 +165,6 @@ function locals_set_float(scriptname, flocal, flocalval) --当游戏版本不受
 end
 
 function packed_stat_set_bool(boolindex, boolval) --当游戏版本不受支持时拒绝修改globals避免损坏线上存档
-    if verchkok == 2 then
-        log.info("正在检查sch-lua是否支持当前游戏版本")
-        if NETWORK.GET_ONLINE_VERSION() == suppver then
-            verchka1 = 100
-            verchkok = 1
-            log.info("通过检测")
-        end
-    end
     if verchkok == 1 then
         stats.set_packed_stat_bool(boolindex, boolval)
     else
@@ -305,10 +274,10 @@ function CreateVehicle(Hash, Pos, Heading, Invincible)
 end
 
 function MCprintspl()
-    log.info("假钞 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY0").."%")
-    log.info("可卡因 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY1").."%")
+    log.info("可卡因 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY0").."%")
+    log.info("大麻 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY1").."%")
     log.info("冰毒 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY2").."%")
-    log.info("大麻 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY3").."%")
+    log.info("假钞 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY3").."%")
     log.info("假证 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY4").."%")
     log.info("地堡 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY5").."%")
     log.info("致幻剂 原材料库存: "..stats.get_int("MPX_MATTOTALFORFACTORY6").."%")
@@ -641,9 +610,15 @@ function Is_Player_Aimming_Me()
     return false
 end
 
+function Is_NPC_H(peds)
+   if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 3 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) then
+        return true
+    else
+        return false
+    end
+end
+
 --------------------------------------------------------------------------------------- functions 供lua调用的用于实现特定功能的函数
-
-
 --------------------------------------------------------------------------------------- TEST
 --[[
 gentab:add_button("test01", function()
@@ -725,7 +700,8 @@ end)
 
 
 gentab:add_button("test02", function()
-    STATS.STAT_INCREMENT(joaat("MPPLY_TOTAL_EVC"), 2147483647)
+    local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
+    log.info(tostring(selfpos.x))
 end)
 ]]
 --------------------------------------------------------------------------------------- TEST
@@ -771,6 +747,7 @@ joaat("A_C_Chop_02"),
 --------------------------------------------------------------------------------------- Lua管理器页面
 
 gentab:add_text("Minimum resolution required: 1920x1080. To use the player function, select a player in the yim player list and scroll to the bottom of the player page. Players aiming to counterattack from the sub-menu Entity Table Access") 
+gentab:add_text("Data modification functions will be migrated to the 'Adjustables and Statistics' submenu") 
 
 gentab:add_text("Task function") 
 
@@ -1254,75 +1231,75 @@ gentab:add_text("Vehicle control")
 
 gentab:add_sameline()
 
-local vehengdmg = gentab:add_checkbox("Burn") --只是一个开关，代码往后面找
+local vehengdmg = gentab:add_checkbox("Burn ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehfixr = gentab:add_checkbox("Repair") --只是一个开关，代码往后面找
+local vehfixr = gentab:add_checkbox("Repair ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehstopr = gentab:add_checkbox("Stop") --只是一个开关，代码往后面找
+local vehstopr = gentab:add_checkbox("Stop ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehjmpr = gentab:add_checkbox("Jump") --只是一个开关，代码往后面找
+local vehjmpr = gentab:add_checkbox("Jump ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehdoorlk4p = gentab:add_checkbox("Lock the door for all players") --只是一个开关，代码往后面找
+local vehdoorlk4p = gentab:add_checkbox("Lock the door for all players ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehbr = gentab:add_checkbox("Chaos") --只是一个开关，代码往后面找
+local vehbr = gentab:add_checkbox("Chaos ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehsp1 = gentab:add_checkbox("Rotate") --只是一个开关，代码往后面找
+local vehsp1 = gentab:add_checkbox("Rotate ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehrm = gentab:add_checkbox("Delete V") --只是一个开关，代码往后面找
+local vehrm = gentab:add_checkbox("Delete V ##vehctl0") --只是一个开关，代码往后面找
 
 gentab:add_text("Hostile NPC vehicle control") 
 
 gentab:add_sameline()
 
-local vehengdmg2 = gentab:add_checkbox("Burn 2") --只是一个开关，代码往后面找
+local vehengdmg2 = gentab:add_checkbox("Burn 2 ##vehctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehstopr2 = gentab:add_checkbox("Stop 2") --只是一个开关，代码往后面找
+local vehstopr2 = gentab:add_checkbox("Stop 2 ##vehctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local vehrm2 = gentab:add_checkbox("Delete 2") --只是一个开关，代码往后面找
+local vehrm2 = gentab:add_checkbox("Delete 2 ##vehctl1") --只是一个开关，代码往后面找
 
 gentab:add_text("NPC control") 
 
 gentab:add_sameline()
 
-local reactany = gentab:add_checkbox("Interrupt A") --只是一个开关，代码往后面找
+local reactany = gentab:add_checkbox("Interrupt A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react1any = gentab:add_checkbox("Fall A") --只是一个开关，代码往后面找
+local react1any = gentab:add_checkbox("Fall A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react2any = gentab:add_checkbox("Kill a") --只是一个开关，代码往后面找
+local react2any = gentab:add_checkbox("Kill A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react3any = gentab:add_checkbox("Burn A") --只是一个开关，代码往后面找
+local react3any = gentab:add_checkbox("Burn A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react4any = gentab:add_checkbox("Take off A") --只是一个开关，代码往后面找
+local react4any = gentab:add_checkbox("Take off A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-gentab:add_button("Bodyguard", function()
+gentab:add_button("Bodyguard ##npcctl0", function()
     local pedtable = entities.get_all_peds_as_handles()
     for _, peds in pairs(pedtable) do
         local foundfrd = false
@@ -1345,7 +1322,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Heal A", function()
+gentab:add_button("Heal A ##npcctl0", function()
     local pedtable = entities.get_all_peds_as_handles()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
@@ -1359,23 +1336,23 @@ end)
 
 gentab:add_sameline()
 
-local revitalizationped = gentab:add_checkbox("Resurrection (unstable)") --只是一个开关，代码往后面找
+local revitalizationped = gentab:add_checkbox("Resurrection (unstable) ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local rmdied = gentab:add_checkbox("Remove the body A") --只是一个开关，代码往后面找
+local rmdied = gentab:add_checkbox("Remove the body A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local rmpedwp = gentab:add_checkbox("Disarm A") --只是一个开关，代码往后面找
+local rmpedwp = gentab:add_checkbox("Disarm A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local stnpcany = gentab:add_checkbox("Electric shock A") --只是一个开关，代码往后面找
+local stnpcany = gentab:add_checkbox("Electric shock A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local drawbox = gentab:add_checkbox("Light beam marker A") --只是一个开关，代码往后面找
+local drawbox = gentab:add_checkbox("Light beam marker A ##npcctl0") --只是一个开关，代码往后面找
 
 gentab:add_text("(BETA testing) NPC control automatically excludes friendly whitelisting (list not yet complete, see below), lightpost markers still work globally") 
 
@@ -1383,119 +1360,123 @@ gentab:add_text("Hostile NPC control")
 
 gentab:add_sameline()
 
-local reactanyac = gentab:add_checkbox("Interrupt A1") --只是一个开关，代码往后面找
+local reactanyac = gentab:add_checkbox("Interrupt A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react1anyac = gentab:add_checkbox("Fall A1") --只是一个开关，代码往后面找
+local react1anyac = gentab:add_checkbox("Fall A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react2anyac = gentab:add_checkbox("Kill A1") --只是一个开关，代码往后面找
+local react2anyac = gentab:add_checkbox("Kill A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react3anyac = gentab:add_checkbox("Burn A1") --只是一个开关，代码往后面找
+local react3anyac = gentab:add_checkbox("Burn A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react4anyac = gentab:add_checkbox("Take off A1") --只是一个开关，代码往后面找
+local react4anyac = gentab:add_checkbox("Take off A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react5anyac = gentab:add_checkbox("Bodyguard A1") --只是一个开关，代码往后面找
+local react5anyac = gentab:add_checkbox("Bodyguard A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local react6anyac = gentab:add_checkbox("Beam marker A1") --只是一个开关，代码往后面找
+local react6anyac = gentab:add_checkbox("Beam marker A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local rmpedwp2 = gentab:add_checkbox("Disarm A1") --只是一个开关，代码往后面找
+local rmpedwp2 = gentab:add_checkbox("Disarm A1 ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local stnpcany2 = gentab:add_checkbox("Electric shock B") --只是一个开关，代码往后面找
+local stnpcany2 = gentab:add_checkbox("Electric shock B ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local stnpcany7 = gentab:add_checkbox("Detonate") --只是一个开关，代码往后面找
+local stnpcany7 = gentab:add_checkbox("Detonate ##npcctl1") --只是一个开关，代码往后面找
+
+gentab:add_sameline()
+
+local stnpcany8 = gentab:add_checkbox("Weakened combat power ##npcctl1") --只是一个开关，代码往后面找
 
 gentab:add_text("NPCs target me for punishment") 
 
 gentab:add_sameline()
 
-local aimreact = gentab:add_checkbox("Interrupt B") --只是一个开关，代码往后面找
+local aimreact = gentab:add_checkbox("Interrupt B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact1 = gentab:add_checkbox("Fall B") --只是一个开关，代码往后面找
+local aimreact1 = gentab:add_checkbox("Fall B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact2 = gentab:add_checkbox("Kill B") --只是一个开关，代码往后面找
+local aimreact2 = gentab:add_checkbox("Kill B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact3 = gentab:add_checkbox("Burn B") --只是一个开关，代码往后面找
+local aimreact3 = gentab:add_checkbox("Burn B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact4 = gentab:add_checkbox("Take off B") --只是一个开关，代码往后面找
+local aimreact4 = gentab:add_checkbox("Take off B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact5 = gentab:add_checkbox("Bodyguard B") --只是一个开关，代码往后面找
+local aimreact5 = gentab:add_checkbox("Bodyguard B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact6 = gentab:add_checkbox("Remove B") --只是一个开关，代码往后面找
+local aimreact6 = gentab:add_checkbox("Remove B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local rmpedwp3 = gentab:add_checkbox("Disarm B") --只是一个开关，代码往后面找
+local rmpedwp3 = gentab:add_checkbox("Disarm B ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local stnpcany3 = gentab:add_checkbox("Electric shock C") --只是一个开关，代码往后面找
+local stnpcany3 = gentab:add_checkbox("Electric shock C ##npcctl2") --只是一个开关，代码往后面找
 
 gentab:add_text("Punish targeting NPC") 
 
 gentab:add_sameline()
 
-local aimreactany = gentab:add_checkbox("Interrupt C") --只是一个开关，代码往后面找
+local aimreactany = gentab:add_checkbox("Interrupt C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact1any = gentab:add_checkbox("Fall C") --只是一个开关，代码往后面找
+local aimreact1any = gentab:add_checkbox("Fall C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact2any = gentab:add_checkbox("Kill C") --只是一个开关，代码往后面找
+local aimreact2any = gentab:add_checkbox("Kill C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact3any = gentab:add_checkbox("Burn C") --只是一个开关，代码往后面找
+local aimreact3any = gentab:add_checkbox("Burn C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact4any = gentab:add_checkbox("Take off C") --只是一个开关，代码往后面找
+local aimreact4any = gentab:add_checkbox("Take off C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact5any = gentab:add_checkbox("Bodyguard C") --只是一个开关，代码往后面找
+local aimreact5any = gentab:add_checkbox("Bodyguard C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local aimreact6any = gentab:add_checkbox("Remove C") --只是一个开关，代码往后面找
+local aimreact6any = gentab:add_checkbox("Remove C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local rmpedwp4 = gentab:add_checkbox("Disarm C") --只是一个开关，代码往后面找
+local rmpedwp4 = gentab:add_checkbox("Disarm C ##npcctl3") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
-local stnpcany4 = gentab:add_checkbox("Electric shock D") --只是一个开关，代码往后面找
+local stnpcany4 = gentab:add_checkbox("Electric shock D ##npcctl3") --只是一个开关，代码往后面找
 
 local delallcam = gentab:add_checkbox("Remove all cameras") --只是一个开关，代码往后面找
 
@@ -1562,7 +1543,7 @@ gentab:add_button("Randomly shoot half of hostile NPCs in real name", function()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and math.random(0,1) >= 0.5 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
+        if Is_NPC_H(peds) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and math.random(0,1) >= 0.5 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
             if PED.IS_PED_IN_ANY_VEHICLE(peds, true) then
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
@@ -1609,7 +1590,7 @@ gentab:add_button("Shoot and kill hostile NPCs in real name", function()
     for _, peds in pairs(pedtable) do
         local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
         local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-        if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
+        if Is_NPC_H(peds) and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() then 
             if PED.IS_PED_IN_ANY_VEHICLE(peds, true) then
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
@@ -1890,11 +1871,11 @@ gentab:add_sameline()
 local ncspupa3 = gentab:add_checkbox("Purchase at 20 times the speed of the nightclub (risky)")
 
 gentab:add_button("The MC club industry is full of supplies", function()
-    globals_set_int(1662873+1+1,1) --可卡因 -- 3095--freemode.c  	if (func_12737(148, "OR_PSUP_DEL" /*Hey, the supplies you purchased have arrived at the ~a~. Remember, paying for them eats into profits!*/, &unk, false, -99, 0, 0, false, 0))
+    globals_set_int(1662873+1+1,1) --大麻 -- 3095--freemode.c  	if (func_12737(148, "OR_PSUP_DEL" /*Hey, the supplies you purchased have arrived at the ~a~. Remember, paying for them eats into profits!*/, &unk, false, -99, 0, 0, false, 0))
     globals_set_int(1662873+1+2,1) --冰毒-- 3095
-    globals_set_int(1662873+1+3,1) --大麻-- 3095
+    globals_set_int(1662873+1+3,1) --假钞-- 3095
     globals_set_int(1662873+1+4,1) --证件-- 3095
-    globals_set_int(1662873+1+0,1) --假钞-- 3095
+    globals_set_int(1662873+1+0,1) --可卡因-- 3095
     globals_set_int(1662873+1+6,1) --致幻剂-- 3095
     gui.show_message("Auto-replenishment","All done")
 end)
@@ -2221,110 +2202,56 @@ gentab:add_text("Miscellaneous")
 
 local SEa = 0
 
-gentab:add_button("Remove balance", function()
-
+gentab:add_button("Remove income and expenditure difference", function()
     SE = MONEY.NETWORK_GET_VC_BANK_BALANCE() + stats.get_int("MPPLY_TOTAL_SVC") - stats.get_int("MPPLY_TOTAL_EVC")
     log.info(tostring(SE))
-    if SE >= 20000 and SEa == 0 and stats.get_int("MPPLY_TOTAL_SVC")>0 and stats.get_int("MPPLY_TOTAL_EVC")>0 then
+    if SE >= 20000 and SEa == 0 and stats.get_int("MPPLY_TOTAL_SVC") > 0 and stats.get_int("MPPLY_TOTAL_EVC") > 0 and stats.get_int("MPPLY_TOTAL_SVC") < 2147483647 and stats.get_int("MPPLY_TOTAL_EVC") < 2147483647 then
         SE = SE - 10000
         stats.set_int("MPX_MONEY_EARN_JOBS",stats.get_int("MPX_MONEY_EARN_JOBS") + SE )
         stats.set_int("MPPLY_TOTAL_EVC",stats.get_int("MPPLY_TOTAL_EVC") + SE )
         gui.show_message("Remove balance difference","Executed successfully")
-        log.info("已移除收支差:"..tostring(SE))    
+        log.info("已移除收支差:"..tostring(SE))
         SEa = 1
     else
         gui.show_message("Your income and expenditure are normal, no need to remove or trigger abnormal value protection","There is no difference in income and expenditure at all, but it may be abnormal")
         SEa = 1
     end
-
 end)
 
 gentab:add_sameline()
 
 gentab:add_button("Restoration of deleted vehicules in 1.66", function()
-    for x = 14936, 14944 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 17510, 17528 do --3095
-        globals_set_int(262145 + x, 1)
-    end
+    local vehranges = { --3095
+        {14936, 14944},
+        {17510, 17528},
+        {17682, 17703},
+        {19341, 19365},
+        {20422, 20425},
+        {21304, 21309},
+        {22103, 22122},
+        {23071, 23098},
+        {24292, 24405},
+        {26039, 26045},
+        {26050, 26070},
+        {27026, 27027},
+        {28890, 28910},
+        {28888, 28888},
+        {28936, 28936},
+        {29604, 29611},
+        {29953, 29959},
+        {30418, 30434},
+        {31290, 31306},
+        {32214, 32228},
+        {33463, 33481},
+        {34446, 34461},
+    }
 
-    for x = 17682, 17703 do --3095
-        globals_set_int(262145 + x, 1)
+    for _, vehrange in ipairs(vehranges) do
+        local start, finish = vehrange[1], vehrange[2]
+        for x = start, finish do
+            globals_set_int(262145 + x, 1)
+        end
     end
-    
-    for x = 19341, 19365 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 20422, 20425 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 21304, 21309 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 22103, 22122 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 23071, 23098 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 24292, 24405 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 26039, 26045 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 26050, 26070 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 27026, 27027 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 28890, 28910 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    globals_set_int(262145 + 28888, 1) --3095
-    globals_set_int(262145 + 28936, 1) --3095
-
-    for x = 29604, 29611 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 29953, 29959 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 30418, 30434 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 31290, 31306 do --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 32214, 32228 do  --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
-    for x = 33463, 33481 do  --3095
-        globals_set_int(262145 + x, 1)
-    end
-
-    for x = 34446, 34461 do  --3095
-        globals_set_int(262145 + x, 1)
-    end
-    
 end)
 
 gentab:add_sameline()
@@ -2483,7 +2410,9 @@ end)
 
 gentab:add_sameline()
 
-local fakeban1 = gentab:add_checkbox("Display false warning") --只是一个开关，代码往后面找
+selfled = gentab:add_checkbox("Portable light source")
+
+local fakeban1 = gentab:add_checkbox("Display false ban warning") --只是一个开关，代码往后面找
 
 gentab:add_sameline()
 
@@ -3334,10 +3263,11 @@ gentab:add_button("Gift the opressor MK2", function()
             STREAMING.REQUEST_MODEL(joaat("oppressor2"))
             giftmk2:yield()
         end   
-        for i = 0, 31 do
-            log.info(tostring(i))
-            spawncrds = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(i), false)
+        createplayertable()
+        for _, exptar_player_id in pairs(player_Index_table) do
+            spawncrds = ENTITY.GET_ENTITY_COORDS(PLAYER.GET_PLAYER_PED(exptar_player_id), false)
             veh = VEHICLE.CREATE_VEHICLE(joaat("oppressor2"), spawncrds.x, spawncrds.y, spawncrds.z, 0 , true, true, true)
+            upgrade_vehicle(veh)
         end
     end)
 end)
@@ -3488,7 +3418,6 @@ gentab:add_sameline()
 local skippcus = gentab:add_checkbox("Continuously removing transitions") --只是一个开关，代码往后面找
 
 gentab:add_button("Disable compatibility check", function()
-    verchka1 = 100
     verchkok = 1
     log.warning("The verification of lua mismatching with the game version will be ignored, use of outdated functionality is at your own risk of corrupting the online data.")
     gui.show_error("The verification of lua mismatching with the game version will be ignored","You must bear the risk of damaging the online data")
@@ -3769,13 +3698,13 @@ EntityTab:add_sameline()
 
 tableautorf = EntityTab:add_checkbox("Getting the player table and refreshing it automatically (used to counterattack enemies)")
 EntityTab:add_text("Player Aiming Reaction")
-plyaimkarma1 = EntityTab:add_checkbox("Shoot F") --这只是一个复选框,代码往最后的循环脚本部分找
+plyaimkarma1 = EntityTab:add_checkbox("Shoot F ##plyctl0") --这只是一个复选框,代码往最后的循环脚本部分找
 EntityTab:add_sameline()
-plyaimkarma2 = EntityTab:add_checkbox("Blow F") --这只是一个复选框,代码往最后的循环脚本部分找
+plyaimkarma2 = EntityTab:add_checkbox("Blow F ##plyctl0") --这只是一个复选框,代码往最后的循环脚本部分找
 EntityTab:add_sameline()
-plyaimkarma3 = EntityTab:add_checkbox("Electroshock F") --这只是一个复选框,代码往最后的循环脚本部分找
+plyaimkarma3 = EntityTab:add_checkbox("Electroshock F ##plyctl0") --这只是一个复选框,代码往最后的循环脚本部分找
 EntityTab:add_sameline()
-plyaimkarma4 = EntityTab:add_checkbox("Kick out F") --这只是一个复选框,代码往最后的循环脚本部分找
+plyaimkarma4 = EntityTab:add_checkbox("Kick out F ##plyctl0") --这只是一个复选框,代码往最后的循环脚本部分找
 
 --------------------------------------------------------------------------------------- 可调整项
 TuneablesandStatsTab:add_text("Tampering with adjustable items to obtain a lot of money may lead to a ban!")
@@ -3813,19 +3742,65 @@ t_heisttab:add_sameline()
 
 perico_pri_target_val_lock = t_heisttab:add_checkbox("Apply ##preicov") --这只是一个复选框,代码往最后的循环脚本部分找
 
-t_ottab = TuneablesandStatsTab:add_tab("Miscellaneous")
-bk_rs_t1 = t_ottab:add_input_int("Bunker research takes time 1")
-bk_rs_t2 = t_ottab:add_input_int("Bunker research takes time 2")
-bk_rs_t3 = t_ottab:add_input_int("Bunker research takes time 3")
+t_ottab = TuneablesandStatsTab:add_tab("Industry and factory")
+bk_rs_t1 = t_ottab:add_input_int("Bunker research time")
+bk_rs_t2 = t_ottab:add_input_int("Bunker research time - Equipment upgrades")
+bk_rs_t3 = t_ottab:add_input_int("Bunker research time - Staff Upgrade")
 t_ottab:add_button("Retrieve ##miscv", function()
     bk_rs_t1:set_value(tunables.get_int("GR_RESEARCH_PRODUCTION_TIME"))
     bk_rs_t2:set_value(tunables.get_int("GR_RESEARCH_UPGRADE_EQUIPMENT_REDUCTION_TIME"))
     bk_rs_t3:set_value(tunables.get_int("GR_RESEARCH_UPGRADE_STAFF_REDUCTION_TIME"))
 end)
-
 t_ottab:add_sameline()
-
 misc_tu_lock = t_ottab:add_checkbox("Apply ##miscv") --这只是一个复选框,代码往最后的循环脚本部分找
+
+biker_val_mtp = t_ottab:add_input_float("MC club and acid lab product value multiplier")
+
+biker_cap_0 = t_ottab:add_input_int("Current inventory of cocaine") --HUD_CASH 
+biker_cap_1 = t_ottab:add_input_int("Current inventory of weed") --HUD_CASH 
+biker_cap_2 = t_ottab:add_input_int("Current inventory of meth") --HUD_CASH 
+biker_cap_3 = t_ottab:add_input_int("Current inventory of counterfeit money") --HUD_CASH 
+biker_cap_4 = t_ottab:add_input_int("Current inventory of fake documents") --HUD_CASH 
+biker_cap_5 = t_ottab:add_input_int("Current inventory of bunkers") --HUD_CASH 
+biker_cap_6 = t_ottab:add_input_int("Current inventory of acid") --HUD_CASH 
+
+biker_cap_max_0 = t_ottab:add_input_int("Max inventory of cocaine") --HUD_CASH 
+biker_cap_max_1 = t_ottab:add_input_int("Max inventory of weed") --HUD_CASH 
+biker_cap_max_2 = t_ottab:add_input_int("Max inventory of meth") --HUD_CASH 
+biker_cap_max_3 = t_ottab:add_input_int("Max inventory of counterfeit money") --HUD_CASH 
+biker_cap_max_4 = t_ottab:add_input_int("Max inventory of fake documents") --HUD_CASH 
+biker_cap_max_5 = t_ottab:add_input_int("Max inventory of bunkers") --HUD_CASH 
+biker_cap_max_6 = t_ottab:add_input_int("Max inventory of acid") --HUD_CASH 
+
+t_ottab:add_button("Retrieve ##miscv2", function()
+    biker_val_mtp:set_value(tunables.get_float(-823848572))
+    local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
+    biker_cap_0:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 0 * 13)+1)) --3095
+    biker_cap_1:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 1 * 13)+1)) --3095
+    biker_cap_2:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 2 * 13)+1)) --3095
+    biker_cap_3:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 3 * 13)+1)) --3095
+    biker_cap_4:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 4 * 13)+1)) --3095
+    biker_cap_5:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 5 * 13)+1)) --3095
+    biker_cap_6:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 6 * 13)+1)) --3095
+    biker_cap_max_0:set_value(tunables.get_int("BIKER_COCAINE_CAPACITY"))
+    biker_cap_max_1:set_value(tunables.get_int("BIKER_WEED_CAPACITY"))
+    biker_cap_max_2:set_value(tunables.get_int("BIKER_METH_CAPACITY"))
+    biker_cap_max_3:set_value(tunables.get_int("BIKER_COUNTERCASH_CAPACITY"))
+    biker_cap_max_4:set_value(tunables.get_int("BIKER_FAKEIDS_CAPACITY"))
+    biker_cap_max_5:set_value(tunables.get_int("GR_MANU_CAPACITY"))
+    biker_cap_max_6:set_value(tunables.get_int("ACID_LAB_PRODUCT_CAPACITY"))
+end)
+t_ottab:add_sameline()
+biker_set_lock = t_ottab:add_checkbox("Apply ##miscv2") --这只是一个复选框,代码往最后的循环脚本部分找
+t_ottab:add_sameline()
+t_ottab:add_text("Modify the inventory carefully and do not exceed the limit")
+
+smug_val = t_ottab:add_input_int("Unit price of hangar cargo")
+t_ottab:add_button("Retrieve ##miscv3", function()
+    smug_val:set_value(tunables.get_int(-954321460))
+end)
+t_ottab:add_sameline()
+smug_set_lock = t_ottab:add_checkbox("Apply ##miscv3") --这只是一个复选框,代码往最后的循环脚本部分找
 
 t_heisttab:add_separator()
 t_heisttab:add_text("Firm Data Breach Contract - Don't Mess With DRE")
@@ -4082,6 +4057,7 @@ script.register_looped("schlua-test", function(script)
             end
         end
     end
+
 end)
 
 script.register_looped("schlua-tuneables-lock", function(script)
@@ -4099,6 +4075,30 @@ script.register_looped("schlua-tuneables-lock", function(script)
         tunables.set_int("GR_RESEARCH_PRODUCTION_TIME", bk_rs_t1:get_value())
         tunables.set_int("GR_RESEARCH_UPGRADE_EQUIPMENT_REDUCTION_TIME", bk_rs_t2:get_value())
         tunables.set_int("GR_RESEARCH_UPGRADE_STAFF_REDUCTION_TIME", bk_rs_t3:get_value())
+    end
+
+    if  biker_set_lock:is_enabled() then
+        tunables.set_float(-823848572, biker_val_mtp:get_value())
+        local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
+
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 0 * 13)+1 , biker_cap_0:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 1 * 13)+1 , biker_cap_1:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 2 * 13)+1 , biker_cap_2:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 3 * 13)+1 , biker_cap_3:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 4 * 13)+1 , biker_cap_4:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 5 * 13)+1 , biker_cap_5:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 6 * 13)+1 , biker_cap_6:get_value()) --3095
+        tunables.set_int("BIKER_COCAINE_CAPACITY", biker_cap_max_0:get_value())
+        tunables.set_int("BIKER_WEED_CAPACITY", biker_cap_max_1:get_value())
+        tunables.set_int("BIKER_METH_CAPACITY", biker_cap_max_2:get_value())
+        tunables.set_int("BIKER_COUNTERCASH_CAPACITY", biker_cap_max_3:get_value())
+        tunables.set_int("BIKER_FAKEIDS_CAPACITY", biker_cap_max_4:get_value())
+        tunables.set_int("GR_MANU_CAPACITY", biker_cap_max_5:get_value())
+        tunables.set_int("ACID_LAB_PRODUCT_CAPACITY", biker_cap_max_6:get_value())    
+    end
+
+    if  smug_set_lock:is_enabled() then
+        tunables.set_int(-954321460, smug_val:get_value())
     end
 
     if  fixer_final_val_lock:is_enabled() then
@@ -4436,14 +4436,14 @@ script.register_looped("schlua-ml2", function(script)  -- 3095
     
     if  autorespl:is_enabled() then--自动补原材料
         if stats.get_int("MPX_MATTOTALFORFACTORY0") > 0 and stats.get_int("MPX_MATTOTALFORFACTORY0") <= 40 and autoresply == 0 then 
-            globals_set_int(1662873+1+0,1) --假钞
-            log.info("假钞原材料不足,将自动补满")
+            globals_set_int(1662873+1+0,1) --kky
+            log.info("可卡因原材料不足,将自动补满")
             MCprintspl()
             autoresply = 1
         end
         if stats.get_int("MPX_MATTOTALFORFACTORY1") > 0 and stats.get_int("MPX_MATTOTALFORFACTORY1") <= 40 and autoresply == 0 then 
-            globals_set_int(1662873+1+1,1) --kky
-            log.info("可卡因原材料不足,将自动补满")
+            globals_set_int(1662873+1+1,1) --dm
+            log.info("大麻原材料不足,将自动补满")
             MCprintspl()
             autoresply = 1
         end
@@ -4454,8 +4454,8 @@ script.register_looped("schlua-ml2", function(script)  -- 3095
             autoresply = 1
         end
         if stats.get_int("MPX_MATTOTALFORFACTORY3") > 0 and stats.get_int("MPX_MATTOTALFORFACTORY3") <= 40 and autoresply == 0 then 
-            globals_set_int(1662873+1+3,1) --dm
-            log.info("大麻原材料不足,将自动补满")
+            globals_set_int(1662873+1+3,1) --jc
+            log.info("假钞原材料不足,将自动补满")
             MCprintspl()
             autoresply = 1
         end
@@ -4902,6 +4902,10 @@ script.register_looped("schlua-defpservice", function(script)
             FIRE.ADD_EXPLOSION(coords.x, coords.y, coords.z, 1, 1, true, true, 1, true)
         end
 
+        if selfled:is_enabled() then
+            local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
+            GRAPHICS.DRAW_LIGHT_WITH_RANGE(selfpos.x, selfpos.y, selfpos.z+0.5, 255, 255,255, 50, 5)
+        end
 end)
 
 script.register_looped("schlua-miscservice", function(script) 
@@ -5622,7 +5626,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, vehicle in pairs(vehtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle, false)
-            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
+            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 1 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
                 if vehicle ~= vehisin then
                     request_control(vehicle)
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, -4000)
@@ -5667,7 +5671,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, vehicle in pairs(vehtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle, false)
-            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
+            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 1 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
                 if vehicle ~= vehisin then
                     request_control(vehicle)
                     delete_entity(vehicle)        
@@ -5745,7 +5749,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, vehicle in pairs(vehtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle, false)
-            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
+            if calcDistance(selfpos, vehicle_pos) <= npcctrlr:get_value() and (HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 49 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(vehicle)) == 1 or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("police3") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("RIOT") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("Predator") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policeb") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("policet") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("polmav") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("FBI2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("sheriff2") or ENTITY.GET_ENTITY_MODEL(vehicle) == joaat("SHERIFF")) then
                 if vehicle ~= vehisin then
                     request_control(vehicle)
                     ENTITY.SET_ENTITY_VELOCITY(vehicle,0,0,0)
@@ -5766,28 +5770,34 @@ script.register_looped("schlua-ectrlservice", function(script)
             end
         end
     end
-
-    if  vehforcefield:is_enabled() then --控制载具力场
+    
+    if  vehforcefield:is_enabled() then --控制载具力场-test
         local vehtable = entities.get_all_vehicles_as_handles()
         local vehisin = PED.GET_VEHICLE_PED_IS_IN(PLAYER.PLAYER_PED_ID(), true)
         for _, vehicle in pairs(vehtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle, false)
+            local force_dr1 = vehicle_pos.x - selfpos.x
+            local force_dr2 = vehicle_pos.y - selfpos.y
+            local force_dr3 = vehicle_pos.z - selfpos.z
             if calcDistance(selfpos, vehicle_pos) <= ffrange:get_value() then
                 if vehicle ~= vehisin then
                     request_control(vehicle)
-                    ENTITY.APPLY_FORCE_TO_ENTITY(vehicle, 3, 0, 0, 3, 0, 0, 0.5, 0, false, false, true, false, false)
+                    ENTITY.APPLY_FORCE_TO_ENTITY(vehicle, 3, force_dr1, force_dr2, force_dr3 + 1, 0, 0, 0.5, 0, false, false, true, false, false)
                 end
             end
         end
     end
-    
+
     if  objforcefield:is_enabled() then --控制物体力场
         local onjtable = entities.get_all_objects_as_handles()
         local vehisin = PED.GET_VEHICLE_PED_IS_IN(PLAYER.PLAYER_PED_ID(), true)
         for _, aobj in pairs(onjtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local aobj_pos = ENTITY.GET_ENTITY_COORDS(aobj, false)
+            local force_dr1 = aobj_pos.x - selfpos.x
+            local force_dr2 = aobj_pos.y - selfpos.y
+            local force_dr3 = aobj_pos.z - selfpos.z
             if calcDistance(selfpos, aobj_pos) <= ffrange:get_value() then
                 if aobj ~= vehisin then
                     request_control(aobj)
@@ -5802,14 +5812,17 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), false)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
+            local force_dr1 = ped_pos.x - selfpos.x
+            local force_dr2 = ped_pos.y - selfpos.y
+            local force_dr3 = ped_pos.z - selfpos.z
             if calcDistance(selfpos, ped_pos) <= ffrange:get_value() and peds ~= PLAYER.PLAYER_PED_ID() then 
                 if PED.IS_PED_IN_ANY_VEHICLE(peds, true) then
                     tarpensveh = PED.GET_VEHICLE_PED_IS_IN(peds, true)
                     request_control(tarpensveh)
-                    ENTITY.APPLY_FORCE_TO_ENTITY(tarpensveh, 3, 0, 0, 2, 0, 0, 0.5, 0, false, false, true, false, false)
+                    ENTITY.APPLY_FORCE_TO_ENTITY(tarpensveh, 3, force_dr1, force_dr2, force_dr3 + 1, 0, 0, 0.5, 0, false, false, true, false, false)
                 else
                     request_control(peds)
-                    ENTITY.APPLY_FORCE_TO_ENTITY(peds, 3, 0, 0, 2, 0, 0, 0.5, 0, false, false, true, false, false)
+                    ENTITY.APPLY_FORCE_TO_ENTITY(peds, 3, force_dr1, force_dr2, force_dr3 + 1, 0, 0, 0.5, 0, false, false, true, false, false)
                 end
             end
         end
@@ -5821,10 +5834,13 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, vehicle in pairs(vehtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local vehicle_pos = ENTITY.GET_ENTITY_COORDS(vehicle, false)
+            local force_dr1 = vehicle_pos.x - selfpos.x
+            local force_dr2 = vehicle_pos.y - selfpos.y
+            local force_dr3 = vehicle_pos.z - selfpos.z
             if calcDistance(selfpos, vehicle_pos) <= ffrange:get_value() then
                 if vehicle ~= vehisin then
                     request_control(vehicle)
-                    ENTITY.APPLY_FORCE_TO_ENTITY(vehicle, 3, 0, 0, 3, 0, 0, 0.5, 0, false, false, true, false, false)
+                    ENTITY.APPLY_FORCE_TO_ENTITY(vehicle, 3, force_dr1, force_dr2, force_dr3 + 1, 0, 0, 0.5, 0, false, false, true, false, false)
                 end
             end
         end
@@ -6162,7 +6178,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
             end
@@ -6174,7 +6190,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 PED.SET_PED_TO_RAGDOLL(peds, 5000, 0,0 , false, false, false)
             end
@@ -6186,7 +6202,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 ENTITY.SET_ENTITY_HEALTH(peds,0,0,0)
             end
@@ -6300,9 +6316,15 @@ script.register_looped("schlua-ectrlservice", function(script)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
             local ismarked = false
             if calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0 then 
-                if PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01") then 
+                if Is_NPC_H(peds) then 
                     ismarked = true
-                    GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,76,0,255)
+                    maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(peds) -100
+                    cuhealth = ENTITY.GET_ENTITY_HEALTH(peds) -100
+                    GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20 * cuhealth / maxhealth,255,76,0,255)
+                    GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+20 * cuhealth / maxhealth,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255, 192, 203,255)
+                    if PED.GET_PED_ARMOUR(peds) > 0 then
+                        GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+20,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20+10 * PED.GET_PED_ARMOUR(peds) / maxhealth ,20, 50, 100,255)
+                    end
                 end
                 if  HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 3 then 
                     ismarked = true
@@ -6320,7 +6342,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and not PED.IS_PED_DEAD_OR_DYING(peds,true)  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 FIRE.START_ENTITY_FIRE(peds)
                 FIRE.START_SCRIPT_FIRE(ped_pos.x, ped_pos.y, ped_pos.z, 25, true)
@@ -6334,7 +6356,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID()  and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds, true) then
                     tarpensveh = PED.GET_VEHICLE_PED_IS_IN(peds, true)
@@ -6352,7 +6374,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and PED.IS_PED_A_PLAYER(peds) == false then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and ENTITY.GET_ENTITY_HEALTH(peds) > 0 and PED.IS_PED_A_PLAYER(peds) == false then 
                 request_control(peds)
                 TASK.CLEAR_PED_TASKS(peds)
                 pedblip = HUD.GET_BLIP_FROM_ENTITY(peds)
@@ -6367,9 +6389,14 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() then 
-                GRAPHICS.REQUEST_STREAMED_TEXTURE_DICT("golfputting", true)
-                GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255,0,0,255)
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 then 
+                maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(peds) -100
+                cuhealth = ENTITY.GET_ENTITY_HEALTH(peds) -100
+                GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+0.8,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20 * cuhealth / maxhealth,255,76,0,255)
+                GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+20 * cuhealth / maxhealth,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20,255, 192, 203,255)
+                if PED.GET_PED_ARMOUR(peds) > 0 then
+                    GRAPHICS.DRAW_BOX(ped_pos.x-0.1,ped_pos.y-0.1,ped_pos.z+20,ped_pos.x+0.1,ped_pos.y+0.1,ped_pos.z+20+10 * PED.GET_PED_ARMOUR(peds) / maxhealth ,20, 50, 100,255)
+                end
             end
         end
     end
@@ -6379,7 +6406,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1  then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1  then 
                 request_control(peds)
                 WEAPON.REMOVE_ALL_PED_WEAPONS(peds,true)
             end
@@ -6391,7 +6418,7 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
                 request_control(peds)
                 if PED.IS_PED_IN_ANY_VEHICLE(peds, true) then
                     TASK.CLEAR_PED_TASKS_IMMEDIATELY(peds)
@@ -6407,8 +6434,37 @@ script.register_looped("schlua-ectrlservice", function(script)
         for _, peds in pairs(pedtable) do
             local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
             local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
-            if (PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 4 or PED.GET_RELATIONSHIP_BETWEEN_PEDS(peds, PLAYER.PLAYER_PED_ID()) == 5 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 1 or HUD.GET_BLIP_COLOUR(HUD.GET_BLIP_FROM_ENTITY(peds)) == 49 or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Swat_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Cop_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_M_Y_Sheriff_01") or ENTITY.GET_ENTITY_MODEL(peds) == joaat("S_F_Y_Sheriff_01")) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
                 FIRE.ADD_EXPLOSION(ped_pos.x, ped_pos.y, ped_pos.z, 1, 1, true, true, 1, false)
+            end
+        end
+    end
+
+    if  stnpcany8:is_enabled() then --控制敌对NPC-削弱战斗能力
+        local pedtable = entities.get_all_peds_as_handles()
+        for _, peds in pairs(pedtable) do
+            local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
+            local ped_pos = ENTITY.GET_ENTITY_COORDS(peds, false)
+            if Is_NPC_H(peds) and calcDistance(selfpos, ped_pos) <= npcctrlr:get_value() and peds ~= PLAYER.PLAYER_PED_ID() and PED.IS_PED_A_PLAYER(peds) ~= 1 and ENTITY.GET_ENTITY_HEALTH(peds) > 0  then 
+                PED.SET_PED_CAN_RAGDOLL(peds, true)
+                PED.SET_PED_COMBAT_ABILITY(peds, 0)
+                PED.SET_PED_SHOOT_RATE(peds, 0)
+                PED.SET_PED_ACCURACY(peds,0)            
+                PED.SET_PED_COMBAT_ATTRIBUTES(peds, 0, false)
+                PED.SET_PED_COMBAT_ATTRIBUTES(peds, 1, false)
+                PED.SET_PED_COMBAT_ATTRIBUTES(peds, 5, false)
+                PED.SET_PED_COMBAT_ATTRIBUTES(peds, 13, false)
+                PED.SET_PED_COMBAT_ATTRIBUTES(peds, 21, false)
+                PED.SET_PED_COMBAT_ATTRIBUTES(peds, 27, false)
+                PED.SET_PED_COMBAT_ATTRIBUTES(peds, 31, false)
+                PED.SET_PED_ALERTNESS(peds, 0)
+                PED.SET_PED_ARMOUR(peds, 0)
+                PED.SET_PED_COMBAT_MOVEMENT(peds, 0)
+                PED.SET_PED_HEARING_RANGE(peds, 0)
+                --PED.SET_PED_FIRING_PATTERN(peds, 0xE2CA3A71)
+                if ENTITY.GET_ENTITY_HEALTH(peds) > 100 then
+                    ENTITY.SET_ENTITY_HEALTH(peds,100,0,0)
+                end
             end
         end
     end
@@ -6630,8 +6686,6 @@ script.register_looped("schlua-calcservice", function(script)
 end)
 
 event.register_handler(menu_event.PlayerMgrInit, function ()
-    verchka1 = verchka1 + 1 --触发lua版本检查:检查lua是否适配当前游戏版本
-
     if cashmtpin:get_value() == 0 then -- 读取在线模式当前联系人差事 现金奖励倍率
         cashmtpin:set_value(tunables.get_float("CASH_MULTIPLIER"))
     end
@@ -6646,31 +6700,6 @@ script.register_looped("schlua-verckservice", function(script)
         autoresply = 0
     end
 
-    if verchka1 > 0 and verchka1 < 99 then
-        if NETWORK.GET_ONLINE_VERSION() ~= suppver then
-            if STREAMING.IS_PLAYER_SWITCH_IN_PROGRESS() then
-            else
-                log.warning("sch-lua脚本不支持您的游戏版本,涉及数据修改的功能将自动停用!")
-                gui.show_error("sch-lua does not support your version of the game","Functions involving data modification will be automatically deactivated.")
-                verchka1 = 0
-                verchkok = 0
-                testwindow = gui.add_imgui(function()
-                    shouldDraw = ImGui.Begin("sch lua warning")
-                    ImGui.TextColored(1, 0, 0, 1, "sch lua current supported version is"..suppver)    
-                    ImGui.TextColored(1, 0, 0, 1, "sch lua your game version is not supported")    
-                    ImGui.TextColored(1, 0, 0, 1, "You can still use features that are not affected by the version, such as entity control")    
-                    ImGui.TextColored(1, 0, 0, 1, "Affected features will be automatically disabled to protect the security of your account")    
-                    ImGui.TextColored(1, 0, 0, 1, "High chance of crash")    
-                    ImGui.SetWindowSize(500, 300)
-                    ImGui.End()
-                end)
-            end
-        else
-            verchka1 = 100
-            verchkok = 1
-            log.info("已通过游戏版本适配检测,您可以使用所有功能")
-        end
-    end
 end)
 
 --------------------------------------------------------------------------------------- 注册的循环脚本,主要用来实现Lua里面那些复选框的功能
@@ -6688,7 +6717,7 @@ end)
         log.info(globals.get_int(1574996))
     end
 
-	1.67 赌场右下角收入    func_3521(iLocal_19710.f_2686, "MONEY_HELD" /*TAKE*/, 1000, 6, 2, 0, "HUD_CASH" /*$~1~*/, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 1, -1);
+	1.68_3095 赌场右下角收入	func_3556(Local_19728.f_2686, "MONEY_HELD" /* GXT: TAKE */, 1000, 6, 2, 0, "HUD_CASH" /* GXT: $~1~ */, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 1, -1, 0);
 
 
 ------------------------------------------------GTAOL 1.67 技工 呼叫 载具资产 freemode.c began

@@ -1,4 +1,4 @@
-# SCH-LUA-YIMMENU by sch-lda 3.06
+# SCH-LUA-YIMMENU by sch-lda 3.09
 ### English Version translated by DrSexo 
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) 
 ### Partially unavailable! Yimmenu has modified SOL_ALL_SAFETIES_ON on 20231210, enforcing Lua type checking. I've attempted to fix most of the functionalities, but there are still a few that remain unavailable. 
