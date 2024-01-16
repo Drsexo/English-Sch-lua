@@ -1,4 +1,4 @@
--- v3.09 --
+-- v3.10 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.09"
+luaversion = "v3.10"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -700,8 +700,7 @@ end)
 
 
 gentab:add_button("test02", function()
-    local selfpos = ENTITY.GET_ENTITY_COORDS(PLAYER.PLAYER_PED_ID(), true)
-    log.info(tostring(selfpos.x))
+    
 end)
 ]]
 --------------------------------------------------------------------------------------- TEST
@@ -2343,6 +2342,82 @@ gentab:add_button("Force save", function() --3095
     globals_set_int(2694471 + 1382 , 27)
 end)
 
+gentab:add_sameline()
+
+gentab:add_button("Remove technicians, assets, and business management expenses", function() 
+    tunables.set_int(-427481449 , 0)
+    tunables.set_int(1119077650 , 0)
+    tunables.set_int(1915529211 , 0)
+    tunables.set_int(59427557 , 0)
+    tunables.set_int(511176100 , 0)
+    tunables.set_int(763803751 , 0)
+    tunables.set_int(-2057763278 , 0)
+    tunables.set_int(1231840091 , 0)
+    tunables.set_int(354424266 , 0)
+    tunables.set_int(1539239470 , 0)
+    tunables.set_int(-438049908 , 0)
+    tunables.set_int(-1892202067 , 0)
+    tunables.set_int(-1522694107 , 0)
+    tunables.set_int(-1135698070 , 0)
+    tunables.set_int(-303744391 , 0)
+    tunables.set_int(756741904 , 0)
+
+    tunables.set_int("ACID_LAB_EQUIPMENT_UPGRADE_UTILITY_FEE" , 0)
+    tunables.set_int("ACID_LAB_UTILITY_FEE" , 0)
+    tunables.set_int("EXEC1_PA_FEES" , 0)
+    tunables.set_int("AUTO_SHOP_UTILITY_COST" , 0)
+    tunables.set_int("ARCADE_UTILITY_COST" , 0)
+    tunables.set_int("FIXER_HQ_UTILITY_COST" , 0)
+    tunables.set_int("EXEC1_OFFICE_FEES" , 0)
+    tunables.set_int("SMUG_HANGAR_UTILITY_FEES" , 0)
+    tunables.set_int("SMUG_HANGAR_STAFF_FEES" , 0)
+    tunables.set_int("EXEC1_SMALL_WAREHOUSE_FEES" , 0)
+    tunables.set_int("EXEC1_MEDIUM_WAREHOUSE_FEES" , 0)
+    tunables.set_int("EXEC1_LARGE_WAREHOUSE_FEES" , 0)
+
+    tunables.set_int("BIKER_COCAINE_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_COCAINE_EQUIPMENT_UPGRADE_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_COUNTERCASH_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_COUNTERCASH_EQUIPMENT_UPGRADE_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_FAKEIDS_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_FAKEIDS_EQUIPMENT_UPGRADE_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_METH_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_METH_EQUIPMENT_UPGRADE_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_WEED_UTILITY_COST" , 0)
+    tunables.set_int("BIKER_WEED_EQUIPMENT_UPGRADE_UTILITY_COST" , 0)
+    tunables.set_int("GR_MANU_UTILITY_COST" , 0)
+    tunables.set_int("GR_MANU_EQUIPMENT_UPGRADE_UTILITY_COST" , 0)
+
+    tunables.set_int("BIKER_COCAINE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_COCAINE_STAFF_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_COCAINE_SECURITY_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_FAKEIDS_SECURITY_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_FAKEIDS_STAFF_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_FAKEIDS_STAFF_COST" , 0)
+    tunables.set_int("BIKER_COUNTERCASH_SECURITY_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_COUNTERCASH_STAFF_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_COUNTERCASH_STAFF_COST" , 0)
+    tunables.set_int("BIKER_WEED_SECURITY_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_WEED_STAFF_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_WEED_STAFF_COST" , 0)
+    tunables.set_int("BIKER_METH_SECURITY_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_METH_STAFF_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("BIKER_METH_STAFF_COST" , 0)
+    tunables.set_int("GR_MANU_STAFF_COST" , 0)
+    tunables.set_int("GR_MANU_STAFF_UPGRADE_STAFF_COST" , 0)
+    tunables.set_int("GR_MANU_SECURITY_UPGRADE_STAFF_COST" , 0)
+
+    tunables.set_int("YACHT_UTILITIES_COST" , 0)
+    tunables.set_int("LOW_APRT_UTIL" , 0)
+    tunables.set_int("MID_APRT_UTIL" , 0)
+    tunables.set_int("HIGH_APRT_UTIL" , 0)
+    tunables.set_int("VC_PENTHOUSE_UTILITY_EXPANSION" , 0)
+    tunables.set_int("VC_PENTHOUSE_UTILITY_BASE" , 0)
+
+    tunables.set_int("MECHANIC_DAILY_FEE" , 0)
+
+end)
+
 gentab:add_text("Vision")
 
 gentab:add_sameline()
@@ -3791,7 +3866,26 @@ t_ottab:add_button("Retrieve ##miscv2", function()
     biker_cap_max_6:set_value(tunables.get_int("ACID_LAB_PRODUCT_CAPACITY"))
 end)
 t_ottab:add_sameline()
-biker_set_lock = t_ottab:add_checkbox("Apply ##miscv2") --这只是一个复选框,代码往最后的循环脚本部分找
+t_ottab:add_button("Apply ##miscv2", function()
+    tunables.set_float(-823848572, biker_val_mtp:get_value())
+    local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
+
+    globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 0 * 13)+1 , biker_cap_0:get_value()) --3095
+    globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 1 * 13)+1 , biker_cap_1:get_value()) --3095
+    globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 2 * 13)+1 , biker_cap_2:get_value()) --3095
+    globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 3 * 13)+1 , biker_cap_3:get_value()) --3095
+    globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 4 * 13)+1 , biker_cap_4:get_value()) --3095
+    globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 5 * 13)+1 , biker_cap_5:get_value()) --3095
+    globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 6 * 13)+1 , biker_cap_6:get_value()) --3095
+    tunables.set_int("BIKER_COCAINE_CAPACITY", biker_cap_max_0:get_value())
+    tunables.set_int("BIKER_WEED_CAPACITY", biker_cap_max_1:get_value())
+    tunables.set_int("BIKER_METH_CAPACITY", biker_cap_max_2:get_value())
+    tunables.set_int("BIKER_COUNTERCASH_CAPACITY", biker_cap_max_3:get_value())
+    tunables.set_int("BIKER_FAKEIDS_CAPACITY", biker_cap_max_4:get_value())
+    tunables.set_int("GR_MANU_CAPACITY", biker_cap_max_5:get_value())
+    tunables.set_int("ACID_LAB_PRODUCT_CAPACITY", biker_cap_max_6:get_value())    
+
+end)
 t_ottab:add_sameline()
 t_ottab:add_text("Modify the inventory carefully and do not exceed the limit")
 
@@ -3800,7 +3894,65 @@ t_ottab:add_button("Retrieve ##miscv3", function()
     smug_val:set_value(tunables.get_int(-954321460))
 end)
 t_ottab:add_sameline()
-smug_set_lock = t_ottab:add_checkbox("Apply ##miscv3") --这只是一个复选框,代码往最后的循环脚本部分找
+t_ottab:add_button("Apply ##miscv3", function()
+    tunables.set_int(-954321460, smug_val:get_value())
+end)
+
+nc_stock_0 = t_ottab:add_input_int("Current inventory of shipped goods") --return Global_1845263[iParam0 /*877*/].f_267.f_313.f_8[iParam1];
+nc_stock_1 = t_ottab:add_input_int("Current inventory of sporting goods") 
+nc_stock_2 = t_ottab:add_input_int("Current inventory of South American imports") 
+nc_stock_3 = t_ottab:add_input_int("Current inventory of pharmaceutical products") 
+nc_stock_4 = t_ottab:add_input_int("Current inventory of organic agricultural products") 
+nc_stock_5 = t_ottab:add_input_int("Current inventory of print") 
+nc_stock_6 = t_ottab:add_input_int("Current inventory of counterfeit banknotes") 
+
+nc_cap_max_0 = t_ottab:add_input_int("Maximum inventory of transported goods")  
+nc_cap_max_1 = t_ottab:add_input_int("Maximum inventory of shipped goods")  
+nc_cap_max_2 = t_ottab:add_input_int("Maximum inventory of South American imports")  
+nc_cap_max_3 = t_ottab:add_input_int("Maximum inventory of pharmaceutical products")  
+nc_cap_max_4 = t_ottab:add_input_int("Maximum inventory of organic agricultural products")  
+nc_cap_max_5 = t_ottab:add_input_int("Maximum inventory of print")  
+nc_cap_max_6 = t_ottab:add_input_int("Maximum inventory of counterfeit banknotes")  
+
+t_ottab:add_button("Retrieve ##miscv4", function()
+    local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
+    nc_stock_0:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 0 ))) --3095 --return Global_1845263[iParam0 /*877*/].f_267.f_313.f_8[iParam1];
+    nc_stock_1:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 1 ))) --3095
+    nc_stock_2:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 2 ))) --3095
+    nc_stock_3:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 3 ))) --3095
+    nc_stock_4:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 4 ))) --3095
+    nc_stock_5:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 5 ))) --3095
+    nc_stock_6:set_value(globals.get_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 6 ))) --3095
+    nc_cap_max_1:set_value(tunables.get_int(-1318722703))
+    nc_cap_max_2:set_value(tunables.get_int(-2136290534))
+    nc_cap_max_3:set_value(tunables.get_int(1069721135))
+    nc_cap_max_4:set_value(tunables.get_int(-8586474))
+    nc_cap_max_5:set_value(tunables.get_int(-358911902))
+    nc_cap_max_6:set_value(tunables.get_int(-879486246))
+    nc_cap_max_0:set_value(tunables.get_int(-1168716160))
+
+end)
+t_ottab:add_sameline()
+t_ottab:add_button("Apply ##miscv4", function()
+        local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
+
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 0 ) , nc_stock_0:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 1 ) , nc_stock_1:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 2 ) , nc_stock_2:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 3 ) , nc_stock_3:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 4 ) , nc_stock_4:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 5 ) , nc_stock_5:get_value()) --3095
+        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 313 + 8 + 1 + 6 ) , nc_stock_6:get_value()) --3095
+        tunables.set_int(-1318722703, nc_cap_max_1:get_value())
+        tunables.set_int(-2136290534, nc_cap_max_2:get_value())
+        tunables.set_int(1069721135, nc_cap_max_3:get_value())
+        tunables.set_int(-8586474, nc_cap_max_4:get_value())
+        tunables.set_int(-358911902, nc_cap_max_5:get_value())
+        tunables.set_int(-879486246, nc_cap_max_6:get_value())
+        tunables.set_int(-1168716160, nc_cap_max_0:get_value())    
+end)
+t_ottab:add_sameline()
+t_ottab:add_text("Modify inventory carefully and do not exceed limits")
 
 t_heisttab:add_separator()
 t_heisttab:add_text("Firm Data Breach Contract - Don't Mess With DRE")
@@ -4075,30 +4227,6 @@ script.register_looped("schlua-tuneables-lock", function(script)
         tunables.set_int("GR_RESEARCH_PRODUCTION_TIME", bk_rs_t1:get_value())
         tunables.set_int("GR_RESEARCH_UPGRADE_EQUIPMENT_REDUCTION_TIME", bk_rs_t2:get_value())
         tunables.set_int("GR_RESEARCH_UPGRADE_STAFF_REDUCTION_TIME", bk_rs_t3:get_value())
-    end
-
-    if  biker_set_lock:is_enabled() then
-        tunables.set_float(-823848572, biker_val_mtp:get_value())
-        local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
-
-        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 0 * 13)+1 , biker_cap_0:get_value()) --3095
-        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 1 * 13)+1 , biker_cap_1:get_value()) --3095
-        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 2 * 13)+1 , biker_cap_2:get_value()) --3095
-        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 3 * 13)+1 , biker_cap_3:get_value()) --3095
-        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 4 * 13)+1 , biker_cap_4:get_value()) --3095
-        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 5 * 13)+1 , biker_cap_5:get_value()) --3095
-        globals_set_int((1845263 + 1 + (playerid * 877) + 267 + 195 + 1 + 6 * 13)+1 , biker_cap_6:get_value()) --3095
-        tunables.set_int("BIKER_COCAINE_CAPACITY", biker_cap_max_0:get_value())
-        tunables.set_int("BIKER_WEED_CAPACITY", biker_cap_max_1:get_value())
-        tunables.set_int("BIKER_METH_CAPACITY", biker_cap_max_2:get_value())
-        tunables.set_int("BIKER_COUNTERCASH_CAPACITY", biker_cap_max_3:get_value())
-        tunables.set_int("BIKER_FAKEIDS_CAPACITY", biker_cap_max_4:get_value())
-        tunables.set_int("GR_MANU_CAPACITY", biker_cap_max_5:get_value())
-        tunables.set_int("ACID_LAB_PRODUCT_CAPACITY", biker_cap_max_6:get_value())    
-    end
-
-    if  smug_set_lock:is_enabled() then
-        tunables.set_int(-954321460, smug_val:get_value())
     end
 
     if  fixer_final_val_lock:is_enabled() then
@@ -4793,8 +4921,8 @@ script.register_looped("schlua-dataservice", function(script)
     
 
     if checkmiss:is_enabled() then --虎鲸导弹 冷却、距离
-        tunables.set_int("IH_SUBMARINE_MISSILES_COOLDOWN", 0) --tuneables_processing.c 
-        tunables.set_int("IH_SUBMARINE_MISSILES_DISTANCE", 80000) --tuneables_processing.c IH_SUBMARINE_MISSILES_DISTANCE
+        tunables.set_int("IH_SUBMARINE_MISSILES_COOLDOWN", 0)  
+        tunables.set_int("IH_SUBMARINE_MISSILES_DISTANCE", 80000) 
     end
 
     if checkbypassconv:is_enabled() then  --跳过NPC对话
