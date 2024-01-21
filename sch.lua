@@ -1,4 +1,4 @@
--- v3.10 --
+-- v3.16 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.10"
+luaversion = "v3.16"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -700,7 +700,8 @@ end)
 
 
 gentab:add_button("test02", function()
-    
+    log.info(tostring(STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(0, 11845, 0)))
+    log.info(tostring(STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(0, 11845, 1)))
 end)
 ]]
 --------------------------------------------------------------------------------------- TEST
@@ -4077,6 +4078,217 @@ odatatab:add_button("I agree", function()
     end
 end)
 
+tstaba1 = TuneablesandStatsTab:add_tab("Miscellaneous")
+tstaba1:add_button("Unlock the wholesale price of some vehicles", function()
+
+    --机库相关
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_MICROLIGHT", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_ROGUE", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_ALPHAZ1", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_HAVOK", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_STARLING", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_MOLOTOK", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_TULA", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_BOMBUSHKA", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_HOWARD", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_MOGUL", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_HUNTER", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_SEABREEZE", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_NOKOTA", 0);
+    tunables.set_int("SMUG_NUMBER_OF_STEAL_MISSIONS_TO_UNLOCK_PYRO", 0);
+
+    --名钻赌场相关
+    tunables.set_int(-1997603235, 1)
+    tunables.set_int(1293915021, 1)
+    tunables.set_int(-423431250, 1)
+    tunables.set_int(-1491164275, 1)
+    tunables.set_int(-170684478, 1)
+    tunables.set_int(-1541063863, 1)
+    tunables.set_int(2075481779, 1)
+    tunables.set_int(-1775833032, 1)
+    tunables.set_int(-1971661685, 1)
+    tunables.set_int(1161220966, 1)
+    tunables.set_int(-1874913332, 1)
+    tunables.set_int(-595990903, 1)
+    tunables.set_int(829638346, 1)
+    tunables.set_int(1362146058, 1)
+    tunables.set_int(-758040390, 1)
+    tunables.set_int(1378787619, 1)
+    tunables.set_int(1041883040, 1)
+    tunables.set_int(-463901261, 1)
+    tunables.set_int(1961619344, 1)
+    tunables.set_int(-2141495545, 1)
+    tunables.set_int(-349041781, 1)
+    tunables.set_int(-410267195, 1)
+    tunables.set_int(-1071451023, 1)
+
+    --佩里科相关 维泰尔\长鳍等
+    stats.set_bool("MPX_COMPLETE_H4_F_USING_VETIR", true)
+    stats.set_bool("MPX_COMPLETE_H4_F_USING_LONGFIN", true)
+    stats.set_bool("MPX_COMPLETE_H4_F_USING_ANNIH", true)
+    stats.set_bool("MPX_COMPLETE_H4_F_USING_ALKONOS", true)
+    stats.set_bool("MPX_COMPLETE_H4_F_USING_PATROLB", true)
+    packed_stat_set_bool(41671, true)
+    packed_stat_set_bool(41656, true)--appinternet.c		case joaat("squaddie"): return func_68(41656, -1);
+
+    --车友会相关
+    for ulkdisc = 31810, 34374 do
+        packed_stat_set_bool(ulkdisc, true)
+    end
+
+    --末日豪劫DLC
+    local dombit = stats.get_int("MPX_GANGOPS_FLOW_BITSET_MISS0")
+    if (dombit & (1 << 1)) == 0 then
+        dombit = dombit ~ (1 << 1)
+    end
+    if (dombit & (1 << 5)) == 0 then
+        dombit = dombit ~ (1 << 5)
+    end
+    if (dombit & (1 << 6)) == 0 then
+        dombit = dombit ~ (1 << 6)
+    end
+    if (dombit & (1 << 7)) == 0 then
+        dombit = dombit ~ (1 << 7)
+    end
+    if (dombit & (1 << 10)) == 0 then
+        dombit = dombit ~ (1 << 10)
+    end    
+    if (dombit & (1 << 11)) == 0 then
+        dombit = dombit ~ (1 << 0)
+    end
+    if (dombit & (1 << 13)) == 0 then
+        dombit = dombit ~ (1 << 13)
+    end    
+    if (dombit & (1 << 12)) == 0 then
+        dombit = dombit ~ (1 << 12)
+    end    
+    if (dombit & (1 << 15)) == 0 then
+        dombit = dombit ~ (1 << 15)
+    end
+    stats.set_int("MPX_GANGOPS_FLOW_BITSET_MISS0", dombit)
+
+    --公寓抢劫
+    local h1bit = stats.get_int("MPX_CHAR_FM_VEHICLE_1_UNLCK")
+    if (h1bit & (1 << 12)) == 0 then
+        h1bit = h1bit ~ (1 << 12)
+    end
+    if (h1bit & (1 << 14)) == 0 then
+        h1bit = h1bit ~ (1 << 14)
+    end
+    if (h1bit & (1 << 16)) == 0 then
+        h1bit = h1bit ~ (1 << 16)
+    end
+    if (h1bit & (1 << 9)) == 0 then
+        h1bit = h1bit ~ (1 << 9)
+    end
+    if (h1bit & (1 << 20)) == 0 then
+        h1bit = h1bit ~ (1 << 20)
+    end
+    if (h1bit & (1 << 7)) == 0 then
+        h1bit = h1bit ~ (1 << 7)
+    end
+    if (h1bit & (1 << 8)) == 0 then
+        h1bit = h1bit ~ (1 << 8)
+    end
+    if (h1bit & (1 << 10)) == 0 then
+        h1bit = h1bit ~ (1 << 10)
+    end
+    if (h1bit & (1 << 11)) == 0 then
+        h1bit = h1bit ~ (1 << 11)
+    end
+    if (h1bit & (1 << 5)) == 0 then
+        h1bit = h1bit ~ (1 << 5)
+    end
+    if (h1bit & (1 << 6)) == 0 then
+        h1bit = h1bit ~ (1 << 6)
+    end
+    if (h1bit & (1 << 21)) == 0 then
+        h1bit = h1bit ~ (1 << 21)
+    end
+    if (h1bit & (1 << 18)) == 0 then
+        h1bit = h1bit ~ (1 << 18)
+    end
+    if (h1bit & (1 << 22)) == 0 then
+        h1bit = h1bit ~ (1 << 22)
+    end
+    if (h1bit & (1 << 19)) == 0 then
+        h1bit = h1bit ~ (1 << 19)
+    end
+    if (h1bit & (1 << 13)) == 0 then
+        h1bit = h1bit ~ (1 << 13)
+    end
+    if (h1bit & (1 << 15)) == 0 then
+        h1bit = h1bit ~ (1 << 15)
+    end
+    if (h1bit & (1 << 17)) == 0 then
+        h1bit = h1bit ~ (1 << 17)
+    end
+    stats.set_int("MPX_CHAR_FM_VEHICLE_1_UNLCK", h1bit)
+
+    --军火霸业
+    local grbit = stats.get_int("MPX_WVM_FLOW_VEHICLE_BS")
+    if (grbit & (1 << 0)) == 0 then
+        grbit = grbit ~ (1 << 0)
+    end
+    if (grbit & (1 << 1)) == 0 then
+        grbit = grbit ~ (1 << 1)
+    end
+    if (grbit & (1 << 2)) == 0 then
+        grbit = grbit ~ (1 << 2)
+    end
+    if (grbit & (1 << 3)) == 0 then
+        grbit = grbit ~ (1 << 3)
+    end
+    if (grbit & (1 << 5)) == 0 then
+        grbit = grbit ~ (1 << 5)
+    end
+    if (grbit & (1 << 7)) == 0 then
+        grbit = grbit ~ (1 << 7)
+    end
+    stats.set_int("MPX_WVM_FLOW_VEHICLE_BS", grbit)
+
+    --进出口大亨
+    local atbit = stats.get_int("MPX_AT_FLOW_VEHICLE_BS")
+    if (atbit & (1 << 0)) == 0 then
+        atbit = atbit ~ (1 << 0)
+    end
+    if (atbit & (1 << 1)) == 0 then
+        atbit = atbit ~ (1 << 1)
+    end
+    if (atbit & (1 << 2)) == 0 then
+        atbit = atbit ~ (1 << 2)
+    end
+    if (atbit & (1 << 3)) == 0 then
+        atbit = atbit ~ (1 << 3)
+    end
+    if (atbit & (1 << 4)) == 0 then
+        atbit = atbit ~ (1 << 4)
+    end
+    if (atbit & (1 << 5)) == 0 then
+        atbit = atbit ~ (1 << 5)
+    end
+    if (atbit & (1 << 6)) == 0 then
+        atbit = atbit ~ (1 << 6)
+    end
+    if (atbit & (1 << 7)) == 0 then
+        atbit = atbit ~ (1 << 7)
+    end
+    stats.set_int("MPX_AT_FLOW_VEHICLE_BS", atbit)
+
+    --不夜城
+    tunables.set_int(1416880888, 1)
+    tunables.set_int(132690314, 1)
+    tunables.set_int(407802353, 1)
+    tunables.set_int(-26415325, 1)
+    tunables.set_int(1547508956, 1)
+    tunables.set_int(-1431059775, 1)
+
+    --毒品战
+    if stats.get_int("MPX_FINISHED_SASS_RACE_TOP_3") <21 then
+        stats.set_int("MPX_FINISHED_SASS_RACE_TOP_3", 21)
+    end
+end)
+tstaba1:add_text(" Supported DLCs : Smuggler's Run + Diamond Casino Heist + Cayo Perico Heist + Doomsday Heist + Apartment Heist + Arms Trafficking + Import/Export Tycoon + Nightclub + Customization Shop + Drug War")
 --------------------------------------------------------------------------------------- 传送点tab
 
 tpmenu:add_text("Teleport page")
