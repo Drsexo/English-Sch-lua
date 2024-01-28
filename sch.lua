@@ -1,4 +1,4 @@
--- v3.16 --
+-- v3.18 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.16"
+luaversion = "v3.18"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -4076,6 +4076,55 @@ odatatab:add_button("I agree", function()
             end        
         end)
     end
+end)
+
+unlocktab = TuneablesandStatsTab:add_tab("Unlock")
+
+unlocktab:add_text("XMAS GIFT TRUCK")
+unlocktab:add_button("eCola Festive Sweater", function()
+    packed_stat_set_bool(42128, true) --fm_content_xmas_truck.c func_6196("XT_TKR_SPCLa" /* GXT: eCola Festive Sweater */);
+end)
+unlocktab:add_button("Sprunk Festive Sweater", function()
+    packed_stat_set_bool(42129, true)
+end)
+unlocktab:add_text("XMAS EVENTS")
+unlocktab:add_button("The Gooch Outfit", function()
+    packed_stat_set_bool(34761, true) --fm_content_xmas_mugger.c func_5997("XM_GOUTF" /* GXT: The Gooch Outfit */);
+end)
+unlocktab:add_button("The Yeti Outfit", function()
+    packed_stat_set_bool(42119, true) --freemode YETIKILLHELP2
+end)
+unlocktab:add_button("The Snowman", function()
+    packed_stat_set_bool(36776, true) --freemode SNOWOAWDHEL2
+end)
+unlocktab:add_text("TRICK OR TREAT")
+unlocktab:add_button("Pumpkin Tee", function()
+    packed_stat_set_bool(34380, true) --freemode TRICKOAWD2
+end)
+unlocktab:add_button("The Horror Pumpkin Mask", function()
+    packed_stat_set_bool(34372, true) --freemode TRICKOAWDHEL
+end)
+unlocktab:add_text("Richard's Film Company Incident")
+unlocktab:add_button("Space Interloper Outfit", function()
+    packed_stat_set_bool(30240, true) --freemode MPROP_RWD_TCK1m
+end)
+unlocktab:add_text("Casino Heist")
+unlocktab:add_button("The High Roller Outfit", function()
+    packed_stat_set_bool(26969, true) --freemode HELPACCARCOLAL2
+end)
+unlocktab:add_text("RDR2 related")
+unlocktab:add_button("The Frontier Outfit", function()
+    packed_stat_set_bool(31736, true) --freemode BURIED_OUTTIC
+end)
+unlocktab:add_text("Salvage Yard DLC")
+unlocktab:add_button("The McTony Security Outfit", function()
+    packed_stat_set_bool(42153, true) --fm_content_vehrob_submarine SUB_OUTFITa
+end)
+unlocktab:add_button("The Los Santos Panic outfit", function()
+    packed_stat_set_bool(42063, true) --fm_content_vehrob_arena MBA_OUTFITa
+end)
+unlocktab:add_button("Coast Guard Outfit outfit", function()
+    packed_stat_set_bool(42111, true) --fm_content_vehrob_cargo_ship CSF_T_UNLKOTFT
 end)
 
 tstaba1 = TuneablesandStatsTab:add_tab("Miscellaneous")
