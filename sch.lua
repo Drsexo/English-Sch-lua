@@ -1,4 +1,4 @@
--- v3.18 --
+-- v3.19 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.18"
+luaversion = "v3.19"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -700,8 +700,6 @@ end)
 
 
 gentab:add_button("test02", function()
-    log.info(tostring(STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(0, 11845, 0)))
-    log.info(tostring(STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(0, 11845, 1)))
 end)
 ]]
 --------------------------------------------------------------------------------------- TEST
@@ -806,7 +804,9 @@ gentab:add_button("Skip cayo perico setup (Panther statue)", function()
     stats.set_int("MPX_H4_MISSIONS", 65279)
     stats.set_int("MPX_H4LOOT_COKE_I_SCOPED", 16777215)
     stats.set_int("MPX_H4LOOT_COKE_I", 16777215)
-    locals.set_int("heist_island_planning", 1544, 2) --3095
+    if globals.get_int(1970744 + 1093) == 79 then --3095 确认抢劫计划面板未全屏渲染再刷新，避免脚本死亡
+        locals.set_int("heist_island_planning", 1544, 2) --3095
+    end
 end)
 
 gentab:add_sameline()
@@ -830,7 +830,9 @@ gentab:add_button("Skip cayo perico setup (pink diamond)", function()
     stats.set_int("MPX_H4_MISSIONS", 65279)
     stats.set_int("MPX_H4LOOT_COKE_I_SCOPED", 16777215)
     stats.set_int("MPX_H4LOOT_COKE_I", 16777215)
-    locals.set_int("heist_island_planning", 1544, 2) --3095
+    if globals.get_int(1970744 + 1093) == 79 then --3095 确认抢劫计划面板未全屏渲染再刷新，避免脚本死亡
+        locals.set_int("heist_island_planning", 1544, 2) --3095
+    end
 end)
 
 gentab:add_sameline()
@@ -854,7 +856,9 @@ gentab:add_button("Reset cayo perico", function()
     stats.set_int("MPX_H4_MISSIONS", 0)
     stats.set_int("MPX_H4LOOT_COKE_I_SCOPED", 0)
     stats.set_int("MPX_H4LOOT_COKE_I", 0)
-    locals_set_int("heist_island_planning", 1544, 2) --3095
+    if globals.get_int(1970744 + 1093) == 79 then --3095 确认抢劫计划面板未全屏渲染再刷新，避免脚本死亡
+        locals.set_int("heist_island_planning", 1544, 2) --3095
+    end
     gui.show_message("Attention","The planning panel will be restored to its initial state after buying the kosatka!")
 end)
 
@@ -1040,6 +1044,172 @@ gentab:add_button("Show Avengers panel", function()  --3095
             run_script("appAvengerOperations", 4592)
         end
     end
+end)
+
+gentab:add_button("Mini-games are completed immediately (various access control, VoltLab, packet collection mini-games, Perico Plasma/Drain Cutting, Bank Drill Immediately)", function()
+
+    local_H4_hack = 24333 --3095    --func_5790(&Local_24333, &(Local_24324[func_381(bParam1, 3) /*2*/]), 0, joaat("heist"), Global_786547.f_1);
+
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then
+
+        locals_set_int("fm_mission_controller_2020", 29118, 6) --3095 --佩里科排水口格栅切割
+
+        locals_set_float("fm_mission_controller_2020", 30357 + 3, 100) --3095 佩里科等离子切割
+        
+        locals_set_float("fm_mission_controller", 10067 + 11, 1) --3095 全福银行钻孔
+    
+        local_H4_hack_v = locals.get_int("fm_mission_controller_2020", local_H4_hack) --佩里科finger clone
+        if (local_H4_hack_v & (1 << 0)) == 0 then
+            local_H4_hack_v = local_H4_hack_v ~ (1 << 0)
+            locals_set_int("fm_mission_controller_2020", local_H4_hack, local_H4_hack_v)
+        end
+    end
+    
+    --所有赌场指纹和键盘门禁
+    local_H3_hack_1 = 52985 --3095    --func_14102(&Local_52985, &(Local_52920[Local_31603[bLocal_3229 /*292*/].f_27 /*2*/]), 0, joaat("heist"), Global_786547.f_1);
+    local_H3_hack_2 = 54047 --3095    --func_14104(&Local_54047, &(Local_53982[Local_31603[bLocal_3229 /*292*/].f_27 /*2*/]), 0, joaat("heist"), Global_786547.f_1);
+    local_H3_hack_1_p = 2836 --3095    
+    local_H3_hack_2_p = 3833 --3095    
+
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 then --赌场指纹门禁
+        local_H3_hack_1_v = locals.get_int("fm_mission_controller", local_H3_hack_1)
+        if (local_H3_hack_1_v & (1 << 0)) == 0 then
+            local_H3_hack_1_v = local_H3_hack_1_v ~ (1 << 0)
+            locals_set_int("fm_mission_controller", local_H3_hack_1, local_H3_hack_1_v)
+        end
+        local_H3_hack_2_v = locals.get_int("fm_mission_controller", local_H3_hack_2)
+        if (local_H3_hack_2_v & (1 << 0)) == 0 then
+            local_H3_hack_2_v = local_H3_hack_2_v ~ (1 << 0)
+            locals_set_int("fm_mission_controller", local_H3_hack_2, local_H3_hack_2_v)
+        end
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("am_mp_arc_cab_manager")) ~= 0 then --赌场指纹门禁-练习
+        local_H3_hack_1_p_v = locals.get_int("am_mp_arc_cab_manager", local_H3_hack_1_p)
+        if (local_H3_hack_1_p_v & (1 << 0)) == 0 then
+            local_H3_hack_1_p_v = local_H3_hack_1_p_v ~ (1 << 0)
+            locals_set_int("am_mp_arc_cab_manager", local_H3_hack_1_p, local_H3_hack_1_p_v)
+        end
+        local_H3_hack_2_p_v = locals.get_int("am_mp_arc_cab_manager", local_H3_hack_2_p)
+        if (local_H3_hack_2_p_v & (1 << 0)) == 0 then
+            local_H3_hack_2_p_v = local_H3_hack_2_p_v ~ (1 << 0)
+            locals_set_int("am_mp_arc_cab_manager", local_H3_hack_2_p, local_H3_hack_2_p_v)
+        end
+    end
+
+    --所有voltlab
+        --[[
+        if (iLocal_765 == iLocal_764)
+            {
+                AUDIO::PLAY_SOUND_FRONTEND(-1, "All_Connected_Correct", uParam1->f_741, true);
+            }
+    ]]
+
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then --voltlab立即完成
+        locals_set_int("fm_mission_controller_2020", 1721, locals.get_int("fm_mission_controller_2020", 1722)) --3095 --voltlab实际值与目标值始终一致
+        locals_set_int("fm_mission_controller_2020", 1723, 3) --3095 已连接三条线
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_content_island_heist")) ~= 0 then
+        locals_set_int("fm_content_island_heist", 764, locals.get_int("fm_content_island_heist", 765)) --3095 --voltlab实际值与目标值始终一致
+        locals_set_int("fm_content_island_heist", 766, 3) --3095  已连接三条线
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_content_vehrob_prep")) ~= 0 then
+        locals_set_int("fm_content_vehrob_prep", 545, locals.get_int("fm_content_vehrob_prep", 546)) --3095 --voltlab实际值与目标值始终一致
+        locals_set_int("fm_content_vehrob_prep", 547, 3) --3095  已连接三条线
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("am_mp_arc_cab_manager")) ~= 0 then
+        locals_set_int("am_mp_arc_cab_manager", 453, locals.get_int("am_mp_arc_cab_manager", 454)) --3095 --voltlab实际值与目标值始终一致
+        locals_set_int("am_mp_arc_cab_manager", 455, 3) --3095  已连接三条线
+    end
+
+
+    --所有收集数据包绕过防火墙破解
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_content_vehrob_casino_prize")) ~= 0 then
+        locals_set_int("fm_content_vehrob_casino_prize", 1043 + 135 , 3) --3095 case 3 Pass_Remote
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 then --
+        locals_set_int("fm_mission_controller", 1269 + 135 , 3) --3095 case 3 Pass_Remote
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then
+        locals_set_int("fm_mission_controller_2020", 978 + 135 , 3) --3095 case 3 Pass_Remote
+    end
+
+    --所有贪吃蛇破解 CIRC_COMP
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 then --
+        locals_set_int("fm_mission_controller", 11776 + 24 , 7)
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then --
+        locals_set_int("fm_mission_controller_2020", 9002 + 24 , 7)
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_content_business_battles")) ~= 0 then --
+        locals_set_int("fm_content_business_battles", 4070 + 24 , 7)
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_content_island_heist")) ~= 0 then --
+        locals_set_int("fm_content_island_heist", 10040 + 24 , 7)
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_content_vehrob_prep")) ~= 0 then --
+        locals_set_int("fm_content_vehrob_prep", 9098 + 24 , 7)
+    end
+
+
+    --int* iParam0, int iParam1, int iParam2, int iParam3, int iParam4, var uParam5, var uParam6, int iParam7, bool bParam8, bool bParam9, bool bParam10, bool bParam11, bool bParam12, bool bParam13, int iParam14, int iParam15, bool bParam16, bool bParam17, bool bParam18, bool bParam19, bool bParam20, bool bParam21, bool bParam22
+    local minigamelocaltable = {
+        [1]  = {script_name = "agency_heist3b", minigame_local = 6210},
+        [2]  = {script_name = "business_battles_sell", minigame_local = 429},
+        [3]  = {script_name = "fm_content_business_battles", minigame_local = 4070},
+        [4]  = {script_name = "fm_content_island_heist", minigame_local = 10040},
+        [5]  = {script_name = "fm_content_vehrob_casino_prize", minigame_local = 7615 + 2},
+        [6]  = {script_name = "fm_content_vehrob_police", minigame_local = 7478},
+        [7]  = {script_name = "fm_content_vehrob_prep", minigame_local = 9098},
+        [8]  = {script_name = "fm_content_vip_contract_1", minigame_local = 7286},
+        [9]  = {script_name = "fm_mission_controller_2020", minigame_local = 28335},
+        [10]  = {script_name = "fm_mission_controller", minigame_local = 9773},
+        [11]  = {script_name = "gb_cashing_out", minigame_local = 399},
+        [12]  = {script_name = "gb_gunrunning_defend", minigame_local = 2259},
+        [13]  = {script_name = "gb_sightseer", minigame_local = 458},
+    }
+        --[12]  = {script_name = "gb_casino_heist", minigame_local = }, --Global_2737317
+        --[12]  = {script_name = "gb_casino", minigame_local = }, --Global_2737317
+        --[12]  = {script_name = "gb_gangops", minigame_local = }, --Global_2737317
+        --[12]  = {script_name = "gb_gunrunning", minigame_local = }, --Global_2737317
+        --[12]  = {script_name = "gb_infiltration", minigame_local = }, --Global_2737317
+        --[12]  = {script_name = "gb_smuggler", minigame_local = }, --Global_2737317
+        --[0]  = {script_name = "business_battles", minigame_local = }, --Global_2737317
+
+    for i = 1, 13 do
+        if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat(minigamelocaltable[i].script_name)) ~= 0 then
+            minigame_tmp_v = locals.get_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local) --3095 -- WINBRUTE 
+            if (minigame_tmp_v & (1 << 9)) == 0 then
+                minigame_tmp_v = minigame_tmp_v ~ (1 << 9)
+                locals_set_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local, minigame_tmp_v)
+            end
+        end
+        if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat(minigamelocaltable[i].script_name)) ~= 0 then
+            minigame_tmp_v = locals.get_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local) --3095 -- WINIP 
+            if (minigame_tmp_v & (1 << 18)) == 0 then
+                minigame_tmp_v = minigame_tmp_v ~ (1 << 18)
+                locals_set_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local, minigame_tmp_v)
+            end
+        end
+        if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat(minigamelocaltable[i].script_name)) ~= 0 then
+            minigame_tmp_v = locals.get_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local) --3095 --  --Biolab 条形上下浮动对准中间 的小游戏 --"Hack_Success", "DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS"
+            if (minigame_tmp_v & (1 << 26)) == 0 then
+                minigame_tmp_v = minigame_tmp_v ~ (1 << 26)
+                locals_set_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local, minigame_tmp_v)
+            end
+        end
+    end
+
+    minigame_tmp_v2 = globals.get_int(2737317)
+    if (minigame_tmp_v2 & (1 << 9)) == 0 then
+        minigame_tmp_v2 = minigame_tmp_v2 ~ (1 << 9)
+    end
+    if (minigame_tmp_v2 & (1 << 18)) == 0 then
+        minigame_tmp_v2 = minigame_tmp_v2 ~ (1 << 18)
+    end
+    if (minigame_tmp_v2 & (1 << 26)) == 0 then
+        minigame_tmp_v2 = minigame_tmp_v2 ~ (1 << 26)
+    end
+    globals_set_int(2737317, minigame_tmp_v2)
 end)
 
 gentab:add_separator()
@@ -1496,6 +1666,11 @@ CamList = {   --从heist control抄的,游戏中的各种摄像头
     joaat("hei_prop_bank_cctv_02"),
     joaat("ch_prop_ch_cctv_cam_02a"),
     joaat("xm_prop_x17_server_farm_cctv_01"),
+    joaat("prop_cctv_pole_02"),
+    joaat("prop_cctv_pole_03"),
+    joaat("prop_cctv_pole_04"),
+    joaat("prop_cctv_pole_01a"),
+    joaat("h4_prop_h4_cctv_pole_04"),
 }
 
 gentab:add_sameline()
@@ -1965,6 +2140,27 @@ gentab:add_button("Navigation Points (Particle Effects)", function()
     end)
 end)
 
+gentab:add_sameline()
+
+gentab:add_button("Random location", function()
+    _,safepos = PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(math.random(-1794,2940), math.random(-3026,6298), 20, 1, 0, outheading, lanes, 0, 3.0, 0.0)
+    PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), safepos.x, safepos.y, safepos.z)
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("L.S Customs", function()
+    PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  -337, -137, 38.5)
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Ammunation with shooting range", function()
+    PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  20.80, -1107, 29.8)
+    PED.SET_PED_DESIRED_HEADING(PLAYER.PLAYER_PED_ID(), 335)
+end)
+
+
 function tpfac() --传送到设施
     local Pos = HUD.GET_BLIP_COORDS(HUD.GET_FIRST_BLIP_INFO_ID(590))
     if HUD.DOES_BLIP_EXIST(HUD.GET_FIRST_BLIP_INFO_ID(590)) then
@@ -1994,6 +2190,8 @@ gentab:add_button("Kosatka Panel", function()
         end
     end)
 end)
+
+gentab:add_sameline()
 
 gentab:add_button("Facility", function()
     local PlayerPos = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER.PLAYER_PED_ID(), 0.0, 0.52, 0.0)
@@ -2058,6 +2256,8 @@ function tpnc() --传送到夜总会
     end
 end
 
+gentab:add_sameline()
+
 gentab:add_button("Nightclub", function()
     tpnc()
 end)
@@ -2110,6 +2310,8 @@ gentab:add_button("Arcade Plan Panel (Advanced Arcade)", function()
     PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  2711.773, -369.458, -54.781)
 end)
 
+gentab:add_sameline()
+
 gentab:add_button("Casino", function()
     local PlayerPos = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER.PLAYER_PED_ID(), 0.0, 0.0, 0.0)
     local intr = INTERIOR.GET_INTERIOR_AT_COORDS(PlayerPos.x, PlayerPos.y, PlayerPos.z)
@@ -2152,17 +2354,6 @@ gentab:add_button("Ms. Baker's Office", function()
     end
 end)
 
-gentab:add_button("LS Customs", function()
-    PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  -337, -137, 38.5)
-end)
-
-gentab:add_sameline()
-
-gentab:add_button("Ammunition with firing range", function()
-    PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  20.80, -1107, 29.8)
-    PED.SET_PED_DESIRED_HEADING(PLAYER.PLAYER_PED_ID(), 335)
-end)
-
 gentab:add_button("Perico drain fence", function()
     PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  5044.62, -5815.75, -12.3)
 end)
@@ -2190,11 +2381,6 @@ gentab:add_sameline()
 
 gentab:add_button("Sea escape point", function()
     PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(),  4735.74, -6174, 20)
-end)
-
-gentab:add_button("Random location", function()
-    _,safepos = PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(math.random(-1794,2940), math.random(-3026,6298), 20, 1, 0, outheading, lanes, 0, 3.0, 0.0)
-    PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), safepos.x, safepos.y, safepos.z)
 end)
 
 gentab:add_separator()
@@ -2622,21 +2808,6 @@ gentab:add_text("PTFX collection")
 
 local ptfxt1 = gentab:add_checkbox("Thunder and lightning A") --只是一个开关，代码往后面找
 
-gentab:add_button("Perico fence instant cut", function()
-    locals_set_int("fm_mission_controller_2020", 29118, 6) --3095 --https://www.unknowncheats.me/forum/3418914-post13398.html
-end)
-
-gentab:add_sameline()
-
-gentab:add_button("Perico instant plasma cutting", function()
-    locals_set_float("fm_mission_controller_2020", 30357 + 3, 100) --3095 --https://www.unknowncheats.me/forum/3418914-post13398.html
-end)
-
-gentab:add_sameline()
-
-gentab:add_button("Perico fingerprint bypass", function()
-    locals_set_int("fm_mission_controller_2020", 24333, 5) --3095 --https://www.unknowncheats.me/forum/3418914-post13398.html
-end)
 --------------------------------------------------------------------------------------- Players 页面
 
 gui.get_tab(""):add_text("SCH LUA PLAYER OPTIONS -!!!!! NO FEEDBACK ACCEPTED!!!!!") 
@@ -3583,7 +3754,7 @@ local emmode = gentab:add_checkbox("Emergency mode-Press Ctrl+S+D at the same ti
 --emmode:set_enabled(true) --开启上方创建的复选框，删除此行代码后紧急模式1不会默认监听快捷键
 
 local emmode2 = gentab:add_checkbox("Emergency Mode 2 - Press Ctrl+A+D to quickly escape to a new session") --只是一个开关，代码往后面找
-emmode2:set_enabled(true) --开启上方创建的复选框，删除此行代码后紧急模式2不会默认监听快捷键
+--emmode2:set_enabled(true) --开启上方创建的复选框，删除此行代码后紧急模式2不会默认监听快捷键
 
 gentab:add_sameline()
 
@@ -3802,6 +3973,8 @@ perico_value_NECKLACE = t_heisttab:add_input_int("Necklace")
 perico_value_TEQUILA = t_heisttab:add_input_int("Tequila")
 t_heisttab:add_text("Miscellaneous")
 perico_pack_vol = t_heisttab:add_input_int("Loot Bag Capacity")
+perico_pm_v_m_n = t_heisttab:add_input_float("Perico Main Target Value Multiplier (Normal)")
+perico_pm_v_m_h = t_heisttab:add_input_float("Perico main target value multiplier (Hard)")
 
 t_heisttab:add_button("Retrieve ##preicov", function()
     perico_value_TEQUILA:set_value(tunables.get_int("IH_PRIMARY_TARGET_VALUE_TEQUILA"))
@@ -3812,6 +3985,8 @@ t_heisttab:add_button("Retrieve ##preicov", function()
     perico_value_STATUE:set_value(tunables.get_int("IH_PRIMARY_TARGET_VALUE_SAPPHIRE_PANTHER_STATUE"))
 
     perico_pack_vol:set_value(tunables.get_int(1859395035))
+    perico_pm_v_m_n:set_value(tunables.get_float(1808919381))
+    perico_pm_v_m_h:set_value(tunables.get_float(1759346392))
 end)
 
 t_heisttab:add_sameline()
@@ -4431,7 +4606,8 @@ deva3 = 73
 deva4 = 74
 deva5 = 75
 deva6 = 76
-script.register_looped("schlua-test", function(script) 
+script.register_looped("schlua-test", function(script)
+ 
     if  devmode == 1 then
         if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 then
 
@@ -4482,6 +4658,8 @@ script.register_looped("schlua-tuneables-lock", function(script)
         tunables.set_int("IH_PRIMARY_TARGET_VALUE_MADRAZO_FILES", perico_value_FILES:get_value())
         tunables.set_int("IH_PRIMARY_TARGET_VALUE_SAPPHIRE_PANTHER_STATUE", perico_value_STATUE:get_value())
         tunables.set_int(1859395035, perico_pack_vol:get_value())
+        tunables.set_float(1808919381, perico_pm_v_m_n:get_value())
+        tunables.set_float(1759346392, perico_pm_v_m_h:get_value())    
     end
 
     if  misc_tu_lock:is_enabled() then
@@ -7166,7 +7344,21 @@ void func_12234(var uParam0, var uParam1, Blip* pblParam2, Blip* pblParam3, Blip
 }
 ------------------------------------------------技工 呼叫 载具资产 end
 
+--[[佩里科 门
+    joaat("h4_prop_h4_gate_02a"),
+    joaat("h4_prop_h4_gate_03a"),
+    joaat("h4_prop_h4_gate_04a"),
+    joaat("h4_prop_h4_gate_05a"),
+    joaat("h4_prop_h4_door_01a"),
+    joaat("h4_prop_h4_gate_l_01a"),
+    joaat("h4_prop_h4_gate_r_01a"),
+    joaat("h4_int_sub_cellgate"),
+    joaat("h4_int_03_vault_ironwork"),
+    joaat("h4_int_03_vault_ironwork"),
+
 ]]
+
+-- MC_TLIVES 团队生命数
 ---------------------------------------------------------------------------------------存储一些小发现、用不上的东西
 
 
