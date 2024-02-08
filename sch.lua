@@ -1,4 +1,4 @@
--- v3.19 --
+-- v3.20 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.19"
+luaversion = "v3.20"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -1197,6 +1197,19 @@ gentab:add_button("Mini-games are completed immediately (various access control,
                 locals_set_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local, minigame_tmp_v)
             end
         end
+        if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat(minigamelocaltable[i].script_name)) ~= 0 then
+            minigame_tmp_v = locals.get_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local) --3095 --  --Biolab 条形上下浮动对准中间 的小游戏 --"Hack_Success", "DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS"
+            if (minigame_tmp_v & (1 << 28)) == 0 then
+                minigame_tmp_v = minigame_tmp_v ~ (1 << 28)
+                locals_set_int(minigamelocaltable[i].script_name, minigamelocaltable[i].minigame_local, minigame_tmp_v)
+            end
+        end
+    end
+
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 then --patch for WINIP
+        locals_set_int("fm_mission_controller", 140 , 0)
+        locals_set_int("fm_mission_controller", 141 , 0)
+        locals_set_int("fm_mission_controller", 156 , 7)
     end
 
     minigame_tmp_v2 = globals.get_int(2737317)
@@ -1210,6 +1223,23 @@ gentab:add_button("Mini-games are completed immediately (various access control,
         minigame_tmp_v2 = minigame_tmp_v2 ~ (1 << 26)
     end
     globals_set_int(2737317, minigame_tmp_v2)
+
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Increase team life count", function() --MC_TLIVES -3095
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then 
+        network.force_script_host("fm_mission_controller_2020") --抢脚本主机
+        c_tlives_v = locals.get_int("fm_mission_controller_2020", 55004 + 873 + 1)
+        locals_set_int("fm_mission_controller_2020", 55004 + 873 + 1, c_tlives_v + 5)
+    end
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 then 
+        network.force_script_host("fm_mission_controller") --抢脚本主机
+        globals_set_int(4718592 + 3318 + 1 + 38, 1)
+        c_tlives_v = locals.get_int("fm_mission_controller", 26154 + 1325 + 1)
+        locals_set_int("fm_mission_controller", 26154 + 1325 + 1, c_tlives_v + 5)
+    end
 end)
 
 gentab:add_separator()
