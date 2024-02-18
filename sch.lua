@@ -1,4 +1,4 @@
--- v3.20 --
+-- v3.22 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.20"
+luaversion = "v3.22"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -700,6 +700,7 @@ end)
 
 
 gentab:add_button("test02", function()
+    log.info(STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(0,9834,0))
 end)
 ]]
 --------------------------------------------------------------------------------------- TEST
@@ -805,7 +806,7 @@ gentab:add_button("Skip cayo perico setup (Panther statue)", function()
     stats.set_int("MPX_H4LOOT_COKE_I_SCOPED", 16777215)
     stats.set_int("MPX_H4LOOT_COKE_I", 16777215)
     if globals.get_int(1970744 + 1093) == 79 then --3095 确认抢劫计划面板未全屏渲染再刷新，避免脚本死亡
-        locals.set_int("heist_island_planning", 1544, 2) --3095
+        locals_set_int("heist_island_planning", 1544, 2) --3095
     end
 end)
 
@@ -831,7 +832,7 @@ gentab:add_button("Skip cayo perico setup (pink diamond)", function()
     stats.set_int("MPX_H4LOOT_COKE_I_SCOPED", 16777215)
     stats.set_int("MPX_H4LOOT_COKE_I", 16777215)
     if globals.get_int(1970744 + 1093) == 79 then --3095 确认抢劫计划面板未全屏渲染再刷新，避免脚本死亡
-        locals.set_int("heist_island_planning", 1544, 2) --3095
+        locals_set_int("heist_island_planning", 1544, 2) --3095
     end
 end)
 
@@ -857,7 +858,7 @@ gentab:add_button("Reset cayo perico", function()
     stats.set_int("MPX_H4LOOT_COKE_I_SCOPED", 0)
     stats.set_int("MPX_H4LOOT_COKE_I", 0)
     if globals.get_int(1970744 + 1093) == 79 then --3095 确认抢劫计划面板未全屏渲染再刷新，避免脚本死亡
-        locals.set_int("heist_island_planning", 1544, 2) --3095
+        locals_set_int("heist_island_planning", 1544, 2) --3095
     end
     gui.show_message("Attention","The planning panel will be restored to its initial state after buying the kosatka!")
 end)
@@ -1054,6 +1055,16 @@ gentab:add_button("Mini-games are completed immediately (various access control,
 
         locals_set_int("fm_mission_controller_2020", 29118, 6) --3095 --佩里科排水口格栅切割
 
+        locals_set_int("fm_mission_controller_2020", 30356, 4) --3095 --佩里科等离子切割 开始
+
+        if locals.get_int("fm_mission_controller_2020", 30332) == 3 then --佩里科密码箱 --Input_Code_Enter_Correct
+            locals_set_int("fm_mission_controller_2020", 30333, 2) --3095 --已输入三组密码
+            locals_set_float("fm_mission_controller_2020", 30333 + 1 + 1, locals.get_int("fm_mission_controller_2020", 30333 + 1 + 1 + 1)) --3095 --使已输入密码与目标相同
+            locals_set_float("fm_mission_controller_2020", 30333 + 1 + 1 + 2, locals.get_int("fm_mission_controller_2020", 30333 + 1 + 1 + 1 + 2)) --3095 --使已输入密码与目标相同
+            locals_set_float("fm_mission_controller_2020", 30333 + 1 + 1 + 4, locals.get_int("fm_mission_controller_2020", 30333 + 1 + 1 + 1 + 4)) --3095 --使已输入密码与目标相同
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 237, 1.0) --确认密码
+        end
+
         locals_set_float("fm_mission_controller_2020", 30357 + 3, 100) --3095 佩里科等离子切割
         
         locals_set_float("fm_mission_controller", 10067 + 11, 1) --3095 全福银行钻孔
@@ -1223,6 +1234,14 @@ gentab:add_button("Mini-games are completed immediately (various access control,
         minigame_tmp_v2 = minigame_tmp_v2 ~ (1 << 26)
     end
     globals_set_int(2737317, minigame_tmp_v2)
+
+    if locals.get_int("fm_content_stash_house", 117 + 15) == 3 then --藏匿屋密码箱 --Input_Code_Enter_Correct SH_HT_MINIG_C f6310->f6299->f6362
+        locals_set_float("fm_content_stash_house", 117 + 22 + 1, locals.get_int("fm_content_stash_house", 117 + 22 + 1 + 1)) --3095 --使已输入密码与目标相同
+        locals_set_float("fm_content_stash_house", 117 + 22 + 1 + 2, locals.get_int("fm_content_stash_house", 117 + 22 + 1 + 1 + 2)) --3095 --使已输入密码与目标相同
+        locals_set_float("fm_content_stash_house", 117 + 22 + 1 + 4, locals.get_int("fm_content_stash_house", 117 + 22 + 1 + 1 + 4)) --3095 --使已输入密码与目标相同
+        gui.show_message("Stash house crack","If you don't succeed once, press it several times until the door opens.") 
+        --gui.show_message("stash house detected","Continue pressing until success")
+    end
 
 end)
 
@@ -3992,6 +4011,29 @@ end)
 TuneablesandStatsTab:add_text("Modification process: 1.Retrieve 2.Modify 3.Apply")
 
 t_heisttab = TuneablesandStatsTab:add_tab("Heists")
+t_heisttab:add_text("Local cuts")
+t_heisttab:add_text("Please change it after the mission starts, it won't be reflected on the planner board, it won't affect your teammates, and your teammates won't see it, it only affects your final income")
+local_cut_h234 = t_heisttab:add_input_int("Perico/Casino/Doomsday")
+local_cut_h1 = t_heisttab:add_input_int("Apartments")
+
+t_heisttab:add_button("Read ##lhcut", function()
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 or SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then
+        local_cut_h234:set_value(globals.get_int(2685249 + 6615)) --3095
+        local_cut_h1:set_value(globals.get_int(2685249 + 6379 )) --3095
+    else
+        gui.show_error("Error","Please start the heist first")
+    end
+end)
+
+t_heisttab:add_sameline()
+t_heisttab:add_button("Apply ##lhcut", function()
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 or SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then
+        globals_set_int(2685249 + 6615, local_cut_h234:get_value()) --3095
+        globals_set_int(2685249 + 6379, local_cut_h1:get_value()) --3095
+    else
+        gui.show_error("Error","Please start the heist first")
+    end
+end)
 
 t_heisttab:add_text("Cayo Perico")
 t_heisttab:add_text("Main target value")
@@ -4542,7 +4584,12 @@ tstaba1:add_button("Unlock the wholesale price of some vehicles", function()
         stats.set_int("MPX_FINISHED_SASS_RACE_TOP_3", 21)
     end
 end)
-tstaba1:add_text(" Supported DLCs : Smuggler's Run + Diamond Casino Heist + Cayo Perico Heist + Doomsday Heist + Apartment Heist + Arms Trafficking + Import/Export Tycoon + Nightclub + Customization Shop + Drug War")
+tstaba1:add_text("Supported DLCs : Smuggler's Run + Diamond Casino Heist + Cayo Perico Heist + Doomsday Heist + Apartment Heist + Arms Trafficking + Import/Export Tycoon + Nightclub + Customization Shop + Drug War")
+
+tstaba1:add_button("Complete the LS car meet prize vehicle challenge of the week", function()
+    stats.set_bool("MPX_CARMEET_PV_CHLLGE_CMPLT", true)
+end)
+
 --------------------------------------------------------------------------------------- 传送点tab
 
 tpmenu:add_text("Teleport page")
@@ -7389,6 +7436,13 @@ void func_12234(var uParam0, var uParam1, Blip* pblParam2, Blip* pblParam3, Blip
 ]]
 
 -- MC_TLIVES 团队生命数
+
+--[[ 3095
+    佩里科个人本地分红(可能也适用于赌场、末日) Global_2685249.f_6615 
+    可能适用于公寓抢劫的本地分红Global_2685249.f_6379
+    Global_2685249.f_3485.f_79 celebration结算页面显示的个人分红 "CELEB_C_EARN" /* GXT: ~1~% CUT OF EARNINGS */
+    iVar7 = Global_2685249.f_6615; fm2020里面的个人分红，最终赋值给Global_2685249.f_3485.f_79
+]]
 ---------------------------------------------------------------------------------------存储一些小发现、用不上的东西
 
 
