@@ -1,4 +1,4 @@
--- v3.22 --
+-- v3.23 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v3.22"
+luaversion = "v3.23"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -66,7 +66,7 @@ devmode3 = 0 --0:禁用某些调试功能 1:启用某些调试功能
 islistwed = 0 --是否已展开时间和金钱stats表单
 
 gtaoversion = memory.scan_pattern("8B C3 33 D2 C6 44 24 20"):add(0x24):rip()
-if gtaoversion:get_string() ~= "3095" then
+if gtaoversion:get_string() ~= "3179" then
     verchkok = 0
     log.warning("sch-lua脚本不支持您的游戏版本,为避免损坏存档,涉及数据修改的功能将自动停用!")
 else
@@ -479,8 +479,8 @@ function writeobjtable()
         local objdist = calcDistance(selfpos,obj_pos)
         formattedobjdistance = string.format("%.1f", objdist)
         local objmod = ENTITY.GET_ENTITY_MODEL(obj_id)
-        if objmod == 2202227855 then
-            ObjTableTab:add_text(obj_id.." Model: "..objmod.." Distance: "..formattedobjdistance.." Special object:ULP_Clear_Fuse")
+        if objmod == 2202227855 or objmod == 3105373629 then
+            ObjTableTab:add_text(obj_id.." Model: "..objmod.." Distance: "..formattedobjdistance.." Potential task entities")
         else
             ObjTableTab:add_text(obj_id.." Model: "..objmod.." Distance: "..formattedobjdistance)
         end
@@ -584,7 +584,11 @@ function writevehtable()
             PED.SET_PED_INTO_VEHICLE(PLAYER.PLAYER_PED_ID(), t_veh_hd, -1)
         end)
         VehicleTableTab:add_sameline()
-        VehicleTableTab:add_button("Destroy the engine "..Veh_list_index, function()
+        VehicleTableTab:add_button("Teleport to"..Veh_list_index, function()
+            PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), ENTITY.GET_ENTITY_COORDS(t_veh_hd, true).x, ENTITY.GET_ENTITY_COORDS(t_veh_hd, true).y, ENTITY.GET_ENTITY_COORDS(t_veh_hd, true).z)
+        end)
+        VehicleTableTab:add_sameline()
+        VehicleTableTab:add_button("Destroy the engine"..Veh_list_index, function()
             request_control(t_veh_hd)
             VEHICLE.SET_VEHICLE_ENGINE_HEALTH(t_veh_hd, -4000)
         end)
@@ -698,9 +702,8 @@ gentab:add_button("montable reset", function()
     prevValues = {}
 end)
 
-
 gentab:add_button("test02", function()
-    log.info(STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(0,9834,0))
+
 end)
 ]]
 --------------------------------------------------------------------------------------- TEST
@@ -872,7 +875,7 @@ end)
 
 gentab:add_button("Skip Casino heist prep (diamond)", function()
     stats.set_int("MPX_H3OPT_APPROACH", 2)--https://beholdmystuff.github.io/perico-stattext-maker/ 生成的stat们
-    stats.set_int("MPX_H3_LAST_APPROACH", 3)
+    stats.set_int("MPX_H3_LAST_APPROACH", 1)
     stats.set_int("MPX_H3OPT_TARGET", 3) --主目标:钻石
     stats.set_int("MPX_H3OPT_BITSET1", 159)
     stats.set_int("MPX_H3OPT_KEYLEVELS", 2)
@@ -1047,7 +1050,7 @@ gentab:add_button("Show Avengers panel", function()  --3095
     end
 end)
 
-gentab:add_button("Mini-games are completed immediately (various access control, VoltLab, packet collection mini-games, Perico Plasma/Drain Cutting, Bank Drill Immediately)", function()
+gentab:add_button("Mini-games are completed immediately (various access control, VoltLab, packet collection mini-games, Perico Plasma/Drain Cutting, Casino/Bank Drill Immediately)", function()
 
     local_H4_hack = 24333 --3095    --func_5790(&Local_24333, &(Local_24324[func_381(bParam1, 3) /*2*/]), 0, joaat("heist"), Global_786547.f_1);
 
@@ -1067,7 +1070,6 @@ gentab:add_button("Mini-games are completed immediately (various access control,
 
         locals_set_float("fm_mission_controller_2020", 30357 + 3, 100) --3095 佩里科等离子切割
         
-        locals_set_float("fm_mission_controller", 10067 + 11, 1) --3095 全福银行钻孔
     
         local_H4_hack_v = locals.get_int("fm_mission_controller_2020", local_H4_hack) --佩里科finger clone
         if (local_H4_hack_v & (1 << 0)) == 0 then
@@ -1075,7 +1077,10 @@ gentab:add_button("Mini-games are completed immediately (various access control,
             locals_set_int("fm_mission_controller_2020", local_H4_hack, local_H4_hack_v)
         end
     end
-    
+    if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 then --自动钻孔
+        locals_set_float("fm_mission_controller", 10067 + 11, 1) --3095 全福银行钻孔
+        locals_set_int("fm_mission_controller", 10107 + 2, 8) --3095 赌场金库门钻孔 DLC_HEIST3\HEIST_FINALE_LASER_DRILL case 8
+    end
     --所有赌场指纹和键盘门禁
     local_H3_hack_1 = 52985 --3095    --func_14102(&Local_52985, &(Local_52920[Local_31603[bLocal_3229 /*292*/].f_27 /*2*/]), 0, joaat("heist"), Global_786547.f_1);
     local_H3_hack_2 = 54047 --3095    --func_14104(&Local_54047, &(Local_53982[Local_31603[bLocal_3229 /*292*/].f_27 /*2*/]), 0, joaat("heist"), Global_786547.f_1);
@@ -4016,10 +4021,15 @@ t_heisttab:add_text("Please change it after the mission starts, it won't be refl
 local_cut_h234 = t_heisttab:add_input_int("Perico/Casino/Doomsday")
 local_cut_h1 = t_heisttab:add_input_int("Apartments")
 
+t_heisttab:add_text("Move income to the right HUD")
+
+hud_take = t_heisttab:add_input_int("Pacific Standard Bank and Casino Heist")
+
 t_heisttab:add_button("Read ##lhcut", function()
     if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 or SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then
         local_cut_h234:set_value(globals.get_int(2685249 + 6615)) --3095
         local_cut_h1:set_value(globals.get_int(2685249 + 6379 )) --3095
+        hud_take:set_value(locals.get_int("fm_mission_controller", 19728 + 2686)) --3095 "MONEY_HELD" /* GXT: TAKE */, 1000, 6, 2, 0, "HUD_CASH" /* GXT: $~1~ */
     else
         gui.show_error("Error","Please start the heist first")
     end
@@ -4030,6 +4040,7 @@ t_heisttab:add_button("Apply ##lhcut", function()
     if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller")) ~= 0 or SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("fm_mission_controller_2020")) ~= 0 then
         globals_set_int(2685249 + 6615, local_cut_h234:get_value()) --3095
         globals_set_int(2685249 + 6379, local_cut_h1:get_value()) --3095
+        locals_set_int("fm_mission_controller", 19728 + 2686, hud_take:get_value()) --3095
     else
         gui.show_error("Error","Please start the heist first")
     end
@@ -4641,6 +4652,65 @@ tpmenu:add_button("Snowman Teleportation Point", function()
         end
     end
 end)
+
+--------------------------------------------------------------------------------------- 当当钟农场任务
+
+t_cluckinfarm = t_heisttab:add_tab("The Cluckin Bell Farm Raid")
+
+t_cluckinfarm:add_text("Black market fund")
+
+t_cluckinfarm:add_button("Quick cash pickup", function()
+    locals_set_int("fm_mission_controller_2020",28883,5)  --3095 --switch (Local_28883.f_0)
+
+end)
+
+t_cluckinfarm:add_text("Breaking and Entering")
+
+t_cluckinfarm:add_button("Transfer to laptop", function()
+    for _, ent in pairs(entities.get_all_objects_as_handles()) do
+        if ENTITY.GET_ENTITY_MODEL(ent) == joaat("m23_2_prop_m32_laptop_01a") then
+            local laptoppos = ENTITY.GET_ENTITY_COORDS(ent, false)
+            PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), laptoppos.x, laptoppos.y, laptoppos.z)        
+        end
+    end
+end)
+
+t_cluckinfarm:add_button("Teleport to Terrorbyte", function()
+    for _, ent in pairs(entities.get_all_vehicles_as_handles()) do
+        if VEHICLE.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL(ENTITY.GET_ENTITY_MODEL(ent)) == "terbyte" then
+            local terbytepos = ENTITY.GET_ENTITY_COORDS(ent, false)
+            PED.SET_PED_COORDS_KEEP_VEHICLE(PLAYER.PLAYER_PED_ID(), terbytepos.x, terbytepos.y, terbytepos.z + 5)        
+        end
+    end
+end)
+
+t_cluckinfarm:add_button("Shoot down the drone", function()
+    for _, ent in pairs(entities.get_all_objects_as_handles()) do
+        
+        if ENTITY.GET_ENTITY_MODEL(ent) == joaat("reh_prop_reh_drone_02a") then
+            log.info("d2")
+            local dronepos = ENTITY.GET_ENTITY_COORDS(ent, true)
+            MISC.SHOOT_SINGLE_BULLET_BETWEEN_COORDS(dronepos.x, dronepos.y, dronepos.z + 1, dronepos.x, dronepos.y, dronepos.z, 1000, true, 2526821735, PLAYER.PLAYER_PED_ID(), false, true, 1.0)  --2526821735是特制卡宾步枪MK2的Hash值,相关数据可在 https://github.com/DurtyFree/gta-v-data-dumps/blob/master/WeaponList.ini 查询
+        end
+    end
+end)
+
+t_cluckinfarm:add_text("Disorganized Crime")
+
+t_cluckinfarm:add_button("Fast drilling + 100% chance of obtaining access cards", function()
+    local_CF_drill_v = locals.get_int("fm_mission_controller_2020", 30368 + 54) --3095 获得门禁卡
+    if (local_CF_drill_v & (1 << 4)) == 0 then
+        local_CF_drill_v = local_CF_drill_v ~ (1 << 4)
+    end
+    if (local_CF_drill_v & (1 << 16)) == 0 then
+        local_CF_drill_v = local_CF_drill_v ~ (1 << 16)
+    end
+    locals_set_int("fm_mission_controller_2020", 30368 + 54, local_CF_drill_v)
+    locals_set_int("fm_mission_controller_2020",30368 + 56 ,4)  --3095 获得门禁卡
+    locals_set_int("fm_mission_controller_2020",30368 + 39 ,3)  --3095 钻孔立即完成
+end)
+
+t_cluckinfarm:add_text("Final Chapter: Scene of the Crime")
 --------------------------------------------------------------------------------------- 注册的循环脚本,主要用来实现Lua里面那些复选框的功能
 --存放一些变量，阻止无限循环，间接实现 checkbox 的 on_enable() 和 on_disable()
 
