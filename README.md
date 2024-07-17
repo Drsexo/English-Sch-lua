@@ -1,10 +1,11 @@
-# SCH-LUA-YIMMENU by sch-lda 3.23
+# SCH-LUA-YIMMENU by sch-lda **4.03**
 ### English Version translated by DrSexo 
-[Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) 
+[Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
 The developer will update the script during holiday periods due to academic obligations. \
-This Github Repo is experimental and only kept as a backup archive. There is no guarantee of user optimization, stability, and security. \
+
+This Github Repo is experimental and only kept as a backup archive. \
+There is no guarantee of user optimization, stability, and security. \
 ***Dont expect a perfect translation as im not chinese*** 
-### ***Alternatively you can use the [official strrepl translation tool](https://github.com/sch-lda/SCH-LUA-YIMMENU/tree/main/Translation) provided by sch-lda to make your own translated file*** 
 ### Please report any lua injection error as I no longer have the game installed to test the script
 
 
@@ -66,7 +67,7 @@ RScript (ZH_CN) https://github.com/TCRoid/YimMenu-Lua-RScript \
 Alestarov_Menu (EN) https://github.com/Alestarov/YimMenu-lua-script-Alestarov_Menu \
 YIMMENU官方Lua仓库 (EN) YIMMENU Official Lua Repo https://github.com/YimMenu-Lua
 YIMMENU Official Lua Repo (EN) YIMMENU Official Lua Repo https://github.com/YimMenu-Lua
-## Screenshots
+## Screenshots (outdated)
 ![1](https://github.com/Drsexo/English-Sch-lua/assets/101467921/fc0fd0f4-3857-4d71-b190-7566b5383cff)
 ![2](https://github.com/Drsexo/English-Sch-lua/assets/101467921/2ff7607b-5e7b-4be5-8d96-cc44dca7572e)
 ![3](https://github.com/Drsexo/English-Sch-lua/assets/101467921/67261258-b9ce-4f1e-9375-e5a9d4173ba1)
