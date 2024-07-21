@@ -1197,7 +1197,7 @@ gentab:add_button("Show bail office panel", function()
         if globals_get_int(3274, 1887305+playerIndex*609+10+430+1) == 1 then
             run_script("appBailOffice", 4592)
         else
-            gui.show_message("Don't forget to register as CEO/Mc”, ”It could also be a script detection error, known issue, no feedback needed")
+            gui.show_message("Don't forget to register as CEO/Mc", "It could also be a script detection error, known issue, no feedback needed")
             run_script("appBailOffice", 4592)
         end
     end
@@ -3018,7 +3018,7 @@ gentab:add_button("Unlock acid lab equipment upgrades", function()
     if stats.get_int("MPX_AWD_CALLME") < 10 then
         stats.set_int("MPX_AWD_CALLME", 10)
     else
-        gui.show_message("Prompt”, ”You've completed 10 Fooligan gang missions, you don't need to unlock them.")
+        gui.show_message("Prompt", "You've completed 10 Fooligan gang missions, you don't need to unlock them.")
     end
 end)
 
