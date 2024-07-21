@@ -1,7 +1,7 @@
-# SCH-LUA-YIMMENU by sch-lda **4.03**
+# SCH-LUA-YIMMENU by sch-lda **4.04**
 ### English Version translated by DrSexo 
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
-The developer will update the script during holiday periods due to academic obligations. \
+The developer will update the script during holiday periods due to academic obligations. 
 
 This Github Repo is experimental and only kept as a backup archive. \
 There is no guarantee of user optimization, stability, and security. \

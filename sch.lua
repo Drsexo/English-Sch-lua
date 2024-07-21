@@ -1,4 +1,4 @@
--- v4.03 --
+-- v4.04 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v4.03"
+luaversion = "v4.04"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -4968,6 +4968,9 @@ tstaba1:add_button("Unlock the wholesale price of some vehicles", function()
         dombit = dombit ~ (1 << 10)
     end    
     if (dombit & (1 << 11)) == 0 then
+        dombit = dombit ~ (1 << 11)
+    end    
+    if (dombit & (1 << 11)) == 0 then
         dombit = dombit ~ (1 << 0)
     end
     if (dombit & (1 << 13)) == 0 then
@@ -5101,8 +5104,58 @@ tstaba1:add_button("Unlock the wholesale price of some vehicles", function()
     if stats.get_int("MPX_FINISHED_SASS_RACE_TOP_3") <21 then
         stats.set_int("MPX_FINISHED_SASS_RACE_TOP_3", 21)
     end
+    stats.set_bool("MPX_AWD_TAXISTAR", true)
+
+    --回收站
+    packed_stat_set_bool(41942, true)
+    packed_stat_set_bool(42123, true)
+    packed_stat_set_bool(42234, true)
+    packed_stat_set_bool(42233, true)
+    
+    local slbit = stats.get_int("MPX_SALV23_GEN_BS")
+    if (slbit & (1 << 12)) == 0 then
+        slbit = slbit ~ (1 << 12)
+    end
+    stats.set_int("MPX_SALV23_GEN_BS", slbit)
+    local slbit2 = stats.get_int("MPX_SALV23_SCOPE_BS")
+    if (slbit2 & (1 << 1)) == 0 then
+        slbit2 = slbit2 ~ (1 << 1)
+    end
+    stats.set_int("MPX_SALV23_SCOPE_BS", slbit2)
+
+    --圣安地列斯雇佣兵
+    local mcbit = stats.get_int("MPX_SUM23_AVOP_PROGRESS") 
+    if (mcbit & (1 << 2)) == 0 then
+        mcbit = mcbit ~ (1 << 2) --raiju
+    end
+    stats.set_int("MPX_SUM23_AVOP_PROGRESS", mcbit)
+
+    --犯罪集团
+    local fzjtbit = stats.get_int("MPX_ULP_MISSION_PROGRESS")
+    if (fzjtbit & (1 << 0)) == 0 then
+        fzjtbit = fzjtbit ~ (1 << 0)
+    end
+    if (fzjtbit & (1 << 5)) == 0 then
+        fzjtbit = fzjtbit ~ (1 << 5)
+    end
+    stats.set_int("MPX_ULP_MISSION_PROGRESS", fzjtbit)
+
+    --bottom dollor
+    if stats.get_int("mpx_awd_dispatchwork") <5 then
+        stats.set_int("mpx_awd_dispatchwork", 5)
+    end
+    packed_stat_set_bool(42280, true)
+    packed_stat_set_bool(42281, true)
+    packed_stat_set_bool(42282, true)
+    packed_stat_set_bool(42283, true)
+    packed_stat_set_bool(42284, true)
+
+    --fixer
+    if stats.get_int("mpx_fixer_count") < 21 then
+        stats.set_int("mpx_fixer_count", 21)
+    end
 end)
-tstaba1:add_text("Supported DLCs : Smuggler's Run + Diamond Casino Heist + Cayo Perico Heist + Doomsday Heist + Apartment Heist + Arms Trafficking + Import/Export Tycoon + Nightclub + Customization Shop + Drug War")
+tstaba1:add_text("Supported DLCs : Smuggler's Run + Diamond Casino Heist + Cayo Perico Heist + Doomsday Heist + Apartment Heist + Arms Trafficking + Import/Export Tycoon + Nightclub + Customization Shop + Drug War + Minimum Price Bounty")
 
 tstaba1:add_button("Complete the LS car meet prize vehicle challenge of the week", function()
     stats.set_bool("MPX_CARMEET_PV_CHLLGE_CMPLT", true)
