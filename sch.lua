@@ -1,4 +1,4 @@
--- v4.04 --
+-- v4.05 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -46,7 +46,7 @@ English:Drsexo https://github.com/Drsexo
     6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v4.04"
+luaversion = "v4.05"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -4843,7 +4843,7 @@ odatatab:add_button("I agree", function()
     end
 end)
 
-unlocktab = TuneablesandStatsTab:add_tab("Unlock")
+unlocktab = TuneablesandStatsTab:add_tab("Unlock##schlua")
 
 unlocktab:add_text("XMAS GIFT TRUCK")
 unlocktab:add_button("eCola Festive Sweater", function()

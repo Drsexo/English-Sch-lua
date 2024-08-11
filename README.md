@@ -1,13 +1,11 @@
-# SCH-LUA-YIMMENU by sch-lda **4.04**
+# SCH-LUA-YIMMENU by sch-lda **4.05**
 ### English Version translated by DrSexo 
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
 The developer will update the script during holiday periods due to academic obligations. 
-
 This Github Repo is experimental and only kept as a backup archive. \
 There is no guarantee of user optimization, stability, and security. \
 ***Dont expect a perfect translation as im not chinese*** 
 ### Please report any lua injection error as I no longer have the game installed to test the script
-
 
 ## User Agreement TOS
 ### Allowed:
