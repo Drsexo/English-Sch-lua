@@ -1,4 +1,4 @@
-# SCH-LUA-YIMMENU by sch-lda **4.05**
+# SCH-LUA-YIMMENU by sch-lda **4.07**
 ### English Version translated by DrSexo 
 [Original **chinese** version can be found here](https://github.com/sch-lda/SCH-LUA-YIMMENU) \
 The developer will update the script during holiday periods due to academic obligations. 
