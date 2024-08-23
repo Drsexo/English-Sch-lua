@@ -1,4 +1,4 @@
--- v4.05 --
+-- v4.07 --
 --I don't restrict or even encourage players to modify and customize the lua to suit their needs.
 --Some of the code I've even commented out to explain what it's for and where the relevant global is located in the decompiled scripts.
 --[[
@@ -27,26 +27,21 @@
     [Alice, nord123, rostal315 and wangzixuan in GTA5OnlineTools (zh_CN) official Discord server] & [gir489returns, tupoy-ya and xiaoxiao921 on Github] provided assistance in Lua writing.
 
 Sites that may be helpful for lua writing
-    1.Yimmenu Lua API https://github.com/YimMenu/YimMenu/tree/master/docs/lua
-    2.GTA5 Native Reference https://nativedb.dotindustries.dev/natives
-    3.GTA5 Decompile Script https://github.com/Primexz/GTAV-Decompiled-Scripts
-    4.PlebMaster (fast search model hash) https://forge.plebmasters.de
-    5.gta-v-data-dumps (Check ptfx/sound/model/action, provide preview) https://github.com/DurtyFree/gta-v-data-dumps
-    6.FiveM Native Reference https://docs.fivem.net/docs/
+    1. Yimmenu Lua API - https://github.com/YimMenu/YimMenu/tree/master/docs/lua
+    2. GTA5 Native Reference (Native functions) - https://nativedb.dotindustries.dev/natives
+    3. GTA5 Decompiled Scripts - https://github.com/root-cause/v-decompiled-scripts
+    4. PlebMaster (GTA5 data search & preview) - https://forge.plebmasters.de
+    5. gta-v-data-dumps (Lookup PTFX/sounds/models) - https://github.com/DurtyFree/gta-v-data-dumps
+    6. CodeWalker (view and edit scripts/resources in GTA V) - https://github.com/dexyfex/CodeWalker
+    7. FiveM Native Reference - https://docs.fivem.net/docs/
+	
 
 Multi-language maintainer.
 Simplified Chinese:sch https://github.com/sch-lda
 English:Drsexo https://github.com/Drsexo
-    Websites that may be helpful for Lua writing:
-    1. Yimmenu Lua API - https://github.com/YimMenu/YimMenu/tree/master/docs/lua
-    2. GTA5 Native Reference (Native functions) - https://nativedb.dotindustries.dev/natives
-    3. GTA5 Decompiled Scripts - https://github.com/Primexz/GTAV-Decompiled-Scripts
-    4. PlebMaster (GTA5 data search & preview) - https://forge.plebmasters.de
-    5. gta-v-data-dumps (Lookup PTFX/sounds/models) - https://github.com/DurtyFree/gta-v-data-dumps
-    6. FiveM Native Reference - https://docs.fivem.net/docs/
 ]]
 
-luaversion = "v4.05"
+luaversion = "v4.07"
 path = package.path
 if path:match("YimMenu") then
     log.info("sch-lua "..luaversion.." For personal testing and learning only, commercial use is prohibited")
@@ -783,66 +778,8 @@ table.insert(newvehtable, "yosemite1500")
     end)
 
 end)
-
-gentab:add_button("test03", function()
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(0, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --int hash     
-        end
-    end
-    log.info("int hash done")
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(1, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --float hash     
-        end
-    end
-    log.info("float hash done")
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(2, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --bool hash     
-        end
-    end
-    log.info("bool hash done")
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(3, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --string hash     
-        end
-    end
-    log.info("string hash done")
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(4, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --textlabel hash     
-        end
-    end
-    log.info("textlabel hash done")
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(5, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --data hash     
-        end
-    end
-    log.info("data hash done")
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(6, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --vector hash     
-        end
-    end
-    log.info("Vector hash done")
-    for i=0, 20000 do
-        hash = STATS.GET_STAT_HASH_FOR_CHARACTER_STAT_(7, i, 0)
-        if hash ~= 0 then
-            log.info(i..","..hash) --UserID hash     
-        end
-    end
-    log.info("UserId hash done")
-end)
 ]]
+
 --------------------------------------------------------------------------------------- TEST
 
 FRDList = {   --友方NPC白名单
@@ -2082,15 +2019,15 @@ end)
 
 gentab:add_separator()
 
-gentab:add_text("Industry function - medium and high risk") 
+gentab:add_text("Industry function - Risk level indicator: |- Almost no risk !!- Medium risk !!!- High risk !!!!- Extremely high risk  *- Temporary modification, invalid when switching session disabled") 
 
-gentab:add_button("1 click completion of CEO warehouse shipments", function()
+gentab:add_button("1 click completion of CEO warehouse shipments (!!)", function()
     locals_set_int(3274, "gb_contraband_sell",547,99999) --Local_545.f_2 
 end)
 
 gentab:add_sameline()
 
-gentab:add_button("1 click completion of motorcycle shipment", function()
+gentab:add_button("1 click completion of motorcycle shipment (!!)", function()
     if locals_get_int(3274, "gb_biker_contraband_sell",721) >= 1 then 
         locals_set_int(3274, "gb_biker_contraband_sell",826,15) --704 + 122 
     else
@@ -2109,7 +2046,7 @@ end)
 ]]
 gentab:add_sameline()
 
-gentab:add_button("1 click completion of bunker shipment", function()
+gentab:add_button("1 click completion of bunker shipment (!!)", function()
     gui.show_message("Autoshipment","may show that the task failed, but you should get the money!")
     locals_set_int(3274, "gb_gunrunning",1985,0) 
     --  gb_gunrunning.c Local_1211.f_774
@@ -2120,42 +2057,42 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("1 click completion of hangar (air freight) shipment", function()
+gentab:add_button("1 click completion of hangar (air freight) shipment (!!)", function()
     gui.show_message("Autoshipment","may show that the task failed, but you should get the money!")
     local integer = locals_get_int(3274, "gb_smuggler", 3012)  --Local_1934.f_1078 SMOT_HLPDROP2
     locals_set_int(3274, "gb_smuggler",2969,integer) --1934 + 1035  
     gui.show_message("Autoshipment","may show that the task failed, but you should get the money!")
 end)
 
-local ccrgsl = gentab:add_checkbox("CEO warehouse shipment locks the transport ship")
+local ccrgsl = gentab:add_checkbox("CEO warehouse shipment locks the transport ship (|)")
 
 gentab:add_sameline()
 
-local bkeasyms = gentab:add_checkbox("The motorcycle gang will ship only one truck")
+local bkeasyms = gentab:add_checkbox("The motorcycle gang will ship only one truck (|)")
 
 gentab:add_sameline()
 
-local bussp2 = gentab:add_checkbox("Rapid production of acid in the motorcycle gang industrial bunker (risky)")
+local bussp2 = gentab:add_checkbox("Rapid production of acid in the motorcycle gang industrial bunker (!!!)")
 
 gentab:add_sameline()
 
-local bussp = gentab:add_checkbox("Extreme production of acid in the motorcycle gang industrial bunker (risky)")
+local bussp = gentab:add_checkbox("Extreme production of acid in the motorcycle gang industrial bunker (!!!!)")
 
 gentab:add_sameline()
 
-local ncspup = gentab:add_checkbox("Nightclub fast purchase (risky)")
+local ncspup = gentab:add_checkbox("Nightclub fast purchase (!!!!)")
 
-local ncspupa1 = gentab:add_checkbox("Purchase at 4 times the speed of the nightclub (risky)")
-
-gentab:add_sameline()
-
-local ncspupa2 = gentab:add_checkbox("Purchase at 10 times the speed of the nightclub (risky)")
+local ncspupa1 = gentab:add_checkbox("Purchase at 4 times the speed of the nightclub (!!!)")
 
 gentab:add_sameline()
 
-local ncspupa3 = gentab:add_checkbox("Purchase at 20 times the speed of the nightclub (risky)")
+local ncspupa2 = gentab:add_checkbox("Purchase at 10 times the speed of the nightclub (!!!!)")
 
-gentab:add_button("The MC club industry is full of supplies", function()
+gentab:add_sameline()
+
+local ncspupa3 = gentab:add_checkbox("Purchase at 20 times the speed of the nightclub (!!!!)")
+
+gentab:add_button("The MC club industry is full of supplies (!!)", function()
     globals_set_int(3274, 1663174+1+1,1) --大麻 --freemode.c  	if (func_11921(148, "OR_PSUP_DEL" /* GXT: Hey, the supplies you purchased have arrived at the ~a~. Remember, paying for them eats into profits! */, &Var3, 0, -99, 0, 0, 0, 0))
     globals_set_int(3274, 1663174+1+2,1) --冰毒
     globals_set_int(3274, 1663174+1+3,1) --假钞
@@ -2167,24 +2104,24 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("The bunker is full of supplies", function()
+gentab:add_button("The bunker is full of supplies (!!)", function()
     globals_set_int(3274, 1663174+1+5,1) --bunker
     gui.show_message("Auto-replenishment","All done")
 end)
 
 gentab:add_sameline()
 
-local autorespl = gentab:add_checkbox("Warehouse automatic replenishment (buggy)")
+local autorespl = gentab:add_checkbox("Warehouse automatic replenishment (possible crash)")
 
 gentab:add_sameline()
 
-gentab:add_button("Max nightclub's popularity", function()
+gentab:add_button("Max nightclub's popularity (|)", function()
     stats.set_int("MPX_CLUB_POPULARITY", 10000)
 end)
 
 gentab:add_sameline()
 
-gentab:add_button("CEO Warehouse staff restock once", function()
+gentab:add_button("CEO Warehouse staff restock once (!!)", function()
     --freemode.c void func_17501(int iParam0, BOOL bParam1) // Position - 0x56C7B6
     packed_stat_set_bool(32359,true) --无需更新
     packed_stat_set_bool(32360,true) --无需更新
@@ -2195,7 +2132,7 @@ end)
 
 gentab:add_sameline()
 
-gentab:add_button("Hangar staff restock once", function()
+gentab:add_button("Hangar staff restock once (!!)", function()
     packed_stat_set_bool(36828,true)  --无需更新
 end)
 
@@ -2203,15 +2140,15 @@ local checkCEOcargo = gentab:add_checkbox("The single purchase quantity of locke
 
 gentab:add_sameline()
 
-local inputCEOcargo = gentab:add_input_int("crates")
+local inputCEOcargo = gentab:add_input_int("crates (!!)")
 
 local check4 = gentab:add_checkbox("Lock hangar staff single purchase quantity is")
 
 gentab:add_sameline()
 
-local iputint3 = gentab:add_input_int("box")
+local iputint3 = gentab:add_input_int("box (!!)")
 
-gentab:add_button("Nightclub safe 300,000 cycles 10 times", function()
+gentab:add_button("Nightclub safe 300,000 cycles 10 times (!!!)", function()
     script.run_in_fiber(function (ncsafeloop)
         a2 =0
         while a2 < 10 do --循环次数
@@ -2230,11 +2167,107 @@ end)
 
 gentab:add_sameline()
 
-local checklkw = gentab:add_checkbox("Casino carousel draw (the carousel may appear as something else, but you do get vehicles)")
+local checklkw = gentab:add_checkbox("Casino carousel draw (the carousel may appear as something else, but you do get vehicles) Low risk for occasional use")
 
-local checkxsdped = gentab:add_checkbox("NPC drops 2000 bucks cycle (high risk)")
+gentab:add_sameline()
+
+local vehexportclasslock = gentab:add_checkbox("CEO Carrier Transaction Locked Acquisition Type is Top (|)")
+
+local checkxsdped = gentab:add_checkbox("NPC drops 2000 bucks cycle (!!!!)")
+
+gentab:add_sameline()
+
+gentab:add_button("Disable industrial raids (|,*)", function()
+    
+    tunables.set_bool("EXEC_DISABLE_DEFEND_MISSIONS", true)
+    tunables.set_bool("EXEC_DISABLE_DEFEND_FLEEING", true)
+    tunables.set_bool("EXEC_DISABLE_DEFEND_UNDER_ATTACK", true)
+    tunables.set_float("EXEC_WAREHOUSE_STOCK_DEFEND_THRESHOLD", 9999)
+
+    tunables.set_float("BB_DEFEND_MISSIONS_STOCK_THRESHOLD_FOR_MISSION_LAUNCH_DEFAULT", 9999) --Nightclub
+    tunables.set_float("BB_DEFEND_MISSIONS_STOCK_THRESHOLD_FOR_MISSION_LAUNCH_UPGRADED", 9999)
+
+    tunables.set_bool("BIKER_DISABLE_DEFEND_GETAWAY", true)
+    tunables.set_bool("BIKER_DISABLE_DEFEND_SHOOTOUT", true)
+    tunables.set_bool("BIKER_DISABLE_DEFEND_CRASH_DEAL", true)
+    tunables.set_bool("BIKER_DISABLE_DEFEND_SNITCH", true)
+    tunables.set_bool("BIKER_DISABLE_DEFEND_RETRIEVAL", true)
+    tunables.set_int("BIKER_DEFEND_GETAWAY_PRODUCT_THRESHOLD", 9999)
+    tunables.set_int("BIKER_DEFEND_SHOOTOUT_PRODUCT_THRESHOLD", 9999)
+    tunables.set_int("BIKER_DEFEND_CRASH_DEAL_PRODUCT_THRESHOLD", 9999)
+    tunables.set_int("BIKER_DEFEND_SNITCH_PRODUCT_THRESHOLD", 9999)
+    tunables.set_int("BIKER_DEFEND_RETRIEVAL_PRODUCT_THRESHOLD", 9999)
+
+    tunables.set_int("GR_GENERAL_STOCK_LEVEL_LAUNCH_THRESHOLD", 9999)
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Reduce MC Club + Bunker raw material consumption (!!,*)", function()
+
+    tunables.set_int("BIKER_WEED_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("BIKER_WEED_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+    tunables.set_int("BIKER_METH_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("BIKER_METH_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+    tunables.set_int("BIKER_CRACK_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("BIKER_CRACK_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+    tunables.set_int("BIKER_FAKEIDS_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("BIKER_FAKEIDS_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+    tunables.set_int("BIKER_COUNTERCASH_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("BIKER_COUNTERCASH_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+
+    tunables.set_int("BIKER_ACID_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("BIKER_ACID_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+
+    tunables.set_int("GR_RESEARCH_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("GR_RESEARCH_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+    tunables.set_int("GR_MANU_MATERIAL_PRODUCT_COST", 1)
+    tunables.set_int("GR_MANU_MATERIAL_PRODUCT_COST_UPGRADE_REDUCTION", 1)
+
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Easy Nightclub selling mission (|,*)", function()
+
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_SINGLE_DROP", 2)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_MULTI_DROP", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_HACK_DROP", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_ROADBLOCK", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_PROTECT_BUYER", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_UNDERCOVER_COPS", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_OFFSHORE_TRANSFER", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_NOT_A_SCRATCH", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_FOLLOW_HELI", 0.01)
+    tunables.set_float("BB_SELL_MISSIONS_WEIGHTING_FIND_BUYER", 0.01)
+
+end)
+
+gentab:add_sameline()
+
+gentab:add_button("Easy CEO vehicle acquisition mission (|,*)", function()
+
+    tunables.set_bool("IMPEXP_DISABLE_PARKED_CAR", false)		
+    tunables.set_bool("IMPEXP_DISABLE_MOVING_CAR", true)		
+    tunables.set_bool("IMPEXP_DISABLE_CARGOBOB", true)		
+    tunables.set_bool("IMPEXP_DISABLE_DRUNK_DRIVER", true)		
+    tunables.set_bool("IMPEXP_DISABLE_PHOTO_SHOOT", true)		
+    tunables.set_bool("IMPEXP_DISABLE_PICTURE_MESSAGE", true)		
+    tunables.set_bool("IMPEXP_DISABLE_CRIME_SCENE", true)		
+    tunables.set_bool("IMPEXP_DISABLE_PROTECTED_CAR", true)		
+    tunables.set_bool("IMPEXP_DISABLE_PARTY_CRASHER", true)		
+    tunables.set_bool("IMPEXP_DISABLE_CAR_MEET", true)		
+    tunables.set_bool("IMPEXP_DISABLE_POLICE_CHASE", true)		
+    tunables.set_bool("IMPEXP_DISABLE_EYE_SKY", true)		
+    tunables.set_bool("IMPEXP_DISABLE_BOMB_DEFUSE", true)		
+    tunables.set_bool("IMPEXP_DISABLE_LAPPED_RACE", true)		
+    tunables.set_bool("IMPEXP_DISABLE_STUNT_MAN", true)		
+    tunables.set_bool("IMPEXP_DISABLE_RACE_DRIVER", true)		
+    tunables.set_bool("IMPEXP_DISABLE_TAIL_VEHICLE", true)		
+end)
 
 gentab:add_separator()
+
 gentab:add_text("Send")
 
 gentab:add_button("Navigation Points (Particle Effects)", function()
@@ -3032,7 +3065,9 @@ end)
 gentab:add_sameline()
 
 gentab:add_button("Remove CEO vehicle cooldown", function()
-    tunables.set_int("GB_CALL_VEHICLE_COOLDOWN", 0)
+    tunables.set_int("GB_CALL_VEHICLE_COOLDOWN", 0) --呼叫ceo载具
+    tunables.set_int("IMPEXP_STEAL_COOLDOWN", 0) --载具交易获取载具
+    tunables.set_int("IMPEXP_SELL_COOLDOWN", 0) --载具交易出售载具
 end)
 
 gentab:add_sameline()
@@ -4618,6 +4653,9 @@ misc_tu_lock = t_ottab:add_checkbox("Apply ##miscv") --这只是一个复选框,
 biker_p_val_mtp = t_ottab:add_input_float("MC club industry and acid product value multipliers")
 biker_far_mtp = t_ottab:add_input_float("MC club and acid long distance sales multipliers")
 
+bk_p_val_mtp = t_ottab:add_input_float("Bunker product value multipliers")
+bk_far_mtp = t_ottab:add_input_float("Bunker product long-distance reward multiplier")
+
 biker_cap_0 = t_ottab:add_input_int("Current inventory of cocaine") --HUD_CASH 
 biker_cap_1 = t_ottab:add_input_int("Current inventory of weed") --HUD_CASH 
 biker_cap_2 = t_ottab:add_input_int("Current inventory of meth") --HUD_CASH 
@@ -4637,6 +4675,9 @@ biker_cap_max_6 = t_ottab:add_input_int("Max inventory of acid") --HUD_CASH
 t_ottab:add_button("Retrieve ##miscv2", function()
     biker_p_val_mtp:set_value(tunables.get_float(-823848572))
     biker_far_mtp:set_value(tunables.get_float("BIKER_SELL_PRODUCT_FAR_MODIFIER"))
+    bk_p_val_mtp:set_value(tunables.get_float("GR_SELL_PRODUCT_LOCAL_MODIFIER"))
+    bk_far_mtp:set_value(tunables.get_float("GR_SELL_PRODUCT_FAR_MODIFIER"))
+
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
     biker_cap_0:set_value(globals_get_int(3274, (1845281 + 1 + (playerid * 877) + 268 + 197 + 1 + 0 * 13)+1)) 
     biker_cap_1:set_value(globals_get_int(3274, (1845281 + 1 + (playerid * 877) + 268 + 197 + 1 + 1 * 13)+1)) 
@@ -4657,6 +4698,8 @@ t_ottab:add_sameline()
 t_ottab:add_button("Apply ##miscv2", function()
     tunables.set_float(-823848572, biker_p_val_mtp:get_value())
     tunables.set_float("BIKER_SELL_PRODUCT_FAR_MODIFIER", biker_far_mtp:get_value())
+    tunables.set_float("GR_SELL_PRODUCT_LOCAL_MODIFIER", bk_p_val_mtp:get_value())
+    tunables.set_float("GR_SELL_PRODUCT_FAR_MODIFIER", bk_far_mtp:get_value())
     local playerid = stats.get_int("MPPLY_LAST_MP_CHAR") --读取角色ID
 
     globals_set_int(3274, (1845281 + 1 + (playerid * 877) + 268 + 197 + 1 + 0 * 13)+1 , biker_cap_0:get_value()) 
@@ -4890,6 +4933,62 @@ unlocktab:add_button("The Los Santos Panic outfit", function()
 end)
 unlocktab:add_button("Coast Guard Outfit outfit", function()
     packed_stat_set_bool(42111, true) --fm_content_vehrob_cargo_ship CSF_T_UNLKOTFT
+end)
+
+unlocktab:add_separator()
+
+unlocktab:add_button("Unlock all bunker research", function()
+    packed_stat_set_bool(15381, true)
+    packed_stat_set_bool(15382, true)
+    packed_stat_set_bool(15428, true)
+    packed_stat_set_bool(15429, true)
+    packed_stat_set_bool(15430, true)
+    packed_stat_set_bool(15431, true)
+    packed_stat_set_bool(15491, true)
+    packed_stat_set_bool(15432, true)
+    packed_stat_set_bool(15433, true)
+    packed_stat_set_bool(15434, true)
+    packed_stat_set_bool(15435, true)
+    packed_stat_set_bool(15436, true)
+    packed_stat_set_bool(15437, true)
+    packed_stat_set_bool(15438, true)
+    packed_stat_set_bool(15439, true)
+    packed_stat_set_bool(15447, true)
+    packed_stat_set_bool(15448, true)
+    packed_stat_set_bool(15449, true)
+    packed_stat_set_bool(15450, true)
+    packed_stat_set_bool(15451, true)
+    packed_stat_set_bool(15452, true)
+    packed_stat_set_bool(15453, true)
+    packed_stat_set_bool(15454, true)
+    packed_stat_set_bool(15455, true)
+    packed_stat_set_bool(15456, true)
+    packed_stat_set_bool(15457, true)
+    packed_stat_set_bool(15458, true)
+    packed_stat_set_bool(15459, true)
+    packed_stat_set_bool(15460, true)
+    packed_stat_set_bool(15461, true)
+    packed_stat_set_bool(15462, true)
+    packed_stat_set_bool(15463, true)
+    packed_stat_set_bool(15464, true)
+    packed_stat_set_bool(15465, true)
+    packed_stat_set_bool(15466, true)
+    packed_stat_set_bool(15467, true)
+    packed_stat_set_bool(15468, true)
+    packed_stat_set_bool(15469, true)
+    packed_stat_set_bool(15470, true)
+    packed_stat_set_bool(15471, true)
+    packed_stat_set_bool(15472, true)
+    packed_stat_set_bool(15473, true)
+    packed_stat_set_bool(15474, true)
+    packed_stat_set_bool(15492, true)
+    packed_stat_set_bool(15493, true)
+    packed_stat_set_bool(15494, true)
+    packed_stat_set_bool(15495, true)
+    packed_stat_set_bool(15496, true)
+    packed_stat_set_bool(15497, true)
+    packed_stat_set_bool(15498, true)
+    packed_stat_set_bool(15499, true)
 end)
 
 tstaba1 = TuneablesandStatsTab:add_tab("Miscellaneous")
@@ -5790,6 +5889,12 @@ script.register_looped("schlua-dataservice", function(script)
         end
         --char* func_180() // Position - 0x7354   --return "CAS_LW_VEHI" /*Congratulations!~n~You won the podium vehicle.*/;
         --你可以自定义代码中的18来获取其他物品。设定为18是展台载具，16衣服，17经验，19现金，4载具折扣，11神秘礼品，15 chips不认识是什么
+    end
+
+    if  vehexportclasslock:is_enabled() then--锁定CEO交易载具获取载具类型为 顶级
+        if SCRIPT.GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH(joaat("gb_vehicle_export")) ~= 0 then
+            locals_set_int(3274, "gb_vehicle_export", 836 + 461, 3)
+        end
     end
 
     if  bkeasyms:is_enabled() then--锁定摩托帮出货任务 
